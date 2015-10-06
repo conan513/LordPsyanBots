@@ -36,6 +36,9 @@ void AddSC_holiday_spell_scripts();
 
 void AddSC_SmartScripts();
 
+//TeleNPC2
+void AddSC_npc_teleport();
+
 //Commands
 void AddSC_account_commandscript();
 void AddSC_achievement_commandscript();
@@ -687,7 +690,6 @@ void AddSC_outdoorpvp_zm();
 // player
 void AddSC_chat_log();
 void AddSC_action_ip_logger();
-
 #endif
 
 void AddScripts()
@@ -1415,63 +1417,79 @@ void AddBattlegroundScripts()
 
 #ifdef SCRIPTS
 /* This is where custom scripts' loading functions should be declared. */
-// start01
+// All In One NPC
+void AddSC_npc_all();
 // start02
 // start03
 // start04
-// start05
+// Arena Gambler
+void AddSC_ArenaGambler();
 // start06
 // start07
 // start08
-// start09
+// Beastmaster
+void AddSC_Npc_Beastmaster();
 // start10
 // start11
 // start12
-// start13
+// Bounty Hunter
+void AddSC_BountyHunter();
 // start14
 // start15
 // start16
-// start17
+    //GuildHouse NPC
+    void AddSC_guildmaster();
 // start18
 // start19
 // start20
-// start21
+// Killstreak
+void AddSC_PvP_System();
 // start22
 // start23
 // start24
-// start25
+// Level NPC
+void AddSC_levelnpc();
 // start26
 // start27
 // start28
-// start29
+    // Lottery NPC
+    void AddSC_npc_lottery();
 // start30
 // start31
 // start32
-// start33
+// Buff NPC
+void AddSC_Npc_Buff();
 // start34
 // start35
 // start36
-// start37
+// Enchant NPC
+void AddSC_npc_enchantment();
 // start38
 // start39
 // start40
-// start41
+// Events
+void AddSC_LevelEvents();
 // start42
 // start43
 // start44
-// start45
+// Profession Npc
+void AddSC_professionnpc();
 // start46
 // start47
 // start48
-// start49
+// IceRune
+void AddSC_summon();
 // start50
 // start51
 // start52
-// start53
+// TeleNPC2
+void AddSC_npc_teleport();
 // start54
 // start55
 // start56
-// start57
+// Transmogrification
+void AddSC_PWS_Transmogrification();
+void AddSC_CS_Transmogrification();
 // start58
 // start59
 // start60
@@ -1482,20 +1500,23 @@ void AddBattlegroundScripts()
 // start65
 // start66
 // start67
-// start68
+// Vote Rewarder NPC
+    void AddSC_npc_vote_rewarder();
 // start69
 // start70
 // start71
 // start72
-// start73
+// Reforging
+void AddSC_REFORGER_NPC();
 // start74
 // start75
 // start76
-// start77
+// Start Guild
+    void AddSC_gon_playerscripts();
 // start78
 // start79
 // start80
-// start81
+void AddSC_World_Chat();
 // start82
 // start83
 // start84
@@ -1518,7 +1539,7 @@ void AddBattlegroundScripts()
 // start101
 // start102
 // start103
-// start104
+void AddSC_TemplateNPC();
 // start105
 // start106
 // start107
@@ -1541,63 +1562,79 @@ void AddCustomScripts()
 {
 #ifdef SCRIPTS
     /* This is where custom scripts should be added. */
-// end01
+    // All In One NPC
+    AddSC_npc_all();
 // end02
 // end03
 // end04
-// end05
+    // Arena Gambler
+    AddSC_ArenaGambler();
 // end06
 // end07
 // end08
-// end09
+    // Beastmaster
+    AddSC_Npc_Beastmaster();
 // end10
 // end11
 // end12
-// end13
+    // Bounty Hunter
+    AddSC_BountyHunter();
 // end14
 // end15
 // end16
-// end17
+    // GuildHouse NPC
+    AddSC_guildmaster();
 // end18
 // end19
 // end20
-// end21
+    // Killstreak
+    AddSC_PvP_System();
 // end22
 // end23
 // end24
-// end25
+    // Level NPC
+    AddSC_levelnpc();
 // end26
 // end27
 // end28
-// end29
+// Lottery NPC
+AddSC_npc_lottery();
 // end30
 // end31
 // end32
-// end33
+    // Buff NPC
+    AddSC_Npc_Buff();
 // end34
 // end35
 // end36
-// end37
+    // Enchant NPC
+    AddSC_npc_enchantment();
 // end38
 // end39
 // end40
-// end41
+    // Events
+    AddSC_LevelEvents();
 // end42
 // end43
 // end44
-// end45
+    // Profession Npc
+    AddSC_professionnpc();
 // end46
 // end47
 // end48
-// end49
+    // IceRune
+    AddSC_summon();
 // end50
 // end51
 // end52
-// end53
+    // TeleNPC2
+    AddSC_npc_teleport();
 // end54
 // end55
 // end56
-// end57
+    // Transmogrification
+    AddSC_PWS_Transmogrification();
+    AddSC_CS_Transmogrification();
 // end58
 // end59
 // end60
@@ -1608,20 +1645,23 @@ void AddCustomScripts()
 // end65
 // end66
 // end67
-// end68
+// Vote Rewarder NPC
+    AddSC_npc_vote_rewarder();
 // end69
 // end70
 // end71
 // end72
-// end73
+    // Reforging
+    AddSC_REFORGER_NPC();
 // end74
 // end75
 // end76
-// end77
+// Start Guild
+AddSC_gon_playerscripts();
 // end78
 // end79
 // end80
-// end81
+    AddSC_World_Chat();
 // end82
 // end83
 // end84
@@ -1644,7 +1684,7 @@ void AddCustomScripts()
 // end101
 // end102
 // end103
-// end104
+    AddSC_TemplateNPC();
 // end105
 // end106
 // end107

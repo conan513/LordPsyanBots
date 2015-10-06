@@ -75,6 +75,7 @@ enum WorldTimers
     WUPDATE_EVENTS,
     WUPDATE_CLEANDB,
     WUPDATE_AUTOBROADCAST,
+    WUPDATE_AUTOANC,
     WUPDATE_MAILBOXQUEUE,
     WUPDATE_DELETECHARS,
     WUPDATE_AHBOT,
@@ -86,6 +87,7 @@ enum WorldTimers
 enum WorldBoolConfigs
 {
     CONFIG_DURABILITY_LOSS_IN_PVP = 0,
+    BATTLEGROUND_CROSSFACTION_ENABLED,
     CONFIG_ADDON_CHANNEL,
     CONFIG_ALLOW_PLAYER_COMMANDS,
     CONFIG_CLEAN_CHARACTER_DB,
@@ -161,7 +163,8 @@ enum WorldBoolConfigs
     // Prepatch by LordPsyan
     // 01
     // 02
-    // 03
+    CONFIG_NO_CAST_TIME,
+    CONFIG_HURT_IN_REAL_TIME,
     // 04
     // 05
     // 06
@@ -169,15 +172,16 @@ enum WorldBoolConfigs
     // 08
     // 09
     // 10
-    // 11
+    CONFIG_FAST_FISHING,
     // 12
     // 13
     // 14
-    // 15
+    CONFIG_FAKE_WHO_LIST,
     // 16
     // 17
     // 18
-    // 19
+    CONFIG_GAIN_HONOR_GUARD,
+    CONFIG_GAIN_HONOR_ELITE,
     // 20
     // Visit http://www.realmsofwarcraft.com/bb for forums and information
     //
@@ -209,15 +213,16 @@ enum WorldFloatConfigs
     // Prepatch by LordPsyan
     // 21
     // 22
-    // 23
+    CONFIG_SPEED_GAME,
     // 24
     // 25
     // 26
-    // 27
+    CONFIG_ATTACKSPEED_PLAYER,
+    CONFIG_ATTACKSPEED_ALL,
     // 28
     // 29
     // 30
-    // 31
+    CONFIG_RESPAWNSPEED,
     // 32
     // 33
     // 34
@@ -379,6 +384,8 @@ enum WorldIntConfigs
     CONFIG_CHARDELETE_HEROIC_MIN_LEVEL,
     CONFIG_AUTOBROADCAST_CENTER,
     CONFIG_AUTOBROADCAST_INTERVAL,
+    CONFIG_FAKE_WHO_ONLINE_INTERVAL,
+    CONFIG_FAKE_WHO_LEVELUP_INTERVAL,
     CONFIG_MAX_RESULTS_LOOKUP_COMMANDS,
     CONFIG_DB_PING_INTERVAL,
     CONFIG_PRESERVE_CUSTOM_CHANNEL_DURATION,
@@ -501,6 +508,7 @@ enum Rates
     RATE_CORPSE_DECAY_LOOTED,
     RATE_INSTANCE_RESET_TIME,
     RATE_TARGET_POS_RECALCULATION_RANGE,
+    RATE_PVP_RANK_EXTRA_HONOR,
     RATE_DURABILITY_LOSS_ON_DEATH,
     RATE_DURABILITY_LOSS_DAMAGE,
     RATE_DURABILITY_LOSS_PARRY,
@@ -510,6 +518,26 @@ enum Rates
     RATE_MONEY_QUEST,
     RATE_MONEY_MAX_LEVEL_QUEST,
     MAX_RATES
+};
+
+enum HonorKillPvPRank
+{
+    HKRANK00,
+    HKRANK01,
+    HKRANK02,
+    HKRANK03,
+    HKRANK04,
+    HKRANK05,
+    HKRANK06,
+    HKRANK07,
+    HKRANK08,
+    HKRANK09,
+    HKRANK10,
+    HKRANK11,
+    HKRANK12,
+    HKRANK13,
+    HKRANK14,
+    HKRANKMAX
 };
 
 /// Can be used in SMSG_AUTH_RESPONSE packet
@@ -640,6 +668,9 @@ class World
         void AddSession(WorldSession* s);
         void SendAutoBroadcast();
         bool RemoveSession(uint32 id);
+
+        void SendRNDBroadcastIRC();
+
         /// Get the number of current active sessions
         void UpdateMaxSessionCounters();
         const SessionMap& GetAllSessions() const { return m_sessions; }
@@ -738,6 +769,8 @@ class World
         void SendGlobalGMMessage(WorldPacket* packet, WorldSession* self = nullptr, uint32 team = 0);
         bool SendZoneMessage(uint32 zone, WorldPacket* packet, WorldSession* self = nullptr, uint32 team = 0);
         void SendZoneText(uint32 zone, const char *text, WorldSession* self = nullptr, uint32 team = 0);
+
+        uint32 pvp_ranks[HKRANKMAX];
 
         /// Are we in the middle of a shutdown?
         bool IsShuttingDown() const { return m_ShutdownTimer > 0; }

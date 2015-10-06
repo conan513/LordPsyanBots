@@ -1103,6 +1103,9 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder* holder)
     //
     // End of prepatch
     delete holder;
+
+    if (pCurrChar->GetTeam() != pCurrChar->GetOTeam())
+        pCurrChar->FitPlayerInTeam(pCurrChar->GetBattleground() && !pCurrChar->GetBattleground()->isArena() ? true : false, pCurrChar->GetBattleground());
 }
     // Prepatch by LordPsyan
     // 01

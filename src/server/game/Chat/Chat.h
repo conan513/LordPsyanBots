@@ -23,6 +23,7 @@
 #include "StringFormat.h"
 #include "WorldSession.h"
 #include "RBAC.h"
+#include "../TriniChat/IRCClient.h"
 
 #include <vector>
 
@@ -176,5 +177,7 @@ class CliHandler : public ChatHandler
         void* m_callbackArg;
         Print* m_print;
 };
+
+char const *fmtstring(char const *format, ...);
 
 #endif
