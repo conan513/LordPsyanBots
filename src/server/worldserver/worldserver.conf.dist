@@ -3328,6 +3328,8 @@ Logger.server=3,Console Server
 Logger.commands.gm=3,Console GM
 Logger.sql.sql=5,Console DBErrors
 Logger.sql.updates=3,Console Server
+Logger.playerbot=3,Console Server
+Logger.ahbot=3,Console Server
 
 #Logger.achievement=3,Console Server
 #Logger.addon=3,Console Server
