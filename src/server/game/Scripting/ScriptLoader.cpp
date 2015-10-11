@@ -1467,8 +1467,7 @@ void AddSC_npc_enchantment();
 // start38
 // start39
 // start40
-// Events
-void AddSC_LevelEvents();
+// start41
 // start42
 // start43
 // start44
@@ -1612,8 +1611,7 @@ AddSC_npc_lottery();
 // end38
 // end39
 // end40
-    // Events
-    AddSC_LevelEvents();
+// end41
 // end42
 // end43
 // end44
