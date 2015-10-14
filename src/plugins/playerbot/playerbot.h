@@ -1,5 +1,5 @@
 #pragma once
-
+#include <vector>
 std::vector<std::string> split(const std::string &s, char delim);
 #ifndef WIN32
 int strcmpi(std::string s1, std::string s2);
