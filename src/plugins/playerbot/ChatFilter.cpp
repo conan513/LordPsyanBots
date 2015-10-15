@@ -242,7 +242,8 @@ CompositeChatFilter::~CompositeChatFilter()
 
 string CompositeChatFilter::Filter(string message)
 {
-    for (int j = 0; j < filters.size(); ++j)
+	int filterSize = filters.size();
+    for (int j = 0; j < filterSize; ++j)
     {
         for (list<ChatFilter*>::iterator i = filters.begin(); i != filters.end(); i++)
         {
