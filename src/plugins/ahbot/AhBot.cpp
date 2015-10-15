@@ -812,7 +812,8 @@ void AhBot::CheckCategoryMultipliers()
     for (int i = 0; i < CategoryList::instance.size(); i++)
     {
         string name = CategoryList::instance[i]->GetName();
-        if (categoryMultiplierExpireTimes[name] <= time(0) || categoryMultipliers[name] <= 0)
+		int theTime = time(0);
+        if (categoryMultiplierExpireTimes[name] <= theTime || categoryMultipliers[name] <= 0)
         {
             categoryMultipliers[name] = (double)urand(20, 100) / 20.0;
             uint32 maxAllowedAuctionCount = CategoryList::instance[i]->GetMaxAllowedAuctionCount();

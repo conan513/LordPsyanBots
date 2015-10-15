@@ -179,7 +179,8 @@ void RandomPlayerbotFactory::CreateRandomBots()
         sLog->outMessage("playerbot", LOG_LEVEL_INFO, "Random bot accounts deleted");
     }
 
-    for (int accountNumber = 0; accountNumber < sPlayerbotAIConfig.randomBotAccountCount; ++accountNumber)
+	int randBotAC = sPlayerbotAIConfig.randomBotAccountCount;
+	for (int accountNumber = 0; accountNumber < randBotAC; ++accountNumber)
     {
         ostringstream out; out << sPlayerbotAIConfig.randomBotAccountPrefix << accountNumber;
         string accountName = out.str();
@@ -202,7 +203,7 @@ void RandomPlayerbotFactory::CreateRandomBots()
     LoginDatabase.PExecute("UPDATE account SET expansion = '%u' where username like '%s%%'", 2, sPlayerbotAIConfig.randomBotAccountPrefix.c_str());
 
     int totalRandomBotChars = 0;
-    for (int accountNumber = 0; accountNumber < sPlayerbotAIConfig.randomBotAccountCount; ++accountNumber)
+	for (int accountNumber = 0; accountNumber < randBotAC; ++accountNumber)
     {
         ostringstream out; out << sPlayerbotAIConfig.randomBotAccountPrefix << accountNumber;
         string accountName = out.str();
@@ -293,7 +294,8 @@ void RandomPlayerbotFactory::CreateRandomGuilds()
         }
     }
 
-    for (; guildNumber < sPlayerbotAIConfig.randomBotGuildCount; ++guildNumber)
+	int randBotGC = sPlayerbotAIConfig.randomBotGuildCount;
+	for (; guildNumber < randBotGC; ++guildNumber)
     {
         string guildName = CreateRandomGuildName();
         if (guildName.empty())
