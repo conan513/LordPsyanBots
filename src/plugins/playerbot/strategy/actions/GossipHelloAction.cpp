@@ -47,7 +47,7 @@ bool GossipHelloAction::Execute(Event event)
     GossipMenu& menu = bot->PlayerTalkClass->GetGossipMenu();
     int i = 0, loops = 0;
     set<uint32> alreadyTalked;
-	int menuGetItemCount = menu.GetMenuItemCount();
+    int menuGetItemCount = menu.GetMenuItemCount();
     while (i < menuGetItemCount && loops++ < 100)
     {
         GossipMenuItem const* item = menu.GetItem(i);

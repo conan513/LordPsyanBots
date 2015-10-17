@@ -1,5 +1,5 @@
 #pragma once
-#include <vector>
+
 std::vector<std::string> split(const std::string &s, char delim);
 #ifndef WIN32
 int strcmpi(std::string s1, std::string s2);
@@ -10,7 +10,7 @@ int strcmpi(std::string s1, std::string s2);
 #include "../Loot/LootMgr.h"
 #include "../Entities/Creature/GossipDef.h"
 #include "../Chat/Chat.h"
-#include "Common.h"
+#include "../../common/Common.h"
 #include "../World/World.h"
 #include "../Spells/SpellMgr.h"
 #include "../Globals/ObjectMgr.h"

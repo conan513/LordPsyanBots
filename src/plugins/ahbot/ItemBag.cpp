@@ -5,10 +5,10 @@
 #include "TradeCategory.h"
 #include "AhBotConfig.h"
 #include "../DataStores/DBCStructure.h"
-#include "Log.h"
-#include "QueryResult.h"
-#include "DatabaseEnv.h"
-#include "DBCStore.h"
+#include "../../common/Logging/Log.h"
+#include "../../server/database/Database/QueryResult.h"
+#include "../../server/database/Database/DatabaseEnv.h"
+#include "../../shared/DataStores/DBCStore.h"
 #include "../AuctionHouse/AuctionHouseMgr.h"
 
 using namespace ahbot;

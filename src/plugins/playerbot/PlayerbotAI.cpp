@@ -373,13 +373,11 @@ int32 PlayerbotAI::CalculateGlobalCooldown(uint32 spellid)
 {
     if (!spellid)
         return 0;
-/*
-    SpellInfo const *spellInfo = sSpellMgr->GetSpellInfo(spellid);
 
-    if (bot->GetSpellHistory()->HasGlobalCooldown(spellInfo))
+    if (bot->GetSpellHistory()->HasCooldown(spellid))
         return sPlayerbotAIConfig.globalCoolDown;
 
-    return sPlayerbotAIConfig.reactDelay;*/
+    return sPlayerbotAIConfig.reactDelay;
 }
 
 void PlayerbotAI::HandleMasterIncomingPacket(const WorldPacket& packet)
@@ -642,7 +640,7 @@ namespace MaNGOS
 
 };
 
-/*
+
 Unit* PlayerbotAI::GetUnit(ObjectGuid guid)
 {
     if (!guid)
@@ -652,28 +650,8 @@ Unit* PlayerbotAI::GetUnit(ObjectGuid guid)
     if (!map)
         return NULL;
 
-    //return ObjectAccessor::GetObjectInMap(guid, map, (Unit*)NULL);
-	return ObjectAccessor::GetUnit(*bot, guid);
+    return ObjectAccessor::GetUnit(*bot, guid);
 }
-*/
- Unit* PlayerbotAI::GetUnit(ObjectGuid guid)
- {
-     if (!guid)
-         return NULL;
- 
-     Map* map = bot->GetMap();
-     if (!map)
-         return NULL;
-     if(guid.IsPlayer())
-         return ObjectAccessor::GetPlayer(map, guid);
-     
-     if(guid.IsPet())
-         return map->GetPet(guid);
-     
-     return map->GetCreature(guid);
-     //return ObjectAccessor::GetObjectInMap(guid, map, (Unit*)NULL);
-     //return ObjectAccessor::GetUnit(*bot, guid);
- }
 
 
 Creature* PlayerbotAI::GetCreature(ObjectGuid guid)
@@ -687,7 +665,7 @@ Creature* PlayerbotAI::GetCreature(ObjectGuid guid)
 
     return map->GetCreature(guid);
 }
- 
+
 GameObject* PlayerbotAI::GetGameObject(ObjectGuid guid)
 {
     if (!guid)
@@ -838,10 +816,10 @@ bool PlayerbotAI::CanCastSpell(uint32 spellid, Unit* target, bool checkHasSpell)
 
     if (checkHasSpell && !bot->HasSpell(spellid))
         return false;
-/*
-    if (bot->HasSpellCooldown(spellid))
+
+    if (bot->GetSpellHistory()->HasCooldown(spellid))
         return false;
-*/
+
     SpellInfo const *spellInfo = sSpellMgr->GetSpellInfo(spellid );
     if (!spellInfo)
         return false;
@@ -1102,9 +1080,6 @@ bool PlayerbotAI::IsInterruptableSpellCasting(Unit* target, string spell)
 
 bool PlayerbotAI::HasAuraToDispel(Unit* target, uint32 dispelType)
 {
-    // FEYZEE: disable dispel for class death knight because of priest Abolish Disease bug
-    if (target->getClass() == CLASS_DEATH_KNIGHT)
-        return false;
     for (uint32 type = SPELL_AURA_NONE; type < TOTAL_AURAS; ++type)
     {
         Unit::AuraEffectList const& auras = target->GetAuraEffectsByType((AuraType)type);

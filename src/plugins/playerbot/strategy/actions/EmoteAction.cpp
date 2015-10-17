@@ -11,9 +11,6 @@ bool EmoteAction::Execute(Event event)
     if (emotes.empty())
         InitEmotes();
 
-    // FEYZEE: disable bot emotes
-    return true;
-/*
     uint32 emote = 0;
 
     string param = event.getParam();
@@ -49,7 +46,6 @@ bool EmoteAction::Execute(Event event)
 
     bot->HandleEmoteCommand(emote);
     return true;
-*/
 }
 
 void EmoteAction::InitEmotes()

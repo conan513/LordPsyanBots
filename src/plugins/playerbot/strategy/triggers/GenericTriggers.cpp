@@ -192,11 +192,8 @@ bool NoMovementTrigger::IsActive()
 
 bool NoPossibleTargetsTrigger::IsActive()
 {
-    // FEYZEE: bots join LFG when they are not in combat
-    //list<ObjectGuid> targets = AI_VALUE(list<ObjectGuid>, "possible targets");
-    //return !targets.size();
-    //return !bot->IsInCombat();
-    return 1;
+    list<ObjectGuid> targets = AI_VALUE(list<ObjectGuid>, "possible targets");
+    return !targets.size();
 }
 
 bool NotLeastHpTargetActiveTrigger::IsActive()

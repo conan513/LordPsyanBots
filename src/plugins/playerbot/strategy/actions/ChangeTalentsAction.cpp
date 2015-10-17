@@ -6,7 +6,7 @@ using namespace ai;
 
 bool ChangeTalentsAction::Execute(Event event)
 {
-
+    
 
     string text = event.getParam();
     if (text == "1" || text == "primary")
@@ -21,7 +21,7 @@ bool ChangeTalentsAction::Execute(Event event)
     }
     else
     {
-        ostringstream out;
+        ostringstream out; 
         switch (bot->GetActiveSpec())
         {
         case 0: out << "Primary";

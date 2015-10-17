@@ -1,6 +1,5 @@
 #include "../pchdef.h"
 #include "AhBotConfig.h"
-
 std::vector<std::string> split(const std::string &s, char delim);
 
 using namespace std;
@@ -32,8 +31,7 @@ bool AhBotConfig::Initialize()
         return false;
     }
 
-    // FEYZEE: change defaults to false because of lag
-    enabled = config.GetBoolDefault("AhBot.Enabled", false);
+    enabled = config.GetBoolDefault("AhBot.Enabled", true);
 
     if (!enabled)
         sLog->outMessage("ahbot", LOG_LEVEL_INFO, "AhBot is Disabled in ahbot.conf");

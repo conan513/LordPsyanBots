@@ -83,16 +83,17 @@ void LootObject::Refresh(Player* bot, ObjectGuid guid)
         LockEntry const *lockInfo = sLockStore.LookupEntry(lockId);
         if (!lockInfo)
             return;
-/*
-        for(uint32 i = 0; i < 6; ++i)
+
+        // TODO: remove?
+        /*for(uint32 i = 0; i < 6; ++i)
         {
             if (go->GetGOInfo()->questItems[i])
             {
                 this->guid = guid;
                 return;
             }
-        }
-*/
+        }*/
+
         for (int i = 0; i < 8; ++i)
         {
             switch (lockInfo->Type[i])

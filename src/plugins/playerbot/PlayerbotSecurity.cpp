@@ -46,8 +46,7 @@ PlayerbotSecurityLevel PlayerbotSecurity::LevelFor(Player* from, DenyReason* rea
                     return PLAYERBOT_SECURITY_ALLOW_ALL;
             }
         }
-        // FEYZEE: disable bot invite rejects caused by level, distance and gear difference
-        /*
+
         if ((int)bot->getLevel() - (int)from->getLevel() > 5)
         {
             if (reason) *reason = PLAYERBOT_DENY_LOW_LEVEL;
@@ -70,7 +69,7 @@ PlayerbotSecurityLevel PlayerbotSecurity::LevelFor(Player* from, DenyReason* rea
             if (reason) *reason = PLAYERBOT_DENY_GEARSCORE;
             return PLAYERBOT_SECURITY_TALK;
         }
-        */
+
         if (bot->isDead())
         {
             if (reason) *reason = PLAYERBOT_DENY_DEAD;
