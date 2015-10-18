@@ -538,7 +538,8 @@ int AhBot::AddAuction(int auction, Category* category, ItemTemplate const* proto
     auctionEntry->owner = owner;
     auctionEntry->startbid = bidPrice;
     auctionEntry->buyout = buyoutPrice;
-    auctionEntry->houseId = auctioneers[auction];
+    // TODO: remove?
+    // auctionEntry->auctioneer = auctioneers[auction];
     auctionEntry->bidder = 0;
     auctionEntry->bid = 0;
     auctionEntry->deposit = 0;
@@ -812,7 +813,7 @@ void AhBot::CheckCategoryMultipliers()
     for (int i = 0; i < CategoryList::instance.size(); i++)
     {
         string name = CategoryList::instance[i]->GetName();
-		int theTime = time(0);
+        int theTime = time(0);
         if (categoryMultiplierExpireTimes[name] <= theTime || categoryMultipliers[name] <= 0)
         {
             categoryMultipliers[name] = (double)urand(20, 100) / 20.0;

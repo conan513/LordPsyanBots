@@ -68,8 +68,8 @@ bool CheckMountStateAction::Mount()
     {
 		vector<uint32>& ids = i->second;
         int index = urand(0, ids.size() - 1);
-		int idsSize = ids.size();
-		if (index >= idsSize)
+        int idsSize = ids.size();
+        if (index >= idsSize)
             continue;
 
         ai->CastSpell(ids[index], bot);

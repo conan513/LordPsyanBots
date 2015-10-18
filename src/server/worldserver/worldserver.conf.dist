@@ -2843,6 +2843,16 @@ NoGrayAggro.Below = 0
 ###################################################################################################
 # AUCTION HOUSE BOT SETTINGS
 #
+#    AuctionHouseBot.Use.Plugins
+#       Description: If using AHBot from Plugins (ahbot.conf set for enabled)
+#                    You must set this to 1.
+#       Default:     0 (Use TC ahbot)
+#                    1 (Use plugins ahbot)
+#
+
+AuctionHouseBot.Use.Plugins = 0
+
+#
 #    AuctionHouseBot.Update.Interval
 #       Description: Interval in seconds for AHBot to get updated
 #       Default:     20

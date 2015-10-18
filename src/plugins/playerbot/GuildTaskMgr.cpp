@@ -5,7 +5,7 @@
 
 #include "../../plugins/ahbot/AhBot.h"
 #include "../../server/game/Guilds/GuildMgr.h"
-#include "DatabaseEnv.h"
+#include "../../server/database/Database/DatabaseEnv.h"
 #include "../../server/game/Mails/Mail.h"
 #include "PlayerbotAI.h"
 
@@ -362,7 +362,7 @@ bool GuildTaskMgr::IsGuildTaskItem(uint32 itemId, uint32 guildId)
     if (results)
     {
         Field* fields = results->Fetch();
-        bool value = fields[0].GetBool();
+        bool value = fields[0].GetUInt32();
         uint32 lastChangeTime = fields[1].GetUInt32();
         uint32 validIn = fields[2].GetUInt32();
         if ((time(0) - lastChangeTime) >= validIn)

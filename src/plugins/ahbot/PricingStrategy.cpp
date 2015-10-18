@@ -2,7 +2,7 @@
 #include "Category.h"
 #include "ItemBag.h"
 #include "AhBotConfig.h"
-#include "DatabaseEnv.h"
+#include "../../server/database/Database/DatabaseEnv.h"
 #include "AhBot.h"
 
 using namespace ahbot;
@@ -190,7 +190,7 @@ uint32 PricingStrategy::GetDefaultBuyPrice(ItemTemplate const* proto)
         double result = 1.0;
 
         QueryResult results = WorldDatabase.PQuery(
-            "select max(Level), max(MinLevel) from quest_template where RequiredItemId1 = %u or RequiredItemId2 = %u or RequiredItemId3 = %u or RequiredItemId4 = %u or RequiredItemId5 = %u or RequiredItemId6 = %u",
+            "select max(QuestLevel), max(MinLevel) from quest_template where RequiredItemId1 = %u or RequiredItemId2 = %u or RequiredItemId3 = %u or RequiredItemId4 = %u or RequiredItemId5 = %u or RequiredItemId6 = %u",
             proto->ItemId, proto->ItemId, proto->ItemId, proto->ItemId, proto->ItemId, proto->ItemId);
         if (results)
         {

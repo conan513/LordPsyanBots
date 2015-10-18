@@ -1363,6 +1363,7 @@ void World::LoadConfigSettings(bool reload)
 
     // AHBot
     m_int_configs[CONFIG_AHBOT_UPDATE_INTERVAL] = sConfigMgr->GetIntDefault("AuctionHouseBot.Update.Interval", 20);
+    m_int_configs[CONFIG_AHBOT_USE_PLUGINS] = sConfigMgr->GetBoolDefault("AuctionHouseBot.Use.Plugins", false);
 
     m_bool_configs[CONFIG_CALCULATE_CREATURE_ZONE_AREA_DATA] = sConfigMgr->GetBoolDefault("Calculate.Creature.Zone.Area.Data", false);
     m_bool_configs[CONFIG_CALCULATE_GAMEOBJECT_ZONE_AREA_DATA] = sConfigMgr->GetBoolDefault("Calculate.Gameoject.Zone.Area.Data", false);
@@ -2348,17 +2349,19 @@ void World::Update(uint32 diff)
         // ahbot mod
         auctionbot.Update();
     }
-
-    // playerbot mod
+        // playerbot mod
+    // <li> Handle AHBot operations
+    if (sWorld->getIntConfig(CONFIG_AHBOT_USE_PLUGINS) == 0)
+    {
+    if (m_timers[WUPDATE_AHBOT].Passed())
+    {
+        sAuctionBot->Update();
+        m_timers[WUPDATE_AHBOT].Reset();
+    }
+    } else {
     sRandomPlayerbotMgr.UpdateAI(diff);
     sRandomPlayerbotMgr.UpdateSessions(diff);
-
-    /// <li> Handle AHBot operations
-    // if (m_timers[WUPDATE_AHBOT].Passed())
-    //{
-    //    sAuctionBot->Update();
-    //    m_timers[WUPDATE_AHBOT].Reset();
-    //}
+    }
     // end of playerbot mod
 
     /// <li> Handle session updates when the timer has passed
