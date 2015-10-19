@@ -310,7 +310,7 @@ struct PvPInfo
 
 struct DuelInfo
 {
-    DuelInfo() : initiator(NULL), opponent(NULL), startTimer(0), startTime(0), outOfBound(0), isMounted(false), hasCoolDownBeforeDuel(false) { }
+    DuelInfo() : initiator(NULL), opponent(NULL), startTimer(0), startTime(0), outOfBound(0), isMounted(false) { }
 
     Player* initiator;
     Player* opponent;
@@ -318,7 +318,6 @@ struct DuelInfo
     time_t startTime;
     time_t outOfBound;
     bool isMounted;
-    bool hasCoolDownBeforeDuel;
 };
 
 struct Areas
@@ -2030,9 +2029,6 @@ class Player : public Unit, public GridObject<Player>
         void UpdateKnownTitles();
         void SetHonorPoints(uint32 value);
         void SetArenaPoints(uint32 value);
-
-        bool HasCoolDownBeforeDuel() const { return duel->hasCoolDownBeforeDuel; }
-        void UpdateHasCoolDownBeforeDuel() { duel->hasCoolDownBeforeDuel = GetSpellHistory()->GetArenaCooldownsSize() > 0; }
 
         //End of PvP System
 
