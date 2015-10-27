@@ -1930,12 +1930,34 @@ void Player::Update(uint32 p_time)
     //because we don't want player's ghost teleported from graveyard
     if (IsHasDelayedTeleport() && IsAlive())
         TeleportTo(m_teleport_dest, m_teleport_options);
-
+    // Prepatch by LordPsyan
+    // 81
+    // 82
     // Playerbot mod
     if (m_playerbotAI)
        m_playerbotAI->UpdateAI(p_time);
     if (m_playerbotMgr)
        m_playerbotMgr->UpdateAI(p_time);
+    // 84
+    // 85
+    // 86
+    // 87
+    // 88
+    // 89
+    // 90
+    // 91
+    // 92
+    // 93
+    // 94
+    // 95
+    // 96
+    // 97
+    // 98
+    // 99
+    // 100
+    // Visit http://www.realmsofwarcraft.com/bb for forums and information
+    //
+    // End of prepatch
 }
 
 void Player::setDeathState(DeathState s)
