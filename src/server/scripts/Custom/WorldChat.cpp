@@ -104,12 +104,11 @@ class World_Chat : public CommandScript
         return true;
     }
 
-    ChatCommand * GetCommands() const
+    std::vector<ChatCommand> GetCommands() const
     {
-            static ChatCommand HandleWorldChatCommandTable[] =
+            static std::vector<ChatCommand> HandleWorldChatCommandTable =
             {
-                { "world",  rbac::RBAC_PERM_COMMAND_WORLD_CHAT, true, &HandleWorldChatCommand, "", NULL },
-                    { NULL,              0,               false,    NULL,                                  "",  NULL }
+                { "world",  rbac::RBAC_PERM_COMMAND_WORLD_CHAT, true, &HandleWorldChatCommand, ""},
             };
             return HandleWorldChatCommandTable;
     }

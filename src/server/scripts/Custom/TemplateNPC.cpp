@@ -513,80 +513,70 @@ class TemplateNPC_Commands : public CommandScript
 public:
     TemplateNPC_Commands() : CommandScript("TemplateNPC_Commands") { }
 
-    ChatCommand* GetCommands() const
+    std::vector<ChatCommand> GetCommands() const override
     {
-        static ChatCommand createDeathKnightItemSetTable[] =
+        static std::vector<ChatCommand> createDeathKnightItemSetTable =
         {
-            { "blood",             SEC_ADMINISTRATOR,         false,          &HandleCreateDeathKnightBloodItemSetCommand,       "", NULL },
-            { "frost",             SEC_ADMINISTRATOR,         false,          &HandleCreateDeathKnightFrostItemSetCommand,       "", NULL },
-            { "unholy",            SEC_ADMINISTRATOR,         false,          &HandleCreateDeathKnightUnholyItemSetCommand,      "", NULL },
-            { NULL,                0,                         false,          NULL,                                              "", NULL }
+            { "blood",             SEC_ADMINISTRATOR,         false,          &HandleCreateDeathKnightBloodItemSetCommand,       ""},
+            { "frost",             SEC_ADMINISTRATOR,         false,          &HandleCreateDeathKnightFrostItemSetCommand,       ""},
+            { "unholy",            SEC_ADMINISTRATOR,         false,          &HandleCreateDeathKnightUnholyItemSetCommand,      ""},
         };
-        static ChatCommand createRogueItemSetTable[] =
+        static std::vector<ChatCommand> createRogueItemSetTable =
         {
-            { "assassination",     SEC_ADMINISTRATOR,         false,          &HandleCreateRogueAssassinationItemSetCommand,     "", NULL },
-            { "combat",            SEC_ADMINISTRATOR,         false,          &HandleCreateRogueCombatItemSetCommand,            "", NULL },
-            { "subtlety",          SEC_ADMINISTRATOR,         false,          &HandleCreateRogueSubtletyItemSetCommand,          "", NULL },
-            { NULL,                0,                         false,          NULL,                                              "", NULL }
+            { "assassination",     SEC_ADMINISTRATOR,         false,          &HandleCreateRogueAssassinationItemSetCommand,     ""},
+            { "combat",            SEC_ADMINISTRATOR,         false,          &HandleCreateRogueCombatItemSetCommand,            ""},
+            { "subtlety",          SEC_ADMINISTRATOR,         false,          &HandleCreateRogueSubtletyItemSetCommand,          ""},
         };
-        static ChatCommand createHunterItemSetTable[] =
+        static std::vector<ChatCommand> createHunterItemSetTable =
         {
-            { "marksmanship",      SEC_ADMINISTRATOR,         false,          &HandleCreateHunterMarksmanshipItemSetCommand,     "", NULL },
-            { "beastmastery",      SEC_ADMINISTRATOR,         false,          &HandleCreateHunterBeastmasteryItemSetCommand,     "", NULL },
-            { "survival",          SEC_ADMINISTRATOR,         false,          &HandleCreateHunterSurvivalItemSetCommand,         "", NULL },
-            { NULL,                0,                         false,          NULL,                                              "", NULL }
+            { "marksmanship",      SEC_ADMINISTRATOR,         false,          &HandleCreateHunterMarksmanshipItemSetCommand,     ""},
+            { "beastmastery",      SEC_ADMINISTRATOR,         false,          &HandleCreateHunterBeastmasteryItemSetCommand,     ""},
+            { "survival",          SEC_ADMINISTRATOR,         false,          &HandleCreateHunterSurvivalItemSetCommand,         ""},
         };
-        static ChatCommand createDruidItemSetTable[] =
+        static std::vector<ChatCommand> createDruidItemSetTable =
         {
-            { "ballance",          SEC_ADMINISTRATOR,         false,          &HandleCreateDruidBallanceItemSetCommand,          "", NULL },
-            { "feral",             SEC_ADMINISTRATOR,         false,          &HandleCreateDruidFeralItemSetCommand,             "", NULL },
-            { "restoration",       SEC_ADMINISTRATOR,         false,          &HandleCreateDruidRestorationItemSetCommand,       "", NULL },
-            { NULL,                0,                         false,          NULL,                                              "", NULL }
+            { "ballance",          SEC_ADMINISTRATOR,         false,          &HandleCreateDruidBallanceItemSetCommand,          ""},
+            { "feral",             SEC_ADMINISTRATOR,         false,          &HandleCreateDruidFeralItemSetCommand,             ""},
+            { "restoration",       SEC_ADMINISTRATOR,         false,          &HandleCreateDruidRestorationItemSetCommand,       ""},
         };
-        static ChatCommand createShamanItemSetTable[] =
+        static std::vector<ChatCommand> createShamanItemSetTable =
         {
-            { "elemental",         SEC_ADMINISTRATOR,         false,          &HandleCreateShamanElementalItemSetCommand,        "", NULL },
-            { "enhancement",       SEC_ADMINISTRATOR,         false,          &HandleCreateShamanEnhancementItemSetCommand,      "", NULL },
-            { "restoration",       SEC_ADMINISTRATOR,         false,          &HandleCreateShamanRestorationItemSetCommand,      "", NULL },
-            { NULL,                0,                         false,          NULL,                                              "", NULL }
+            { "elemental",         SEC_ADMINISTRATOR,         false,          &HandleCreateShamanElementalItemSetCommand,        ""},
+            { "enhancement",       SEC_ADMINISTRATOR,         false,          &HandleCreateShamanEnhancementItemSetCommand,      ""},
+            { "restoration",       SEC_ADMINISTRATOR,         false,          &HandleCreateShamanRestorationItemSetCommand,      ""},
         };
-        static ChatCommand createWarlockItemSetTable[] =
+        static std::vector<ChatCommand> createWarlockItemSetTable =
         {
-            { "affliction",        SEC_ADMINISTRATOR,         false,          &HandleCreateWarlockAfflictionItemSetCommand,      "", NULL },
-            { "demonology",        SEC_ADMINISTRATOR,         false,          &HandleCreateWarlockDemonologyItemSetCommand,      "", NULL },
-            { "destruction",       SEC_ADMINISTRATOR,         false,          &HandleCreateWarlockDestructionItemSetCommand,     "", NULL },
-            { NULL,                0,                         false,          NULL,                                              "", NULL }
+            { "affliction",        SEC_ADMINISTRATOR,         false,          &HandleCreateWarlockAfflictionItemSetCommand,      ""},
+            { "demonology",        SEC_ADMINISTRATOR,         false,          &HandleCreateWarlockDemonologyItemSetCommand,      ""},
+            { "destruction",       SEC_ADMINISTRATOR,         false,          &HandleCreateWarlockDestructionItemSetCommand,     ""},
         };
-        static ChatCommand createMageItemSetTable[] =
+        static std::vector<ChatCommand> createMageItemSetTable =
         {
-            { "frost",             SEC_ADMINISTRATOR,         false,          &HandleCreateMageFrostItemSetCommand,              "", NULL },
-            { "fire",              SEC_ADMINISTRATOR,         false,          &HandleCreateMageFireItemSetCommand,               "", NULL },
-            { "arcane",            SEC_ADMINISTRATOR,         false,          &HandleCreateMageArcaneItemSetCommand,             "", NULL },
-            { NULL,                0,                         false,          NULL,                                              "", NULL }
+            { "frost",             SEC_ADMINISTRATOR,         false,          &HandleCreateMageFrostItemSetCommand,              ""},
+            { "fire",              SEC_ADMINISTRATOR,         false,          &HandleCreateMageFireItemSetCommand,               ""},
+            { "arcane",            SEC_ADMINISTRATOR,         false,          &HandleCreateMageArcaneItemSetCommand,             ""},
         };
-        static ChatCommand createWarriorItemSetTable[] =
+        static std::vector<ChatCommand> createWarriorItemSetTable =
         {
-            { "arms",              SEC_ADMINISTRATOR,         false,          &HandleCreateWarriorArmsItemSetCommand,            "", NULL },
-            { "fury",              SEC_ADMINISTRATOR,         false,          &HandleCreateWarriorFuryItemSetCommand,            "", NULL },
-            { "protection",        SEC_ADMINISTRATOR,         false,          &HandleCreateWarriorProtectionItemSetCommand,      "", NULL },
-            { NULL,                0,                         false,          NULL,                                              "", NULL }
+            { "arms",              SEC_ADMINISTRATOR,         false,          &HandleCreateWarriorArmsItemSetCommand,            ""},
+            { "fury",              SEC_ADMINISTRATOR,         false,          &HandleCreateWarriorFuryItemSetCommand,            ""},
+            { "protection",        SEC_ADMINISTRATOR,         false,          &HandleCreateWarriorProtectionItemSetCommand,      ""},
         };
-        static ChatCommand createPaladinItemSetTable[] =
+        static std::vector<ChatCommand> createPaladinItemSetTable =
         {
-            { "holy",              SEC_ADMINISTRATOR,         false,          &HandleCreatePaladinHolyItemSetCommand,            "", NULL },
-            { "protection",        SEC_ADMINISTRATOR,         false,          &HandleCreatePaladinProtectionItemSetCommand,      "", NULL },
-            { "retribution",       SEC_ADMINISTRATOR,         false,          &HandleCreatePaladinRetributionItemSetCommand,     "", NULL },
-            { NULL,                0,                         false,          NULL,                                              "", NULL }
+            { "holy",              SEC_ADMINISTRATOR,         false,          &HandleCreatePaladinHolyItemSetCommand,            ""},
+            { "protection",        SEC_ADMINISTRATOR,         false,          &HandleCreatePaladinProtectionItemSetCommand,      ""},
+            { "retribution",       SEC_ADMINISTRATOR,         false,          &HandleCreatePaladinRetributionItemSetCommand,     ""},
         };
 
-        static ChatCommand createPriestItemSetTable[] =
+        static std::vector<ChatCommand> createPriestItemSetTable =
         {
-            { "discipline",        SEC_ADMINISTRATOR,         false,          &HandleCreatePriestDisciplineItemSetCommand,       "", NULL },
-            { "shadow",            SEC_ADMINISTRATOR,         false,          &HandleCreatePriestShadowItemSetCommand,           "", NULL },
-            { "holy",              SEC_ADMINISTRATOR,         false,          &HandleCreatePriestHolyItemSetCommand,             "", NULL },
-            { NULL,                0,                         false,          NULL,                                              "", NULL }
+            { "discipline",        SEC_ADMINISTRATOR,         false,          &HandleCreatePriestDisciplineItemSetCommand,       ""},
+            { "shadow",            SEC_ADMINISTRATOR,         false,          &HandleCreatePriestShadowItemSetCommand,           ""},
+            { "holy",              SEC_ADMINISTRATOR,         false,          &HandleCreatePriestHolyItemSetCommand,             ""},
         };
-        static ChatCommand createItemSetCommandTable[] =
+        static std::vector<ChatCommand> createItemSetCommandTable =
         {
             { "priest",            SEC_ADMINISTRATOR,          true,            NULL,         "", createPriestItemSetTable },
             { "paladin",           SEC_ADMINISTRATOR,          true,            NULL,         "", createPaladinItemSetTable },
@@ -598,12 +588,10 @@ public:
             { "hunter",            SEC_ADMINISTRATOR,          true,            NULL,         "", createHunterItemSetTable },
             { "rogue",             SEC_ADMINISTRATOR,          true,            NULL,         "", createRogueItemSetTable },
             { "deathknight",       SEC_ADMINISTRATOR,          true,            NULL,         "", createDeathKnightItemSetTable },
-            { NULL,                0,                          false,           NULL,         "", NULL }
         };
-        static ChatCommand commandTable[] =
+        static std::vector<ChatCommand> commandTable =
         {
             { "create",            SEC_ADMINISTRATOR,         true, NULL,                 "", createItemSetCommandTable },
-            { NULL,                0,                         false, NULL,                "", NULL }
         };
         return commandTable;
     }

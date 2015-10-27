@@ -147,6 +147,9 @@ void CharacterDatabaseConnection::DoPrepareStatements()
     PrepareStatement(CHAR_UPD_MAIL_RETURNED, "UPDATE mail SET sender = ?, receiver = ?, expire_time = ?, deliver_time = ?, cod = 0, checked = ? WHERE id = ?", CONNECTION_ASYNC);
     PrepareStatement(CHAR_UPD_MAIL_ITEM_RECEIVER, "UPDATE mail_items SET receiver = ? WHERE item_guid = ?", CONNECTION_ASYNC);
     PrepareStatement(CHAR_UPD_ITEM_OWNER, "UPDATE item_instance SET owner_guid = ? WHERE guid = ?", CONNECTION_ASYNC);
+    PrepareStatement(CHAR_GET_EXTERNAL_MAIL, "SELECT id, receiver, subject, message, money, item, item_count FROM mail_external ORDER BY id ASC", CONNECTION_SYNCH);
+    PrepareStatement(CHAR_DEL_EXTERNAL_MAIL, "DELETE FROM mail_external WHERE id = ?", CONNECTION_ASYNC);
+
 
     PrepareStatement(CHAR_SEL_ITEM_REFUNDS, "SELECT player_guid, paidMoney, paidExtendedCost FROM item_refund_instance WHERE item_guid = ? AND player_guid = ? LIMIT 1", CONNECTION_SYNCH);
     PrepareStatement(CHAR_SEL_ITEM_BOP_TRADE, "SELECT allowedPlayers FROM item_soulbound_trade_data WHERE itemGuid = ? LIMIT 1", CONNECTION_SYNCH);
@@ -623,7 +626,25 @@ void CharacterDatabaseConnection::DoPrepareStatements()
     // 04
     // 05
     // 06
-    // 07
+    // New NPCBots
+    PrepareStatement(CHAR_SEL_NPCBOTS, "SELECT entry FROM characters_npcbot", CONNECTION_SYNCH);
+    PrepareStatement(CHAR_SEL_NPCBOT_OWNER, "SELECT owner FROM characters_npcbot WHERE entry = ?", CONNECTION_SYNCH);
+    PrepareStatement(CHAR_UPD_NPCBOT_OWNER, "UPDATE characters_npcbot SET owner = ? WHERE entry = ?", CONNECTION_ASYNC);
+    PrepareStatement(CHAR_UPD_NPCBOT_OWNER_ALL, "UPDATE characters_npcbot SET owner = ? WHERE owner = ?", CONNECTION_ASYNC);
+    PrepareStatement(CHAR_SEL_NPCBOT_ROLES, "SELECT roles FROM characters_npcbot WHERE entry = ?", CONNECTION_SYNCH);
+    PrepareStatement(CHAR_UPD_NPCBOT_ROLES, "UPDATE characters_npcbot SET roles = ? WHERE entry = ?", CONNECTION_ASYNC);
+    PrepareStatement(CHAR_SEL_NPCBOT_EQUIP, "SELECT equipMhEx, equipOhEx, equipRhEx, "
+        "equipHead, equipShoulders, equipChest, equipWaist, equipLegs, equipFeet, equipWrist, equipHands, equipBack, equipBody, equipFinger1, equipFinger2, equipTrinket1, equipTrinket2, equipNeck FROM characters_npcbot WHERE entry = ?", CONNECTION_SYNCH);
+    PrepareStatement(CHAR_SEL_NPCBOT_EQUIP_BY_ITEM_INSTANCE, "SELECT ii.creatorGuid, ii.giftCreatorGuid, ii.count, ii.duration, ii.charges, ii.flags, ii.enchantments, ii.randomPropertyId, ii.durability, ii.playedTime, ii.text, ii.guid, ii.itemEntry, ii.owner_guid "
+        "FROM item_instance ii JOIN characters_npcbot cn ON ii.guid IN "
+        "(cn.equipMhEx, cn.equipOhEx, cn.equipRhEx, cn.equipHead, cn.equipShoulders, cn.equipChest, cn.equipWaist, cn.equipLegs, cn.equipFeet, cn.equipWrist, cn.equipHands, cn.equipBack, cn.equipBody, cn.equipFinger1, cn.equipFinger2, cn.equipTrinket1, cn.equipTrinket2, cn.equipNeck) "
+        "WHERE cn.entry = ?", CONNECTION_SYNCH);
+    PrepareStatement(CHAR_UPD_NPCBOT_EQUIP, "UPDATE characters_npcbot SET equipMhEx = ?, equipOhEx = ?, equipRhEx = ?, "
+        "equipHead = ?, equipShoulders = ?, equipChest = ?, equipWaist = ?, equipLegs = ?, equipFeet = ?, equipWrist = ?, equipHands = ?, equipBack = ?, equipBody = ?, equipFinger1 = ?, equipFinger2 = ?, equipTrinket1 = ?, equipTrinket2 = ?, equipNeck = ? WHERE entry = ?", CONNECTION_ASYNC);
+    PrepareStatement(CHAR_DEL_NPCBOT, "DELETE FROM characters_npcbot WHERE entry = ?", CONNECTION_ASYNC);
+    PrepareStatement(CHAR_INS_NPCBOT, "INSERT INTO characters_npcbot (entry, roles) VALUES (?, ?)", CONNECTION_SYNCH);
+    PrepareStatement(CHAR_UPD_NPCBOT_FACTION, "UPDATE characters_npcbot SET faction = ? WHERE entry = ?", CONNECTION_SYNCH);
+    PrepareStatement(CHAR_SEL_NPCBOT_FACTION, "SELECT faction FROM characters_npcbot WHERE entry = ?", CONNECTION_SYNCH);
     // 08
     // 09
     // 10
