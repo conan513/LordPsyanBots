@@ -310,7 +310,8 @@ void WorldSession::SendExternalMails()
         uint32 itemId = fields[5].GetUInt32();
         uint32 itemCount = fields[6].GetUInt32();
 
-        Player *receiver = ObjectAccessor::FindPlayer(ObjectGuid(HighGuid::Player, 0, (receiver_guid)));
+        ObjectGuid receiverGuid(HighGuid::Player, receiver_guid);
+        Player* receiver = ObjectAccessor::FindConnectedPlayer(receiverGuid);
 
         mail = new MailDraft(subject, body);
 

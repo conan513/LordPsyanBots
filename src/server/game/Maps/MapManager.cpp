@@ -68,6 +68,7 @@ void MapManager::Initialize()
     uint32 botoldMSTime = getMSTime();
 
     TC_LOG_INFO("server.loading", "Starting NpcBot system...");
+
     PreparedStatement* botstmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_NPCBOTS);
     //"SELECT entry FROM characters_npcbot", CONNECTION_SYNCH
     PreparedQueryResult res = CharacterDatabase.Query(botstmt);
@@ -103,7 +104,7 @@ void MapManager::Initialize()
         }
 
         field = infores->Fetch();
-        uint32 tableGuid = field[0].GetUInt32();
+        ObjectGuid::LowType tableGuid = field[0].GetUInt32();
         uint32 mapId = uint32(field[1].GetUInt16());
         float pos_x = field[2].GetFloat();
         float pos_y = field[3].GetFloat();
@@ -116,14 +117,14 @@ void MapManager::Initialize()
         ASSERT(g.IsCoordValid() && "Invalid Grid coord!");
         Map* npcbotmap = sMapMgr->CreateBaseMap(mapId);
         npcbotmap->LoadGrid(pos_x, pos_y);
-        Creature* bot = npcbotmap->GetCreature(ObjectGuid(HighGuid::Unit, entry, tableGuid));
-        ABORT();
+ /*       Creature* bot = npcbotmap->GetCreature(ObjectGuid(HighGuid::Unit, entry, tableGuid));
+        ASSERT(bot);
         //debug
         if (!bot->IsAlive())
         {
             bot->Respawn();
             bot->ResetBotAI(1);
-        }
+        }*/
 
         TC_LOG_DEBUG("server.loading", ">> Spawned npcbot %s (id: %u, map: %u, grid: %u, cell: %u)", proto->Name.c_str(), entry, mapId, g.GetId(), c.GetId());
         botgrids.push_back(g.GetId());
@@ -132,7 +133,7 @@ void MapManager::Initialize()
     } while (res->NextRow());
 
     botgrids.unique();
-    TC_LOG_INFO("server.loading", ">> Spawned %u npcbot(s) within %lu grid(s) in %u ms", botcounter, botgrids.size(), GetMSTimeDiffToNow(botoldMSTime));
+    TC_LOG_INFO("server.loading", ">> Spawned %u npcbot(s) within %u grid(s) in %u ms", botcounter, botgrids.size(), GetMSTimeDiffToNow(botoldMSTime));
     //end npcbot
 }
 

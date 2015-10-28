@@ -41,7 +41,7 @@ public:
 
         static std::vector<ChatCommand> npcbotCommandTable =
         {
-            { "set",        GM_COMMANDS,                        false, NULL,                                    ""},
+            { "set",        GM_COMMANDS,                        false, NULL,                                    "", npcbotSetCommandTable},
             { "add",        GM_COMMANDS,                        false, &HandleNpcBotAddCommand,                 ""},
             { "remove",     GM_COMMANDS,                        false, &HandleNpcBotRemoveCommand,              ""},
             { "spawn",      GM_COMMANDS,                        false, &HandleNpcBotSpawnCommand,               ""},
@@ -53,7 +53,7 @@ public:
 
         static std::vector<ChatCommand> commandTable =
         {
-            { "npcbot",     GM_COMMANDS,                        false, NULL,                      ""},
+            { "npcbot",     GM_COMMANDS,                        false, NULL,                      "", npcbotCommandTable },
         };
         return commandTable;
     }
