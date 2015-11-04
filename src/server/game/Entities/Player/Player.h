@@ -60,6 +60,10 @@ struct CharacterCustomizeInfo;
 class PlayerbotAI;
 class PlayerbotMgr;
 
+// NpcBot mod
+class BotMgr;
+// end NpcBot mod
+
 typedef std::deque<Mail*> PlayerMails;
 
 #define PLAYER_MAX_SKILLS           127
@@ -1024,7 +1028,7 @@ class TradeData
         Item* GetItem(TradeSlots slot) const;
         bool HasItem(ObjectGuid itemGuid) const;
         TradeSlots GetTradeSlotForItem(ObjectGuid itemGuid) const;
-        void SetItem(TradeSlots slot, Item* item);
+        void SetItem(TradeSlots slot, Item* item, bool update = false);
 
         uint32 GetSpell() const { return m_spell; }
         void SetSpell(uint32 spell_id, Item* castItem = NULL);
@@ -1599,8 +1603,8 @@ class Player : public Unit, public GridObject<Player>
 
         void SendProficiency(ItemClass itemClass, uint32 itemSubclassMask);
         void SendInitialSpells();
-        bool AddSpell(uint32 spellId, bool active, bool learning, bool dependent, bool disabled, bool loading = false, bool fromSkill = false);
-        void LearnSpell(uint32 spell_id, bool dependent, bool fromSkill = false);
+        bool AddSpell(uint32 spellId, bool active, bool learning, bool dependent, bool disabled, bool loading = false, uint32 fromSkill = 0);
+        void LearnSpell(uint32 spell_id, bool dependent, uint32 fromSkill = 0);
         void RemoveSpell(uint32 spell_id, bool disabled = false, bool learn_low_rank = true);
         void ResetSpells(bool myClassOnly = false);
         void LearnCustomSpells();
@@ -2202,7 +2206,7 @@ class Player : public Unit, public GridObject<Player>
         void SendSavedInstances();
         static void ConvertInstancesToGroup(Player* player, Group* group, bool switchLeader);
         bool Satisfy(AccessRequirement const* ar, uint32 target_map, bool report = false);
-        bool CheckInstanceLoginValid();
+        bool CheckInstanceLoginValid(Map* map);
         bool CheckInstanceCount(uint32 instanceId) const;
         void AddInstanceEnterTime(uint32 instanceId, time_t enterTime);
 
@@ -2333,7 +2337,20 @@ class Player : public Unit, public GridObject<Player>
     // 08
     // 09
     // 10
-    // 11
+        /*********************************************************/
+        /***                     BOT SYSTEM                    ***/
+        /*********************************************************/
+        void SetBotMgr(BotMgr* mgr) { ASSERT(!_botMgr); _botMgr = mgr; }
+        BotMgr* GetBotMgr() const { return _botMgr; }
+        bool HaveBot() const;
+        uint8 GetNpcBotsCount(bool inWorldOnly = false) const;
+        uint8 GetBotFollowDist() const;
+        void SetBotFollowDist(int8 dist);
+        void SetBotsShouldUpdateStats();
+        void RemoveAllBots(uint8 removetype = 0);
+        /*********************************************************/
+        /***                 END BOT SYSTEM                    ***/
+        /*********************************************************/
     // 12
     // 13
     // 14
@@ -2409,7 +2426,6 @@ class Player : public Unit, public GridObject<Player>
         void _LoadGroup(PreparedQueryResult result);
         void _LoadSkills(PreparedQueryResult result);
         void _LoadSpells(PreparedQueryResult result);
-        void _LoadFriendList(PreparedQueryResult result);
         bool _LoadHomeBind(PreparedQueryResult result);
         void _LoadDeclinedNames(PreparedQueryResult result);
         void _LoadArenaTeamInfo(PreparedQueryResult result);
@@ -2602,6 +2618,14 @@ class Player : public Unit, public GridObject<Player>
         bool m_needsZoneUpdate;
 
     private:
+        /*********************************************************/
+        /***                     BOT SYSTEM                    ***/
+        /*********************************************************/
+        BotMgr* _botMgr;
+        /*********************************************************/
+        /***                END BOT SYSTEM                     ***/
+        /*********************************************************/
+
         // internal common parts for CanStore/StoreItem functions
         InventoryResult CanStoreItem_InSpecificSlot(uint8 bag, uint8 slot, ItemPosCountVec& dest, ItemTemplate const* pProto, uint32& count, bool swap, Item* pSrcItem) const;
         InventoryResult CanStoreItem_InBag(uint8 bag, ItemPosCountVec& dest, ItemTemplate const* pProto, uint32& count, bool merge, bool non_specialized, Item* pSrcItem, uint8 skip_bag, uint8 skip_slot) const;

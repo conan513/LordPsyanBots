@@ -776,8 +776,8 @@ SpellInfo::SpellInfo(SpellEntry const* spellEntry)
     AttributesEx6 = spellEntry->AttributesEx6;
     AttributesEx7 = spellEntry->AttributesEx7;
     AttributesCu = 0;
-    Stances = spellEntry->Stances;
-    StancesNot = spellEntry->StancesNot;
+    Stances = MAKE_PAIR64(spellEntry->Stances[0], spellEntry->Stances[1]);
+    StancesNot = MAKE_PAIR64(spellEntry->StancesNot[0], spellEntry->StancesNot[1]);
     Targets = spellEntry->Targets;
     TargetCreatureType = spellEntry->TargetCreatureType;
     RequiresSpellFocus = spellEntry->RequiresSpellFocus;
@@ -1309,7 +1309,7 @@ SpellCastResult SpellInfo::CheckShapeshift(uint32 form) const
         (Effects[0].Effect == SPELL_EFFECT_LEARN_SPELL || Effects[1].Effect == SPELL_EFFECT_LEARN_SPELL || Effects[2].Effect == SPELL_EFFECT_LEARN_SPELL))
         return SPELL_CAST_OK;
 
-    uint32 stanceMask = (form ? 1 << (form - 1) : 0);
+    uint64 stanceMask = (form ? UI64LIT(1) << (form - 1) : 0);
 
     if (stanceMask & StancesNot)                 // can explicitly not be cast in this stance
         return SPELL_FAILED_NOT_SHAPESHIFT;
@@ -2230,6 +2230,11 @@ int32 SpellInfo::CalcPowerCost(Unit const* caster, SpellSchoolMask schoolMask) c
         }
     }
 
+    //npcbot - apply bot spell cost mods
+    if (powerCost > 0 && caster->GetTypeId() == TYPEID_UNIT && caster->ToCreature()->GetBotAI())
+        caster->ToCreature()->ApplyCreatureSpellCostMods(this, powerCost);
+    //end npcbot
+
     // PCT mod from user auras by school
     powerCost = int32(powerCost * (1.0f + caster->GetFloatValue(UNIT_FIELD_POWER_COST_MULTIPLIER + school)));
     if (powerCost < 0)
@@ -2658,7 +2663,7 @@ void SpellInfo::_UnloadImplicitTargetConditionLists()
     // find the same instances of ConditionList and delete them.
     for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
     {
-        ConditionList* cur = Effects[i].ImplicitTargetConditions;
+        ConditionContainer* cur = Effects[i].ImplicitTargetConditions;
         if (!cur)
             continue;
         for (uint8 j = i; j < MAX_SPELL_EFFECTS; ++j)

@@ -26,7 +26,7 @@ void LoadList(string value, T &list)
 
 bool PlayerbotAIConfig::Initialize()
 {
-    sLog->outMessage("playerbot", LOG_LEVEL_INFO, "Initializing AI Playerbot by ike3, based on the original Playerbot by blueboy");
+    sLog->outMessage("playerbot", LOG_LEVEL_INFO, "Initializing AI Playerbot by ike3, based on the original Playerbot by blueboy and screwed up by LordPsyan (Had to get my name in here somehow)");
 
     string error;
     if (!config.LoadInitial("aiplayerbot.conf", error))

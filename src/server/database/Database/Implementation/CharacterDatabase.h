@@ -143,7 +143,6 @@ enum CharacterDatabaseStatements
     CHAR_DEL_GIFT,
     CHAR_SEL_CHARACTER_GIFT_BY_ITEM,
     CHAR_SEL_ACCOUNT_BY_NAME,
-    CHAR_SEL_ACCOUNT_BY_GUID,
     CHAR_DEL_ACCOUNT_INSTANCE_LOCK_TIMES,
     CHAR_INS_ACCOUNT_INSTANCE_LOCK_TIMES,
     CHAR_SEL_CHARACTER_NAME_CLASS,
@@ -287,6 +286,7 @@ enum CharacterDatabaseStatements
     CHAR_DEL_GM_TICKET,
     CHAR_DEL_ALL_GM_TICKETS,
     CHAR_DEL_PLAYER_GM_TICKETS,
+    CHAR_UPD_PLAYER_GM_TICKETS_ON_CHAR_DELETION,
 
     CHAR_INS_GM_SURVEY,
     CHAR_INS_GM_SUBSURVEY,
@@ -530,6 +530,8 @@ enum CharacterDatabaseStatements
     CHAR_UPD_QUEST_TRACK_GM_COMPLETE,
     CHAR_UPD_QUEST_TRACK_COMPLETE_TIME,
     CHAR_UPD_QUEST_TRACK_ABANDON_TIME,
+
+    CHAR_INS_DESERTER_TRACK,
     // Prepatch by LordPsyan
     // 01
     // 02
@@ -537,7 +539,20 @@ enum CharacterDatabaseStatements
     // 04
     // 05
     // 06
-    // 07
+    // New NPCBots
+    CHAR_SEL_NPCBOTS,
+    CHAR_SEL_NPCBOT_OWNER,
+    CHAR_UPD_NPCBOT_OWNER,
+    CHAR_UPD_NPCBOT_OWNER_ALL,
+    CHAR_SEL_NPCBOT_ROLES,
+    CHAR_UPD_NPCBOT_ROLES,
+    CHAR_SEL_NPCBOT_EQUIP,
+    CHAR_SEL_NPCBOT_EQUIP_BY_ITEM_INSTANCE,
+    CHAR_UPD_NPCBOT_EQUIP,
+    CHAR_DEL_NPCBOT,
+    CHAR_INS_NPCBOT,
+    CHAR_UPD_NPCBOT_FACTION,
+    CHAR_SEL_NPCBOT_FACTION,
     // 08
     // 09
     // 10
@@ -554,6 +569,7 @@ enum CharacterDatabaseStatements
     // Visit http://www.realmsofwarcraft.com/bb for forums and information
     //
     // End of prepatch
+
     MAX_CHARACTERDATABASE_STATEMENTS
 };
 

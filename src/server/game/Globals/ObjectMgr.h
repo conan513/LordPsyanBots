@@ -136,6 +136,21 @@ struct GameTele
 
 typedef std::unordered_map<uint32, GameTele > GameTeleContainer;
 
+#define MAX_CREATURE_OUTFIT_DISPLAYS 11
+struct CreatureOutfit
+{
+    uint8 race;
+    uint8 gender;
+    uint8 face;
+    uint8 skin;
+    uint8 hair;
+    uint8 facialhair;
+    uint8 haircolor;
+    uint32 outfit[MAX_CREATURE_OUTFIT_DISPLAYS];
+};
+
+typedef std::unordered_map<uint32, CreatureOutfit > CreatureOutfitContainer;
+
 enum ScriptsType
 {
     SCRIPTS_FIRST = 1,
@@ -564,14 +579,14 @@ struct GossipMenuItems
     uint32          BoxMoney;
     std::string     BoxText;
     uint32          BoxBroadcastTextId;
-    ConditionList   Conditions;
+    ConditionContainer   Conditions;
 };
 
 struct GossipMenus
 {
     uint32          entry;
     uint32          text_id;
-    ConditionList   conditions;
+    ConditionContainer   conditions;
 };
 
 typedef std::multimap<uint32, GossipMenus> GossipMenusContainer;
@@ -778,7 +793,7 @@ class ObjectMgr
         * If the player is online, the name is retrieved immediately otherwise
         * a database query is done.
         *
-        * @remark Use sWorld->GetCharacterNameData because it doesn't require a database query when player is offline
+        * @remark Use sWorld->GetCharacterInfo because it doesn't require a database query when player is offline
         *
         * @param guid player full guid
         * @param name returned name
@@ -1034,6 +1049,7 @@ class ObjectMgr
 
         void LoadNPCSpellClickSpells();
 
+        void LoadCreatureOutfits();
         void LoadGameTele();
 
         void LoadGossipMenu();
@@ -1230,8 +1246,8 @@ class ObjectMgr
         bool IsReservedName(std::string const& name) const;
 
         // name with valid structure and symbols
-        static ResponseCodes CheckPlayerName(std::string const& name, bool create = false);
-        static PetNameInvalidReason CheckPetName(std::string const& name);
+        static ResponseCodes CheckPlayerName(std::string const& name, LocaleConstant locale, bool create = false);
+        static PetNameInvalidReason CheckPetName(std::string const& name, LocaleConstant locale);
         static bool IsValidCharterName(std::string const& name);
 
         static bool CheckDeclinedNames(const std::wstring& w_ownname, DeclinedName const& names);
@@ -1247,6 +1263,8 @@ class ObjectMgr
         GameTeleContainer const& GetGameTeleMap() const { return _gameTeleStore; }
         bool AddGameTele(GameTele& data);
         bool DeleteGameTele(std::string const& name);
+
+        CreatureOutfitContainer const& GetCreatureOutfitMap() const { return _creatureOutfitStore; }
 
         TrainerSpellData const* GetNpcTrainerSpells(uint32 entry) const
         {
@@ -1398,6 +1416,8 @@ class ObjectMgr
 
         PageTextContainer _pageTextStore;
         InstanceTemplateContainer _instanceTemplateStore;
+
+        CreatureOutfitContainer _creatureOutfitStore;
 
     private:
         void LoadScripts(ScriptsType type);

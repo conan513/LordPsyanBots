@@ -291,8 +291,8 @@ void ObjectMgr::LoadCreatureLocales()
 
     _creatureLocaleStore.clear();                              // need for reload case
 
-    QueryResult result = WorldDatabase.Query("SELECT entry, name_loc1, subname_loc1, name_loc2, subname_loc2, name_loc3, subname_loc3, name_loc4, subname_loc4, name_loc5, subname_loc5, name_loc6, subname_loc6, name_loc7, subname_loc7, name_loc8, subname_loc8 FROM locales_creature");
-
+    //                                               0      1       2     3
+    QueryResult result = WorldDatabase.Query("SELECT entry, locale, Name, Title FROM creature_template_locale");
     if (!result)
         return;
 
@@ -300,16 +300,20 @@ void ObjectMgr::LoadCreatureLocales()
     {
         Field* fields = result->Fetch();
 
-        uint32 entry = fields[0].GetUInt32();
+        uint32 id               = fields[0].GetUInt32();
+        std::string localeName  = fields[1].GetString();
 
-        CreatureLocale& data = _creatureLocaleStore[entry];
+        std::string name        = fields[2].GetString();
+        std::string title       = fields[3].GetString();
 
-        for (uint8 i = TOTAL_LOCALES - 1; i > 0; --i)
-        {
-            LocaleConstant locale = (LocaleConstant) i;
-            AddLocaleString(fields[1 + 2 * (i - 1)].GetString(), locale, data.Name);
-            AddLocaleString(fields[1 + 2 * (i - 1) + 1].GetString(), locale, data.SubName);
-        }
+        CreatureLocale& data = _creatureLocaleStore[id];
+        LocaleConstant locale = GetLocaleByName(localeName);
+        if (locale == LOCALE_enUS)
+            continue;
+
+        AddLocaleString(name,       locale, data.Name);
+        AddLocaleString(title,      locale, data.Title);
+
     } while (result->NextRow());
 
     TC_LOG_INFO("server.loading", ">> Loaded %u creature locale strings in %u ms", uint32(_creatureLocaleStore.size()), GetMSTimeDiffToNow(oldMSTime));
@@ -442,7 +446,7 @@ void ObjectMgr::LoadCreatureTemplate(Field* fields)
     creatureTemplate.Modelid3         = fields[8].GetUInt32();
     creatureTemplate.Modelid4         = fields[9].GetUInt32();
     creatureTemplate.Name             = fields[10].GetString();
-    creatureTemplate.SubName          = fields[11].GetString();
+    creatureTemplate.Title            = fields[11].GetString();
     creatureTemplate.IconName         = fields[12].GetString();
     creatureTemplate.GossipMenuId     = fields[13].GetUInt32();
     creatureTemplate.minlevel         = fields[14].GetUInt8();
@@ -2192,23 +2196,10 @@ uint32 ObjectMgr::GetPlayerTeamByGUID(ObjectGuid guid) const
 
 uint32 ObjectMgr::GetPlayerAccountIdByGUID(ObjectGuid guid) const
 {
-    // prevent DB access for online player
-    if (Player* player = ObjectAccessor::FindConnectedPlayer(guid))
-    {
-        return player->GetSession()->GetAccountId();
-    }
+    if (CharacterInfo const* characterInfo = sWorld->GetCharacterInfo(guid))
+        return characterInfo->AccountId;
 
-    PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_ACCOUNT_BY_GUID);
 
-    stmt->setUInt32(0, guid.GetCounter());
-
-    PreparedQueryResult result = CharacterDatabase.Query(stmt);
-
-    if (result)
-    {
-        uint32 acc = (*result)[0].GetUInt32();
-        return acc;
-    }
 
     return 0;
 }
@@ -2530,7 +2521,7 @@ void ObjectMgr::LoadItemTemplates()
             if (!req)
                 for (uint8 j = 0; j < MAX_ITEM_PROTO_SPELLS; ++j)
                 {
-                    if (itemTemplate.Spells[j].SpellId)
+                    if (itemTemplate.Spells[j].SpellId > 0)
                     {
                         req = true;
                         break;
@@ -2714,15 +2705,6 @@ void ObjectMgr::LoadItemTemplates()
                     {
                         TC_LOG_ERROR("sql.sql", "Item (Entry: %u) has broken spell in spellid_%d (%d)", entry, j+1, itemTemplate.Spells[j].SpellId);
                         itemTemplate.Spells[j].SpellId = 0;
-                    }
-
-                    if (spellInfo && itemTemplate.Spells[j].SpellCategory
-                        && itemTemplate.Spells[j].SpellCategory != SPELL_CATEGORY_FOOD)
-                    {
-                        bool added = sSpellsByCategoryStore[itemTemplate.Spells[j].SpellCategory].insert(itemTemplate.Spells[j].SpellId).second;
-                        if (added)
-                            TC_LOG_DEBUG("sql.sql", "Item(Entry: %u) spellid_%d (%d) category %u added to sSpellsByCategoryStore",
-                                          entry, j + 1, itemTemplate.Spells[j].SpellId, itemTemplate.Spells[j].SpellCategory);
                     }
                 }
             }
@@ -6542,6 +6524,8 @@ void ObjectMgr::LoadGameObjectLocales()
 
         GameObjectLocale& data = _gameObjectLocaleStore[id];
         LocaleConstant locale = GetLocaleByName(localeName);
+        if (locale == LOCALE_enUS)
+            continue;
 
         AddLocaleString(name, locale, data.Name);
         AddLocaleString(castBarCaption, locale, data.CastBarCaption);
@@ -7584,7 +7568,7 @@ bool isValidString(const std::wstring& wstr, uint32 strictMask, bool numericOrSp
     return false;
 }
 
-ResponseCodes ObjectMgr::CheckPlayerName(const std::string& name, bool create)
+ResponseCodes ObjectMgr::CheckPlayerName(std::string const& name, LocaleConstant locale, bool create /*= false*/)
 {
     std::wstring wname;
     if (!Utf8toWStr(name, wname))
@@ -7606,7 +7590,7 @@ ResponseCodes ObjectMgr::CheckPlayerName(const std::string& name, bool create)
         if (wname[i] == wname[i-1] && wname[i] == wname[i-2])
             return CHAR_NAME_THREE_CONSECUTIVE;
 
-    return CHAR_NAME_SUCCESS;
+    return ValidateName(name, locale);
 }
 
 bool ObjectMgr::IsValidCharterName(const std::string& name)
@@ -7627,7 +7611,7 @@ bool ObjectMgr::IsValidCharterName(const std::string& name)
     return isValidString(wname, strictMask, true);
 }
 
-PetNameInvalidReason ObjectMgr::CheckPetName(const std::string& name)
+PetNameInvalidReason ObjectMgr::CheckPetName(const std::string& name, LocaleConstant locale)
 {
     std::wstring wname;
     if (!Utf8toWStr(name, wname))
@@ -7644,6 +7628,17 @@ PetNameInvalidReason ObjectMgr::CheckPetName(const std::string& name)
     if (!isValidString(wname, strictMask, false))
         return PET_NAME_MIXED_LANGUAGES;
 
+    switch (ValidateName(name, locale))
+    {
+        case CHAR_NAME_PROFANE:
+            return PET_NAME_PROFANE;
+        case CHAR_NAME_RESERVED:
+            return PET_NAME_RESERVED;
+        case RESPONSE_FAILURE:
+            return PET_NAME_INVALID;
+        default:
+            break;
+    }
     return PET_NAME_SUCCESS;
 }
 
@@ -7871,6 +7866,82 @@ SkillRangeType GetSkillRangeType(SkillRaceClassInfoEntry const* rcEntry)
     }
 
     return SKILL_RANGE_LEVEL;
+}
+
+void ObjectMgr::LoadCreatureOutfits()
+{
+    uint32 oldMSTime = getMSTime();
+
+    _creatureOutfitStore.clear();                           // for reload case (test only)
+
+    //                                                 0     1      2      3     4     5       6           7
+    QueryResult result = WorldDatabase.Query("SELECT entry, race, gender, skin, face, hair, haircolor, facialhair, "
+        //8       9        10    11     12     13    14     15     16     17     18
+        "head, shoulders, body, chest, waist, legs, feet, wrists, hands, back, tabard FROM creature_template_outfits");
+
+    if (!result)
+    {
+        TC_LOG_ERROR("server.loading", ">> Loaded 0 creature outfits. DB table `creature_template_outfits` is empty!");
+        return;
+    }
+
+    uint32 count = 0;
+
+    do
+    {
+        Field* fields = result->Fetch();
+
+        uint32 i = 0;
+        uint32 entry     = fields[i++].GetUInt32();
+
+        if (!GetCreatureTemplate(entry))
+        {
+            TC_LOG_ERROR("server.loading", ">> Creature entry %u in `creature_template_outfits`, but not in `creature_template`!", entry);
+            continue;
+        }
+
+        CreatureOutfit co; // const, shouldnt be changed after saving
+        co.race          = fields[i++].GetUInt8();
+        ChrRacesEntry const* rEntry = sChrRacesStore.LookupEntry(co.race);
+        if (!rEntry)
+        {
+            TC_LOG_ERROR("server.loading", ">> Creature entry %u in `creature_template_outfits` has incorrect race (%u).", entry, uint32(co.race));
+            continue;
+        }
+        co.gender        = fields[i++].GetUInt8();
+        // Set correct displayId
+        switch (co.gender)
+        {
+            case GENDER_FEMALE:
+                _creatureTemplateStore[entry].Modelid1 = rEntry->model_f;
+                break;
+            case GENDER_MALE:
+                _creatureTemplateStore[entry].Modelid1 = rEntry->model_m;
+                break;
+            default:
+                TC_LOG_ERROR("server.loading", ">> Creature entry %u in `creature_template_outfits` has invalid gender %u", entry, uint32(co.gender));
+                continue;
+        }
+        _creatureTemplateStore[entry].Modelid2 = 0;
+        _creatureTemplateStore[entry].Modelid3 = 0;
+        _creatureTemplateStore[entry].Modelid4 = 0;
+        _creatureTemplateStore[entry].unit_flags2 |= UNIT_FLAG2_MIRROR_IMAGE; // Needed so client requests mirror packet
+
+        co.skin          = fields[i++].GetUInt8();
+        co.face          = fields[i++].GetUInt8();
+        co.hair          = fields[i++].GetUInt8();
+        co.haircolor     = fields[i++].GetUInt8();
+        co.facialhair    = fields[i++].GetUInt8();
+        for (uint32 j = 0; j != MAX_CREATURE_OUTFIT_DISPLAYS; ++j)
+            co.outfit[j] = fields[i+j].GetUInt32();
+
+        _creatureOutfitStore[entry] = co;
+
+        ++count;
+    }
+    while (result->NextRow());
+
+    TC_LOG_INFO("server.loading", ">> Loaded %u creature outfits in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
 }
 
 void ObjectMgr::LoadGameTele()

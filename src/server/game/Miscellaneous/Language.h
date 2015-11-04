@@ -1226,7 +1226,6 @@ enum TrinityStrings
 
     LANG_NPCINFO_INHABIT_TYPE                     = 11008,
     LANG_NPCINFO_FLAGS_EXTRA                      = 11009,
-
     // Prepatch by LordPsyan
     // 21
     // 22

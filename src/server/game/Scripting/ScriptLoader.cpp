@@ -102,11 +102,8 @@ void AddSC_boss_galvangar();
 void AddSC_boss_vanndar();
 void AddSC_blackrock_depths();               //Blackrock Depths
 void AddSC_boss_ambassador_flamelash();
-void AddSC_boss_anubshiah();
 void AddSC_boss_draganthaurissan();
 void AddSC_boss_general_angerforge();
-void AddSC_boss_gorosh_the_dervish();
-void AddSC_boss_grizzle();
 void AddSC_boss_high_interrogator_gerstahn();
 void AddSC_boss_magmus();
 void AddSC_boss_moira_bronzebeard();
@@ -804,11 +801,8 @@ void AddEasternKingdomsScripts()
     AddSC_boss_vanndar();
     AddSC_blackrock_depths();               //Blackrock Depths
     AddSC_boss_ambassador_flamelash();
-    AddSC_boss_anubshiah();
     AddSC_boss_draganthaurissan();
     AddSC_boss_general_angerforge();
-    AddSC_boss_gorosh_the_dervish();
-    AddSC_boss_grizzle();
     AddSC_boss_high_interrogator_gerstahn();
     AddSC_boss_magmus();
     AddSC_boss_moira_bronzebeard();
@@ -1516,7 +1510,22 @@ void AddBattlegroundScripts()
 // start97
 // start98
 // start99
-// start100
+//Bots
+void AddSC_death_knight_bot();
+void AddSC_druid_bot();
+void AddSC_hunter_bot();
+void AddSC_mage_bot();
+void AddSC_paladin_bot();
+void AddSC_priest_bot();
+void AddSC_rogue_bot();
+void AddSC_shaman_bot();
+void AddSC_warlock_bot();
+void AddSC_warrior_bot();
+void AddSC_blademaster_bot();
+void AddSC_script_bot_commands();
+//advanced
+//void AddSC_BotQuests_chapter1();
+//end Bots
 // start101
 // start102
 // start103
@@ -1642,7 +1651,22 @@ void AddCustomScripts()
 // end97
 // end98
 // end99
-// end100
+    //Bots
+    AddSC_death_knight_bot();
+    AddSC_druid_bot();
+    AddSC_hunter_bot();
+    AddSC_mage_bot();
+    AddSC_paladin_bot();
+    AddSC_priest_bot();
+    AddSC_rogue_bot();
+    AddSC_shaman_bot();
+    AddSC_warlock_bot();
+    AddSC_warrior_bot();
+    AddSC_blademaster_bot();
+    AddSC_script_bot_commands();
+    //advanced
+    //AddSC_BotQuests_chapter1();
+    //end Bots
 // end101
 // end102
 // end103
