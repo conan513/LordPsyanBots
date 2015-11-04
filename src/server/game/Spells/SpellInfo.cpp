@@ -25,7 +25,6 @@
 #include "Battleground.h"
 #include "Vehicle.h"
 #include "Pet.h"
-#include "World.h"
 
 uint32 GetTargetFlagMask(SpellTargetObjectTypes objType)
 {
@@ -777,8 +776,8 @@ SpellInfo::SpellInfo(SpellEntry const* spellEntry)
     AttributesEx6 = spellEntry->AttributesEx6;
     AttributesEx7 = spellEntry->AttributesEx7;
     AttributesCu = 0;
-    Stances = spellEntry->Stances;
-    StancesNot = spellEntry->StancesNot;
+    Stances = MAKE_PAIR64(spellEntry->Stances[0], spellEntry->Stances[1]);
+    StancesNot = MAKE_PAIR64(spellEntry->StancesNot[0], spellEntry->StancesNot[1]);
     Targets = spellEntry->Targets;
     TargetCreatureType = spellEntry->TargetCreatureType;
     RequiresSpellFocus = spellEntry->RequiresSpellFocus;
@@ -1310,7 +1309,7 @@ SpellCastResult SpellInfo::CheckShapeshift(uint32 form) const
         (Effects[0].Effect == SPELL_EFFECT_LEARN_SPELL || Effects[1].Effect == SPELL_EFFECT_LEARN_SPELL || Effects[2].Effect == SPELL_EFFECT_LEARN_SPELL))
         return SPELL_CAST_OK;
 
-    uint32 stanceMask = (form ? 1 << (form - 1) : 0);
+    uint64 stanceMask = (form ? UI64LIT(1) << (form - 1) : 0);
 
     if (stanceMask & StancesNot)                 // can explicitly not be cast in this stance
         return SPELL_FAILED_NOT_SHAPESHIFT;
@@ -2115,10 +2114,7 @@ uint32 SpellInfo::CalcCastTime(Spell* spell /*= NULL*/) const
     if (HasAttribute(SPELL_ATTR0_REQ_AMMO) && (!IsAutoRepeatRangedSpell()))
         castTime += 500;
 
-    if (!sWorld->getBoolConfig(CONFIG_NO_CAST_TIME))
-        return (castTime > 0) ? uint32(castTime) : 0;
-    else
-        return 0;
+    return (castTime > 0) ? uint32(castTime) : 0;
 }
 
 uint32 SpellInfo::GetMaxTicks() const
@@ -2667,7 +2663,7 @@ void SpellInfo::_UnloadImplicitTargetConditionLists()
     // find the same instances of ConditionList and delete them.
     for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
     {
-        ConditionList* cur = Effects[i].ImplicitTargetConditions;
+        ConditionContainer* cur = Effects[i].ImplicitTargetConditions;
         if (!cur)
             continue;
         for (uint8 j = i; j < MAX_SPELL_EFFECTS; ++j)

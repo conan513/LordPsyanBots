@@ -40,6 +40,15 @@ class BattlegroundMap;
 struct PvPDifficultyEntry;
 struct WorldSafeLocsEntry;
 
+enum BattlegroundDesertionType
+{
+    BG_DESERTION_TYPE_LEAVE_BG        = 0, // player leaves the BG
+    BG_DESERTION_TYPE_OFFLINE         = 1, // player is kicked from BG because offline
+    BG_DESERTION_TYPE_LEAVE_QUEUE     = 2, // player is invited to join and refuses to do it
+    BG_DESERTION_TYPE_NO_ENTER_BUTTON = 3, // player is invited to join and do nothing (time expires)
+    BG_DESERTION_TYPE_INVITE_LOGOUT   = 4, // player is invited to join and logs out
+};
+
 enum BattlegroundCriteriaId
 {
     BG_CRITERIA_CHECK_RESILIENT_VICTORY,
@@ -356,7 +365,7 @@ class Battleground
         void CastSpellOnTeam(uint32 SpellID, uint32 TeamID);
         void RemoveAuraOnTeam(uint32 SpellID, uint32 TeamID);
         void RewardHonorToTeam(uint32 Honor, uint32 TeamID);
-        void RewardReputationToTeam(uint32 a_faction_id, uint32 h_faction_id, uint32 Reputation, uint32 TeamId);
+        void RewardReputationToTeam(uint32 faction_id, uint32 Reputation, uint32 TeamID);
         void UpdateWorldState(uint32 Field, uint32 Value);
         void UpdateWorldStateForPlayer(uint32 Field, uint32 Value, Player* player);
         virtual void EndBattleground(uint32 winner);

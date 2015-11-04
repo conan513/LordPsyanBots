@@ -29,11 +29,6 @@ enum CharacterDatabaseStatements
         name for a suiting suffix.
     */
 
-    FAKE_CHAR_SEL_RACE_BY_NAME,
-    FAKE_CHAR_SEL_RACE_BY_NAME_IS_ONLINE,
-    FAKE_CHAR_ONLINE,
-    FAKE_CHAR_ONLINE_SEARCH,
-
     CHAR_DEL_QUEST_POOL_SAVE,
     CHAR_INS_QUEST_POOL_SAVE,
     CHAR_DEL_NONEXISTENT_GUILD_BANK_ITEM,
@@ -134,8 +129,6 @@ enum CharacterDatabaseStatements
     CHAR_UPD_MAIL_RETURNED,
     CHAR_UPD_MAIL_ITEM_RECEIVER,
     CHAR_UPD_ITEM_OWNER,
-    CHAR_GET_EXTERNAL_MAIL,
-    CHAR_DEL_EXTERNAL_MAIL,
     CHAR_SEL_ITEM_REFUNDS,
     CHAR_SEL_ITEM_BOP_TRADE,
     CHAR_DEL_ITEM_BOP_TRADE,
@@ -150,7 +143,6 @@ enum CharacterDatabaseStatements
     CHAR_DEL_GIFT,
     CHAR_SEL_CHARACTER_GIFT_BY_ITEM,
     CHAR_SEL_ACCOUNT_BY_NAME,
-    CHAR_SEL_ACCOUNT_BY_GUID,
     CHAR_DEL_ACCOUNT_INSTANCE_LOCK_TIMES,
     CHAR_INS_ACCOUNT_INSTANCE_LOCK_TIMES,
     CHAR_SEL_CHARACTER_NAME_CLASS,
@@ -294,6 +286,7 @@ enum CharacterDatabaseStatements
     CHAR_DEL_GM_TICKET,
     CHAR_DEL_ALL_GM_TICKETS,
     CHAR_DEL_PLAYER_GM_TICKETS,
+    CHAR_UPD_PLAYER_GM_TICKETS_ON_CHAR_DELETION,
 
     CHAR_INS_GM_SURVEY,
     CHAR_INS_GM_SUBSURVEY,
@@ -537,6 +530,8 @@ enum CharacterDatabaseStatements
     CHAR_UPD_QUEST_TRACK_GM_COMPLETE,
     CHAR_UPD_QUEST_TRACK_COMPLETE_TIME,
     CHAR_UPD_QUEST_TRACK_ABANDON_TIME,
+
+    CHAR_INS_DESERTER_TRACK,
     // Prepatch by LordPsyan
     // 01
     // 02
@@ -574,6 +569,7 @@ enum CharacterDatabaseStatements
     // Visit http://www.realmsofwarcraft.com/bb for forums and information
     //
     // End of prepatch
+
     MAX_CHARACTERDATABASE_STATEMENTS
 };
 

@@ -40,7 +40,7 @@
 #ifndef _RBAC_H
 #define _RBAC_H
 
-#include "Define.h"
+#include "DatabaseEnv.h"
 #include <string>
 #include <set>
 #include <map>
@@ -718,7 +718,7 @@ enum RBACPermissions
     // 17
     // 18
     // 19
-    RBAC_PERM_COMMAND_WORLD_CHAT                             = 1015,
+    // 20
     // Visit http://www.realmsofwarcraft.com/bb for forums and information
     //
     // End of prepatch
@@ -888,6 +888,8 @@ class RBACData
 
         /// Loads all permissions assigned to current account
         void LoadFromDB();
+        PreparedQueryResultFuture LoadFromDBAsync();
+        void LoadFromDBCallback(PreparedQueryResult result);
 
         /// Sets security level
         void SetSecurityLevel(uint8 id)

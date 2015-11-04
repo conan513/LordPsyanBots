@@ -25,6 +25,7 @@
 #include "Timer.h"
 #include "ObjectDefines.h"
 
+#include <boost/regex.hpp>
 #include <map>
 
 typedef std::map<uint16, uint32> AreaFlagByAreaID;
@@ -119,7 +120,7 @@ DBCStorage <HolidaysEntry>                sHolidaysStore(Holidaysfmt);
 DBCStorage <ItemEntry>                    sItemStore(Itemfmt);
 DBCStorage <ItemBagFamilyEntry>           sItemBagFamilyStore(ItemBagFamilyfmt);
 //DBCStorage <ItemCondExtCostsEntry> sItemCondExtCostsStore(ItemCondExtCostsEntryfmt);
-DBCStorage <ItemDisplayInfoEntry> sItemDisplayInfoStore(ItemDisplayTemplateEntryfmt);
+//DBCStorage <ItemDisplayInfoEntry> sItemDisplayInfoStore(ItemDisplayTemplateEntryfmt); -- not used currently
 DBCStorage <ItemExtendedCostEntry> sItemExtendedCostStore(ItemExtendedCostEntryfmt);
 DBCStorage <ItemLimitCategoryEntry> sItemLimitCategoryStore(ItemLimitCategoryEntryfmt);
 DBCStorage <ItemRandomPropertiesEntry> sItemRandomPropertiesStore(ItemRandomPropertiesfmt);
@@ -139,6 +140,12 @@ DBCStorage <MapDifficultyEntry> sMapDifficultyStore(MapDifficultyEntryfmt); // o
 MapDifficultyMap sMapDifficultyMap;
 
 DBCStorage <MovieEntry> sMovieStore(MovieEntryfmt);
+
+DBCStorage<NamesProfanityEntry> sNamesProfanityStore(NamesProfanityEntryfmt);
+DBCStorage<NamesReservedEntry> sNamesReservedStore(NamesReservedEntryfmt);
+typedef std::array<std::vector<boost::regex>, TOTAL_LOCALES> NameValidationRegexContainer;
+NameValidationRegexContainer NamesProfaneValidators;
+NameValidationRegexContainer NamesReservedValidators;
 
 DBCStorage <OverrideSpellDataEntry> sOverrideSpellDataStore(OverrideSpellDatafmt);
 
@@ -163,7 +170,6 @@ DBCStorage <SoundEntriesEntry> sSoundEntriesStore(SoundEntriesfmt);
 DBCStorage <SpellItemEnchantmentEntry> sSpellItemEnchantmentStore(SpellItemEnchantmentfmt);
 DBCStorage <SpellItemEnchantmentConditionEntry> sSpellItemEnchantmentConditionStore(SpellItemEnchantmentConditionfmt);
 DBCStorage <SpellEntry> sSpellStore(SpellEntryfmt);
-SpellCategoryStore sSpellsByCategoryStore;
 PetFamilySpellsStore sPetFamilySpellsStore;
 
 DBCStorage <SpellCastTimesEntry> sSpellCastTimesStore(SpellCastTimefmt);
@@ -378,7 +384,7 @@ void LoadDBCStores(const std::string& dataPath)
 
     LoadDBC(availableDbcLocales, bad_dbc_files, sItemStore,                   dbcPath, "Item.dbc");
     LoadDBC(availableDbcLocales, bad_dbc_files, sItemBagFamilyStore,          dbcPath, "ItemBagFamily.dbc");
-    LoadDBC(availableDbcLocales, bad_dbc_files, sItemDisplayInfoStore,        dbcPath, "ItemDisplayInfo.dbc");
+    //LoadDBC(dbcCount, availableDbcLocales, bad_dbc_files, sItemDisplayInfoStore,        dbcPath, "ItemDisplayInfo.dbc");     -- not used currently
     //LoadDBC(dbcCount, availableDbcLocales, bad_dbc_files, sItemCondExtCostsStore,       dbcPath, "ItemCondExtCosts.dbc");
     LoadDBC(availableDbcLocales, bad_dbc_files, sItemExtendedCostStore,       dbcPath, "ItemExtendedCost.dbc");
     LoadDBC(availableDbcLocales, bad_dbc_files, sItemLimitCategoryStore,      dbcPath, "ItemLimitCategory.dbc");
@@ -401,6 +407,37 @@ void LoadDBCStores(const std::string& dataPath)
     sMapDifficultyStore.Clear();
 
     LoadDBC(availableDbcLocales, bad_dbc_files, sMovieStore,                  dbcPath, "Movie.dbc");
+
+    LoadDBC(availableDbcLocales, bad_dbc_files, sNamesProfanityStore, dbcPath, "NamesProfanity.dbc");
+    LoadDBC(availableDbcLocales, bad_dbc_files, sNamesReservedStore, dbcPath, "NamesReserved.dbc");
+    for (uint32 i = 0; i < sNamesProfanityStore.GetNumRows(); ++i)
+    {
+        NamesProfanityEntry const* namesProfanity = sNamesProfanityStore.LookupEntry(i);
+        if (!namesProfanity)
+            continue;
+
+        ASSERT(namesProfanity->Language < TOTAL_LOCALES || namesProfanity->Language == -1);
+        if (namesProfanity->Language != -1)
+            NamesProfaneValidators[namesProfanity->Language].emplace_back(namesProfanity->Name, boost::regex::perl | boost::regex::icase | boost::regex::optimize);
+        else
+            for (uint32 i = 0; i < TOTAL_LOCALES; ++i)
+                NamesProfaneValidators[i].emplace_back(namesProfanity->Name, boost::regex::perl | boost::regex::icase | boost::regex::optimize);
+    }
+
+    for (uint32 i = 0; i < sNamesReservedStore.GetNumRows(); ++i)
+    {
+        NamesReservedEntry const* namesReserved = sNamesReservedStore.LookupEntry(i);
+        if (!namesReserved)
+            continue;
+
+        ASSERT(namesReserved->Language < TOTAL_LOCALES || namesReserved->Language == -1);
+        if (namesReserved->Language != -1)
+            NamesReservedValidators[namesReserved->Language].emplace_back(namesReserved->Name, boost::regex::perl | boost::regex::icase | boost::regex::optimize);
+        else
+            for (uint32 i = 0; i < TOTAL_LOCALES; ++i)
+                NamesReservedValidators[i].emplace_back(namesReserved->Name, boost::regex::perl | boost::regex::icase | boost::regex::optimize);
+    }
+
 
     LoadDBC(availableDbcLocales, bad_dbc_files, sOverrideSpellDataStore,      dbcPath, "OverrideSpellData.dbc");
 
@@ -430,12 +467,6 @@ void LoadDBCStores(const std::string& dataPath)
     LoadDBC(availableDbcLocales, bad_dbc_files, sSkillTiersStore,             dbcPath, "SkillTiers.dbc");
     LoadDBC(availableDbcLocales, bad_dbc_files, sSoundEntriesStore,           dbcPath, "SoundEntries.dbc");
     LoadDBC(availableDbcLocales, bad_dbc_files, sSpellStore,                  dbcPath, "Spell.dbc", &CustomSpellEntryfmt, &CustomSpellEntryIndex);
-    for (uint32 i = 1; i < sSpellStore.GetNumRows(); ++i)
-    {
-        SpellEntry const* spell = sSpellStore.LookupEntry(i);
-        if (spell && spell->Category)
-            sSpellsByCategoryStore[spell->Category].insert(i);
-    }
 
     for (uint32 j = 0; j < sSkillLineAbilityStore.GetNumRows(); ++j)
     {
@@ -1011,4 +1042,21 @@ SkillRaceClassInfoEntry const* GetSkillRaceClassInfo(uint32 skill, uint8 race, u
     }
 
     return NULL;
+}
+
+ResponseCodes ValidateName(std::string const& name, LocaleConstant locale)
+{
+    if (locale >= TOTAL_LOCALES)
+        return RESPONSE_FAILURE;
+
+    for (boost::regex const& regex : NamesProfaneValidators[locale])
+        if (boost::regex_search(name, regex))
+            return CHAR_NAME_PROFANE;
+
+    // regexes at TOTAL_LOCALES are loaded from NamesReserved which is not locale specific
+    for (boost::regex const& regex : NamesReservedValidators[locale])
+        if (boost::regex_search(name, regex))
+            return CHAR_NAME_RESERVED;
+
+    return CHAR_NAME_SUCCESS;
 }

@@ -78,14 +78,11 @@ include_directories(
   ${CMAKE_SOURCE_DIR}/src/server/game/Entities/Item/Container
   ${CMAKE_SOURCE_DIR}/src/server/game/Entities/Object
   ${CMAKE_SOURCE_DIR}/src/server/game/Entities/Object/Updates
-  ${CMAKE_SOURCE_DIR}/src/server/game/Entities/Pet
-  ${CMAKE_SOURCE_DIR}/src/server/game/Entities/Player
   ${CMAKE_SOURCE_DIR}/src/server/game/Entities/Unit
   ${CMAKE_SOURCE_DIR}/src/server/game/Entities/Vehicle
   ${CMAKE_SOURCE_DIR}/src/server/game/Globals
   ${CMAKE_SOURCE_DIR}/src/server/game/Grids
   ${CMAKE_SOURCE_DIR}/src/server/game/Grids/Cells
-  ${CMAKE_SOURCE_DIR}/src/server/game/Groups
   ${CMAKE_SOURCE_DIR}/src/server/game/Handlers
   ${CMAKE_SOURCE_DIR}/src/server/game/Instances
   ${CMAKE_SOURCE_DIR}/src/server/game/Loot
@@ -98,9 +95,7 @@ include_directories(
   ${CMAKE_SOURCE_DIR}/src/server/game/Scripting
   ${CMAKE_SOURCE_DIR}/src/server/game/Server
   ${CMAKE_SOURCE_DIR}/src/server/game/Server/Protocol
-  ${CMAKE_SOURCE_DIR}/src/server/game/Spells
   ${CMAKE_SOURCE_DIR}/src/server/game/Spells/Auras
-  ${CMAKE_SOURCE_DIR}/src/server/game/TriniChat
   ${CMAKE_SOURCE_DIR}/src/server/game/Weather
   ${CMAKE_SOURCE_DIR}/src/server/game/World
   ${CMAKE_SOURCE_DIR}/src/server/shared

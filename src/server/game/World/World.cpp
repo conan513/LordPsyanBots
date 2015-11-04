@@ -67,11 +67,11 @@
 // Prepatch by LordPsyan
 // 01
 // 02
-#include "IRCClient.h"
+// 03
 // 04
 // 05
 // 06
-#include "../../scripts/Custom/TemplateNPC.h"
+// 07
 // 08
 // 09
 // 10
@@ -295,10 +295,7 @@ void World::AddSession_(WorldSession* s)
         return;
     }
 
-    s->SendAuthResponse(AUTH_OK, true);
-    s->SendAddonsInfo();
-    s->SendClientCacheVersion(sWorld->getIntConfig(CONFIG_CLIENTCACHE_VERSION));
-    s->SendTutorialsData();
+    s->InitializeSession();
 
     UpdateMaxSessionCounters();
 
@@ -388,15 +385,7 @@ bool World::RemoveQueuedPlayer(WorldSession* sess)
     if ((!m_playerLimit || sessions < m_playerLimit) && !m_QueuedPlayer.empty())
     {
         WorldSession* pop_sess = m_QueuedPlayer.front();
-        pop_sess->SetInQueue(false);
-        pop_sess->ResetTimeOutTime();
-        pop_sess->SendAuthWaitQue(0);
-        pop_sess->SendAddonsInfo();
-
-        pop_sess->SendClientCacheVersion(sWorld->getIntConfig(CONFIG_CLIENTCACHE_VERSION));
-        pop_sess->SendAccountDataTimes(GLOBAL_CACHE_MASK);
-        pop_sess->SendTutorialsData();
-
+        pop_sess->InitializeSession();
         m_QueuedPlayer.pop_front();
 
         // update iter to point first queued socket or end() if queue is empty now
@@ -432,6 +421,7 @@ void World::LoadConfigSettings(bool reload)
 
     ///- Read ticket system setting from the config file
     m_bool_configs[CONFIG_ALLOW_TICKETS] = sConfigMgr->GetBoolDefault("AllowTickets", true);
+    m_bool_configs[CONFIG_DELETE_CHARACTER_TICKET_TRACE] = sConfigMgr->GetBoolDefault("DeletedCharacterTicketTrace", false);
 
     ///- Get string for new logins (newly created characters)
     SetNewCharString(sConfigMgr->GetStringDefault("PlayerStart.String", ""));
@@ -698,10 +688,6 @@ void World::LoadConfigSettings(bool reload)
     m_int_configs[CONFIG_STRICT_CHARTER_NAMES]                = sConfigMgr->GetIntDefault ("StrictCharterNames", 0);
     m_int_configs[CONFIG_STRICT_PET_NAMES]                    = sConfigMgr->GetIntDefault ("StrictPetNames",     0);
 
-    m_bool_configs[CONFIG_FAKE_WHO_LIST]                      = sConfigMgr->GetBoolDefault("Fake.WHO.List", false);
-    m_int_configs[CONFIG_FAKE_WHO_ONLINE_INTERVAL]            = sConfigMgr->GetIntDefault("Fake.WHO.Online.Interval", 5);
-    m_int_configs[CONFIG_FAKE_WHO_LEVELUP_INTERVAL]           = sConfigMgr->GetIntDefault("Fake.WHO.LevelUp.Interval", 2);
-
     m_int_configs[CONFIG_MIN_PLAYER_NAME]                     = sConfigMgr->GetIntDefault ("MinPlayerName",  2);
     if (m_int_configs[CONFIG_MIN_PLAYER_NAME] < 1 || m_int_configs[CONFIG_MIN_PLAYER_NAME] > MAX_PLAYER_NAME)
     {
@@ -887,18 +873,6 @@ void World::LoadConfigSettings(bool reload)
         TC_LOG_ERROR("server.loading", "MinPetitionSigns (%i) must be in range 0..9. Set to 9.", m_int_configs[CONFIG_MIN_PETITION_SIGNS]);
         m_int_configs[CONFIG_MIN_PETITION_SIGNS] = 9;
     }
-    rate_values[RATE_PVP_RANK_EXTRA_HONOR] = sConfigMgr->GetFloatDefault("PvPRank.Rate.ExtraHonor", 1);
-    std::string s_pvp_ranks = sConfigMgr->GetStringDefault("PvPRank.HKPerRank", "10,50,100,200,450,750,1300,2000,3500,6000,9500,15000,21000,30000");
-    char *c_pvp_ranks = const_cast<char*>(s_pvp_ranks.c_str());
-    for (int i = 0; i !=HKRANKMAX; i++)
-    {
-        if (i==0)
-            pvp_ranks[0] = 0;
-        else if (i==1)
-            pvp_ranks[1] = atoi(strtok (c_pvp_ranks, ","));
-        else
-            pvp_ranks[i] = atoi(strtok (NULL, ","));
-    }
 
     m_int_configs[CONFIG_GM_LOGIN_STATE]        = sConfigMgr->GetIntDefault("GM.LoginState", 2);
     m_int_configs[CONFIG_GM_VISIBLE_STATE]      = sConfigMgr->GetIntDefault("GM.Visible", 2);
@@ -1080,6 +1054,7 @@ void World::LoadConfigSettings(bool reload)
     m_bool_configs[CONFIG_BATTLEGROUND_QUEUE_ANNOUNCER_ENABLE]       = sConfigMgr->GetBoolDefault("Battleground.QueueAnnouncer.Enable", false);
     m_bool_configs[CONFIG_BATTLEGROUND_QUEUE_ANNOUNCER_PLAYERONLY]   = sConfigMgr->GetBoolDefault("Battleground.QueueAnnouncer.PlayerOnly", false);
     m_bool_configs[CONFIG_BATTLEGROUND_STORE_STATISTICS_ENABLE]      = sConfigMgr->GetBoolDefault("Battleground.StoreStatistics.Enable", false);
+    m_bool_configs[CONFIG_BATTLEGROUND_TRACK_DESERTERS]              = sConfigMgr->GetBoolDefault("Battleground.TrackDeserters.Enable", false);
     m_int_configs[CONFIG_BATTLEGROUND_INVITATION_TYPE]               = sConfigMgr->GetIntDefault ("Battleground.InvitationType", 0);
     m_int_configs[CONFIG_BATTLEGROUND_PREMATURE_FINISH_TIMER]        = sConfigMgr->GetIntDefault ("Battleground.PrematureFinishTimer", 5 * MINUTE * IN_MILLISECONDS);
     m_int_configs[CONFIG_BATTLEGROUND_PREMADE_GROUP_WAIT_FOR_MATCH]  = sConfigMgr->GetIntDefault ("Battleground.PremadeGroupWaitForMatch", 30 * MINUTE * IN_MILLISECONDS);
@@ -1101,8 +1076,6 @@ void World::LoadConfigSettings(bool reload)
     m_bool_configs[CONFIG_OFFHAND_CHECK_AT_SPELL_UNLEARN]            = sConfigMgr->GetBoolDefault("OffhandCheckAtSpellUnlearn", true);
 
     m_int_configs[CONFIG_CREATURE_PICKPOCKET_REFILL] = sConfigMgr->GetIntDefault("Creature.PickPocketRefillDelay", 10 * MINUTE);
-
-    m_bool_configs[BATTLEGROUND_CROSSFACTION_ENABLED]                = sConfigMgr->GetBoolDefault("CrossfactionBG.enable", true);
 
     if (int32 clientCacheId = sConfigMgr->GetIntDefault("ClientCacheVersion", 0))
     {
@@ -1168,28 +1141,24 @@ void World::LoadConfigSettings(bool reload)
     // Prepatch by LordPsyan
     // 01
     // 02
-    m_float_configs[CONFIG_SPEED_GAME] = sConfigMgr->GetFloatDefault("Custom.SpeedGame", 1.0f);
-    m_bool_configs[CONFIG_NO_CAST_TIME] = sConfigMgr->GetBoolDefault("Custom.NoCastTime", false);
-    m_bool_configs[CONFIG_HURT_IN_REAL_TIME] = sConfigMgr->GetBoolDefault("Custom.HurtInRealTime", false);
+    // 03
     // 04
     // 05
     // 06
-    m_bool_configs[CONFIG_FAST_FISHING] = sConfigMgr->GetBoolDefault("Custom.FastFishing", false);
+    // 07
     // 08
     // 09
     // 10
-    m_bool_configs[CONFIG_GAIN_HONOR_GUARD] = sConfigMgr->GetBoolDefault("Custom.GainHonorOnGuardKill", false);
-    m_bool_configs[CONFIG_GAIN_HONOR_ELITE] = sConfigMgr->GetBoolDefault("Custom.GainHonorOnEliteKill", false);
+    // 11
     // 12
     // 13
     // 14
-    m_float_configs[CONFIG_ATTACKSPEED_PLAYER] = sConfigMgr->GetFloatDefault("Custom.AttackSpeedForPlayer", 1.0f);
-    m_float_configs[CONFIG_ATTACKSPEED_ALL] = sConfigMgr->GetFloatDefault("Custom.AttackSpeedForMobs", 1.0f);
+    // 15
     // 16
     // 17
     // 18
     // 19
-    m_float_configs[CONFIG_RESPAWNSPEED] = sConfigMgr->GetFloatDefault("Custom.RespawnSpeed", 1.0f);
+    // 20
     // Visit http://www.realmsofwarcraft.com/bb for forums and information
     //
     // End of prepatch
@@ -1328,10 +1297,6 @@ void World::LoadConfigSettings(bool reload)
     // MySQL ping time interval
     m_int_configs[CONFIG_DB_PING_INTERVAL] = sConfigMgr->GetIntDefault("MaxPingTime", 30);
 
-     // External Mail
-    m_bool_configs[CONFIG_EXTERNAL_MAIL_ENABLE] = sConfigMgr->GetBoolDefault("External.Mail.Enable", false);
-    m_int_configs[CONFIG_EXTERNAL_MAIL_INTERVAL] = sConfigMgr->GetIntDefault("External.Mail.Interval", 1);
-
     // misc
     m_bool_configs[CONFIG_PDUMP_NO_PATHS] = sConfigMgr->GetBoolDefault("PlayerDump.DisallowPaths", true);
     m_bool_configs[CONFIG_PDUMP_NO_OVERWRITE] = sConfigMgr->GetBoolDefault("PlayerDump.DisallowOverwrite", true);
@@ -1398,168 +1363,6 @@ void World::LoadConfigSettings(bool reload)
     // call ScriptMgr if we're reloading the configuration
     if (reload)
         sScriptMgr->OnConfigLoad(reload);
-    sScriptMgr->OnConfigLoad(reload);
-
-    // IRC Configurations.
-    int ConfCnt = 0;
-    sIRC->_chan_count = 0;
-    if (sConfigMgr->GetIntDefault("irc.active", 1) == 1)
-      sIRC->Active = true;
-    else
-      sIRC->Active = false;
-
-    sIRC->_Host = sConfigMgr->GetStringDefault("irc.host", "irc.freenode.net");
-    if (sIRC->_Host.size() > 0)
-        ConfCnt++;
-    sIRC->_Mver = "Version 4.1";
-    sIRC->_Port = sConfigMgr->GetIntDefault("irc.port", 6667);
-    sIRC->_User = sConfigMgr->GetStringDefault("irc.user", "TriniChat");
-    sIRC->_Pass = sConfigMgr->GetStringDefault("irc.pass", "Services Password");
-    sIRC->_Nick = sConfigMgr->GetStringDefault("irc.nick", "TriniChat");
-    sIRC->_Auth = sConfigMgr->GetIntDefault("irc.auth", 0);
-    sIRC->_Auth_Nick = sConfigMgr->GetStringDefault("irc.auth.nick", "AuthNick");
-    sIRC->_ICC = sConfigMgr->GetStringDefault("irc.icc", "001");
-    sIRC->_defchan = sConfigMgr->GetStringDefault("irc.defchan", "lobby");
-    sIRC->_ldefc = sConfigMgr->GetIntDefault("irc.ldef", 0);
-    sIRC->_wct = sConfigMgr->GetIntDefault("irc.wct", 30000);
-    sIRC->ajoin = sConfigMgr->GetIntDefault("irc.ajoin", 0);
-    sIRC->_staffLink = sConfigMgr->GetIntDefault("irc.staff_link", 1);
-    sIRC->_staffChan = sConfigMgr->GetStringDefault("irc.staff_chan", "staff");
-    sIRC->_bot_names = sConfigMgr->GetStringDefault("irc.ignore_bots", "");
-    sIRC->ajchan = sConfigMgr->GetStringDefault("irc.ajchan", "world");
-    sIRC->onlrslt = sConfigMgr->GetIntDefault("irc.online.result", 10);
-    sIRC->BOTMASK = sConfigMgr->GetIntDefault("Botmask", 0);
-    sIRC->TICMASK = sConfigMgr->GetIntDefault("Ticketmask", 0);
-    sIRC->logfile = sConfigMgr->GetStringDefault("irc.logfile.prefix", "IRC_");
-    sIRC->logmask = sConfigMgr->GetIntDefault("irc.logmask", 0);
-    sIRC->logchan = sConfigMgr->GetStringDefault("irc.logchannel","");
-    sIRC->logchanpw = sConfigMgr->GetStringDefault("irc.logchannelpw","");
-    for (int i = 1; i < MAX_CONF_CHANNELS;i++)
-    {
-        std::ostringstream ss;
-        ss << i;
-        std::string ci = "irc.chan_" + ss.str();
-        std::string pw = "irc.pass_" + ss.str();
-        std::string t_chan = sConfigMgr->GetStringDefault(ci.c_str(), "");
-        if (t_chan.size() > 0)
-        {
-            sIRC->_chan_count++;
-            sIRC->_irc_chan[sIRC->_chan_count] = t_chan;
-            sIRC->_irc_pass[sIRC->_chan_count] = sConfigMgr->GetStringDefault(pw.c_str(), t_chan.c_str());
-            ci = "wow.chan_" + ss.str();
-            sIRC->_wow_chan[sIRC->_chan_count] = sConfigMgr->GetStringDefault(ci.c_str(), t_chan.c_str());
-        }
-    }
-    sIRC->JoinMsg = sConfigMgr->GetStringDefault("irc.joinmsg", "TriniChat $Ver for Trinitycore 3.3.x");
-    sIRC->RstMsg  = sConfigMgr->GetStringDefault("irc.rstmsg", "TriniChat Is Restarting, I Will Be Right Back!");
-    sIRC->kikmsg = sConfigMgr->GetStringDefault("irc.kickmsg", "Do Not Kick Me Again, Severe Actions Will Be Taken!");
-
-    // IRC LINES
-    sIRC->ILINES[WOW_IRC] = sConfigMgr->GetStringDefault("chat.wow_irc", "\003<WoW>[\002$Name($Level)\002\003] $Msg");
-    sIRC->ILINES[IRC_WOW] = sConfigMgr->GetStringDefault("chat.irc_wow", "\003<IRC>[$Name]: $Msg");
-    sIRC->ILINES[JOIN_WOW] = sConfigMgr->GetStringDefault("chat.join_wow", "\00312>>\00304 $Name \003Joined The Channel!");
-    sIRC->ILINES[JOIN_IRC] = sConfigMgr->GetStringDefault("chat.join_irc", "\003[$Name]: Has Joined IRC!");
-    sIRC->ILINES[LEAVE_WOW] = sConfigMgr->GetStringDefault("chat.leave_wow", "\00312<<\00304 $Name \003Left The Channel!");
-    sIRC->ILINES[LEAVE_IRC] = sConfigMgr->GetStringDefault("chat.leave_irc", "\003[$Name]: Has Left IRC!");
-    sIRC->ILINES[CHANGE_NICK] = sConfigMgr->GetStringDefault("chat.change_nick", "\003<> $Name Is Now Known As $NewName!");
-
-    // TriniChat Options
-    sIRC->_MCA = sConfigMgr->GetIntDefault("irc.maxattempt", 10);
-    sIRC->_autojoinkick = sConfigMgr->GetIntDefault("irc.autojoin_kick", 1);
-    sIRC->_cmd_prefx = sConfigMgr->GetStringDefault("irc.command_prefix", ".");
-
-    sIRC->_op_gm = sConfigMgr->GetIntDefault("irc.op_gm_login", 0);
-    sIRC->_op_gm_lev = sConfigMgr->GetIntDefault("irc.op_gm_level", 3);
-
-    // Misc Options
-    sIRC->games = sConfigMgr->GetIntDefault("irc.fun.games", 0);
-    sIRC->gmlog = sConfigMgr->GetIntDefault("irc.gmlog", 1);
-    sIRC->Status = sConfigMgr->GetStringDefault("irc.StatusChannel", "");
-    sIRC->Statuspw = sConfigMgr->GetStringDefault("irc.StatusChannelPW","");
-    sIRC->anchn = sConfigMgr->GetStringDefault("irc.AnnounceChannel", "");
-    sIRC->anchnpw = sConfigMgr->GetStringDefault("irc.AnnounceChannelPW","");
-    sIRC->ticann = sConfigMgr->GetStringDefault("irc.Tickets", "");
-    sIRC->ticannpw = sConfigMgr->GetStringDefault("irc.TicketsPW","");
-    sIRC->autoanc = sConfigMgr->GetIntDefault("irc.auto.announce", 30);
-    sIRC->ojGM1 = sConfigMgr->GetStringDefault("irc.gm1", "[Moderator]");
-    sIRC->ojGM2 = sConfigMgr->GetStringDefault("irc.gm2", "[GameMaster]");
-    sIRC->ojGM3 = sConfigMgr->GetStringDefault("irc.gm3", "[Developer]");
-    sIRC->ojGM4 = sConfigMgr->GetStringDefault("irc.gm4", "[Owner]");
-    // REQUIRED GM LEVEL
-    QueryResult result = WorldDatabase.PQuery("SELECT `Command`, `gmlevel` FROM `irc_commands` ORDER BY `Command`");
-    if (result)
-    {
-        Field *fields = result->Fetch();
-        for (uint64 i=0; i < result->GetRowCount(); i++)
-        {
-            //TODO: ELSEIF? STRCMP?
-            std::string command = fields[0].GetCString();
-            uint32 gmlvl = fields[1].GetUInt32();
-            if (command == "acct") sIRC->CACCT = gmlvl;
-            if (command == "ban") sIRC->CBAN = gmlvl;
-            if (command == "char") sIRC->CCHAN = gmlvl;
-            if (command == "char") sIRC->CCHAR = gmlvl;
-            if (command == "fun") sIRC->CFUN = gmlvl;
-            if (command == "help") sIRC->CHELP = gmlvl;
-            if (command == "inchan") sIRC->CINCHAN = gmlvl;
-            if (command == "info") sIRC->CINFO = gmlvl;
-            if (command == "item") sIRC->CITEM = gmlvl;
-            if (command == "jail") sIRC->CJAIL = gmlvl;
-            if (command == "kick") sIRC->CKICK = gmlvl;
-            if (command == "kill") sIRC->_KILL = gmlvl;
-            if (command == "level") sIRC->CLEVEL = gmlvl;
-            if (command == "lookup") sIRC->CLOOKUP = gmlvl;
-            if (command == "money") sIRC->CMONEY = gmlvl;
-            if (command == "mute") sIRC->CMUTE = gmlvl;
-            if (command == "online") sIRC->CONLINE = gmlvl;
-            if (command == "pm") sIRC->CPM = gmlvl;
-            if (command == "reconnect") sIRC->CRECONNECT = gmlvl;
-            if (command == "reload") sIRC->CRELOAD = gmlvl;
-            if (command == "restart") sIRC->CSHUTDOWN = gmlvl;
-            if (command == "revive") sIRC->CREVIVE = gmlvl;
-            if (command == "saveall") sIRC->CSAVEALL = gmlvl;
-            if (command == "server") sIRC->CSERVERCMD = gmlvl;
-            if (command == "shutdown") sIRC->CSHUTDOWN = gmlvl;
-            if (command == "spell") sIRC->CSPELL = gmlvl;
-            if (command == "sysmsg") sIRC->CSYSMSG = gmlvl;
-            if (command == "tele") sIRC->CTELE = gmlvl;
-            if (command == "top") sIRC->CTOP = gmlvl;
-            if (command == "who") sIRC->CWHO = gmlvl;
-            result->NextRow();
-        }
-    }
-    else
-    {
-        sIRC->CACCT     = 3;
-        sIRC->CBAN      = 3;
-        sIRC->CCHAN     = 3;
-        sIRC->CCHAR     = 3;
-        sIRC->CFUN      = 3;
-        sIRC->CHELP     = 3;
-        sIRC->CINCHAN   = 3;
-        sIRC->CINFO     = 3;
-        sIRC->CITEM     = 3;
-        sIRC->CJAIL     = 3;
-        sIRC->CKICK     = 3;
-        sIRC->_KILL     = 3;
-        sIRC->CLEVEL    = 3;
-        sIRC->CLOOKUP   = 3;
-        sIRC->CMONEY    = 3;
-        sIRC->CMUTE     = 3;
-        sIRC->CONLINE   = 3;
-        sIRC->CPM       = 3;
-        sIRC->CRECONNECT= 3;
-        sIRC->CRELOAD   = 3;
-        sIRC->CREVIVE   = 3;
-        sIRC->CSAVEALL  = 3;
-        sIRC->CSERVERCMD= 3;
-        sIRC->CSHUTDOWN = 3;
-        sIRC->CSPELL    = 3;
-        sIRC->CSYSMSG   = 3;
-        sIRC->CTELE     = 3;
-        sIRC->CTOP      = 3;
-        sIRC->CWHO      = 3;
-    }
 }
 
 extern void LoadGameObjectModelList(std::string const& dataPath);
@@ -1585,7 +1388,6 @@ void World::SetInitialWorldSettings()
 
     ///- Initialize config settings
     LoadConfigSettings();
-    TC_LOG_ERROR("misc" "Loading TrinityCore configuration settings...","");
 
     ///- Initialize Allowed Security Level
     LoadDBAllowedSecurityLevel();
@@ -2053,9 +1855,6 @@ void World::SetInitialWorldSettings()
     LoginDatabase.PExecute("INSERT INTO uptime (realmid, starttime, uptime, revision) VALUES(%u, %u, 0, '%s')",
                             realmID, uint32(m_startTime), GitRevision::GetFullVersion());       // One-time query
 
-    static uint32 autoanc = 1;
-    autoanc = sIRC->autoanc;
-
     m_timers[WUPDATE_WEATHERS].SetInterval(1*IN_MILLISECONDS);
     m_timers[WUPDATE_AUCTIONS].SetInterval(MINUTE*IN_MILLISECONDS);
     m_timers[WUPDATE_UPTIME].SetInterval(m_int_configs[CONFIG_UPTIME_UPDATE]*MINUTE*IN_MILLISECONDS);
@@ -2072,8 +1871,6 @@ void World::SetInitialWorldSettings()
 
     m_timers[WUPDATE_PINGDB].SetInterval(getIntConfig(CONFIG_DB_PING_INTERVAL)*MINUTE*IN_MILLISECONDS);    // Mysql ping time in minutes
 
-    m_timers[WUPDATE_AUTOANC].SetInterval(autoanc*MINUTE*1000);
-
     //to set mailtimer to return mails every day between 4 and 5 am
     //mailtimer is increased when updating auctions
     //one second is 1000 -(tested on win system)
@@ -2081,9 +1878,7 @@ void World::SetInitialWorldSettings()
     tm localTm;
     localtime_r(&m_gameTime, &localTm);
     mail_timer = ((((localTm.tm_hour + 20) % 24)* HOUR * IN_MILLISECONDS) / m_timers[WUPDATE_AUCTIONS].GetInterval());
-
-    extmail_timer.SetInterval(m_int_configs[CONFIG_EXTERNAL_MAIL_INTERVAL] * MINUTE * IN_MILLISECONDS);
-
+                                                            //1440
     mail_timer_expires = ((DAY * IN_MILLISECONDS) / (m_timers[WUPDATE_AUCTIONS].GetInterval()));
     TC_LOG_INFO("server.loading", "Mail timer set to: " UI64FMTD ", mail return is called every " UI64FMTD " minutes", uint64(mail_timer), uint64(mail_timer_expires));
 
@@ -2153,26 +1948,7 @@ void World::SetInitialWorldSettings()
     TC_LOG_INFO("server.loading", "Calculate guild limitation(s) reset time...");
     InitGuildResetTime();
 
-    LoadCharacterNameData();
-
-    TC_LOG_INFO("server.loading", "Loading Template Talents...");
-    sTemplateNpcMgr->LoadTalentsContainer();
-
-    // Load templates for Template NPC #2
-    TC_LOG_INFO("server.loading", "Loading Template Glyphs...");
-    sTemplateNpcMgr->LoadGlyphsContainer();
-
-    // Load templates for Template NPC #3
-    TC_LOG_INFO("server.loading", "Loading Template Gear for Humans...");
-    sTemplateNpcMgr->LoadHumanGearContainer();
-
-    // Load templates for Template NPC #4
-    TC_LOG_INFO("server.loading", "Loading Template Gear for Alliances...");
-    sTemplateNpcMgr->LoadAllianceGearContainer();
-
-    // Load templates for Template NPC #5
-    TC_LOG_INFO("server.loading", "Loading Template Gear for Hordes...");
-    sTemplateNpcMgr->LoadHordeGearContainer();
+    LoadCharacterInfoStore();
 
     uint32 startupDuration = GetMSTimeDiffToNow(startupBegin);
 
@@ -2339,17 +2115,6 @@ void World::Update(uint32 diff)
     if (m_gameTime > m_NextGuildReset)
         ResetGuildCap();
 
-     // Handle external mail
-    if (sWorld->getBoolConfig(CONFIG_EXTERNAL_MAIL_ENABLE))
-    {
-        extmail_timer.Update(diff);
-        if (extmail_timer.Passed())
-        {
-            WorldSession::SendExternalMails();
-            extmail_timer.Reset();
-        }
-    }
-
     /// <ul><li> Handle auctions when the timer has passed
     if (m_timers[WUPDATE_AUCTIONS].Passed())
     {
@@ -2495,12 +2260,6 @@ void World::Update(uint32 diff)
         CharacterDatabase.KeepAlive();
         LoginDatabase.KeepAlive();
         WorldDatabase.KeepAlive();
-    }
-
-    if (m_timers[WUPDATE_AUTOANC].Passed())
-    {
-        m_timers[WUPDATE_AUTOANC].Reset();
-        SendRNDBroadcastIRC();
     }
 
     // update the instance reset times
@@ -3124,20 +2883,6 @@ void World::SendAutoBroadcast()
     TC_LOG_DEBUG("misc", "AutoBroadcast: '%s'", msg.c_str());
 }
 
-void World::SendRNDBroadcastIRC()
-{
-    std::string msg;
-    QueryResult result = WorldDatabase.PQuery("SELECT `message` FROM `irc_autoannounce` ORDER BY RAND() LIMIT 1");
-    if (!result)
-        return;
-    msg = result->Fetch()[0].GetString();
-
-    sWorld->SendWorldText(6612,msg.c_str());
-    std::string ircchan = "#";
-    ircchan += sIRC->anchn;
-    sIRC->Send_IRC_Channel(ircchan, sIRC->MakeMsg("\00304,08\037/!\\\037\017\00304 Automatic System Message \00304,08\037/!\\\037\017 %s", "%s", msg.c_str()), true);
-}
-
 void World::UpdateRealmCharCount(uint32 accountId)
 {
     PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_CHARACTER_COUNT);
@@ -3513,6 +3258,15 @@ void World::ProcessQueryCallbacks()
     }
 }
 
+CharacterInfo const* World::GetCharacterInfo(ObjectGuid const& guid) const
+{
+    CharacterInfoContainer::const_iterator itr = _characterInfoStore.find(guid);
+    if (itr != _characterInfoStore.end())
+        return &itr->second;
+
+    return nullptr;
+}
+
 /**
 * @brief Loads several pieces of information on server startup with the GUID
 * There is no further database query necessary.
@@ -3522,87 +3276,78 @@ void World::ProcessQueryCallbacks()
 * @return Name, Gender, Race, Class and Level of player character
 * Example Usage:
 * @code
-*    CharacterNameData const* nameData = sWorld->GetCharacterNameData(GUID);
-*    if (!nameData)
+*    CharacterInfo const* characterInfo = sWorld->GetCharacterInfo(GUID);
+*    if (!characterInfo)
 *        return;
 *
-* std::string playerName = nameData->m_name;
-* uint8 playerGender = nameData->m_gender;
-* uint8 playerRace = nameData->m_race;
-* uint8 playerClass = nameData->m_class;
-* uint8 playerLevel = nameData->m_level;
+*    std::string playerName = characterInfo->Name;
+*    uint8 playerGender = characterInfo->Sex;
+*    uint8 playerRace = characterInfo->Race;
+*    uint8 playerClass = characterInfo->Class;
+*    uint8 playerLevel = characterInfo->Level;
 * @endcode
 **/
 
-void World::LoadCharacterNameData()
+void World::LoadCharacterInfoStore()
 {
-    TC_LOG_INFO("server.loading", "Loading character name data");
+    TC_LOG_INFO("server.loading", "Loading character info store");
 
-    QueryResult result = CharacterDatabase.Query("SELECT guid, name, race, gender, class, level FROM characters WHERE deleteDate IS NULL");
+    _characterInfoStore.clear();
+
+    QueryResult result = CharacterDatabase.Query("SELECT guid, name, account, race, gender, class, level FROM characters");
     if (!result)
     {
         TC_LOG_INFO("server.loading", "No character name data loaded, empty query");
         return;
     }
 
-    uint32 count = 0;
-
     do
     {
         Field* fields = result->Fetch();
-        AddCharacterNameData(ObjectGuid(HighGuid::Player, fields[0].GetUInt32()), fields[1].GetString(),
-            fields[3].GetUInt8() /*gender*/, fields[2].GetUInt8() /*race*/, fields[4].GetUInt8() /*class*/, fields[5].GetUInt8() /*level*/);
-        ++count;
+        AddCharacterInfo(ObjectGuid::Create<HighGuid::Player>(fields[0].GetUInt32()), fields[2].GetUInt32(), fields[1].GetString(),
+            fields[4].GetUInt8() /*gender*/, fields[3].GetUInt8() /*race*/, fields[5].GetUInt8() /*class*/, fields[6].GetUInt8() /*level*/);
     } while (result->NextRow());
 
-    TC_LOG_INFO("server.loading", "Loaded name data for %u characters", count);
+    TC_LOG_INFO("server.loading", "Loaded character infos for " SZFMTD " characters", _characterInfoStore.size());
 }
 
-void World::AddCharacterNameData(ObjectGuid guid, std::string const& name, uint8 gender, uint8 race, uint8 playerClass, uint8 level)
+void World::AddCharacterInfo(ObjectGuid const& guid, uint32 accountId, std::string const& name, uint8 gender, uint8 race, uint8 playerClass, uint8 level)
 {
-    CharacterNameData& data = _characterNameDataMap[guid];
-    data.m_name = name;
-    data.m_race = race;
-    data.m_gender = gender;
-    data.m_class = playerClass;
-    data.m_level = level;
+    CharacterInfo& data = _characterInfoStore[guid];
+    data.Name = name;
+    data.AccountId = accountId;
+    data.Race = race;
+    data.Sex = gender;
+    data.Class = playerClass;
+    data.Level = level;
 }
 
-void World::UpdateCharacterNameData(ObjectGuid guid, std::string const& name, uint8 gender /*= GENDER_NONE*/, uint8 race /*= RACE_NONE*/)
+void World::UpdateCharacterInfo(ObjectGuid const& guid, std::string const& name, uint8 gender /*= GENDER_NONE*/, uint8 race /*= RACE_NONE*/)
 {
-    std::map<ObjectGuid, CharacterNameData>::iterator itr = _characterNameDataMap.find(guid);
-    if (itr == _characterNameDataMap.end())
+    CharacterInfoContainer::iterator itr = _characterInfoStore.find(guid);
+    if (itr == _characterInfoStore.end())
         return;
 
-    itr->second.m_name = name;
+    itr->second.Name = name;
 
     if (gender != GENDER_NONE)
-        itr->second.m_gender = gender;
+        itr->second.Sex = gender;
 
     if (race != RACE_NONE)
-        itr->second.m_race = race;
+        itr->second.Race = race;
 
     WorldPacket data(SMSG_INVALIDATE_PLAYER, 8);
     data << guid;
     SendGlobalMessage(&data);
 }
 
-void World::UpdateCharacterNameDataLevel(ObjectGuid guid, uint8 level)
+void World::UpdateCharacterInfoLevel(ObjectGuid const& guid, uint8 level)
 {
-    std::map<ObjectGuid, CharacterNameData>::iterator itr = _characterNameDataMap.find(guid);
-    if (itr == _characterNameDataMap.end())
+    CharacterInfoContainer::iterator itr = _characterInfoStore.find(guid);
+    if (itr == _characterInfoStore.end())
         return;
 
-    itr->second.m_level = level;
-}
-
-CharacterNameData const* World::GetCharacterNameData(ObjectGuid guid) const
-{
-    std::map<ObjectGuid, CharacterNameData>::const_iterator itr = _characterNameDataMap.find(guid);
-    if (itr != _characterNameDataMap.end())
-        return &itr->second;
-    else
-        return NULL;
+    itr->second.Level = level;
 }
 
 void World::ReloadRBAC()

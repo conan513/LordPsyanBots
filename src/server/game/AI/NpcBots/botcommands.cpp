@@ -53,7 +53,7 @@ public:
 
         static std::vector<ChatCommand> commandTable =
         {
-            { "npcbot",     GM_COMMANDS,                        false, NULL,                      "", npcbotCommandTable },
+            { "npcbot",     GM_COMMANDS,                        false, NULL,                      "", npcbotCommandTable},
         };
         return commandTable;
     }

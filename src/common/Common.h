@@ -21,7 +21,6 @@
 
 #include "Define.h"
 
-#include <unordered_map>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -32,14 +31,19 @@
 #include <assert.h>
 
 #include <set>
+#include <unordered_set>
 #include <list>
 #include <string>
 #include <map>
+#include <unordered_map>
 #include <queue>
 #include <sstream>
 #include <algorithm>
 #include <memory>
 #include <vector>
+#include <array>
+
+#include <boost/functional/hash.hpp>
 
 #include "Debugging/Errors.h"
 
@@ -99,16 +103,11 @@ enum TimeConstants
 
 enum AccountTypes
 {
-    SEC_PLAYER          = 0,
-    SEC_VIP             = 1,
-    SEC_MODERATOR       = 2,
-    SEC_GAMEMASTER      = 3,
-    SEC_EVENTM          = 4,
-    SEC_HEADGM          = 5,
-    SEC_DEVELOPER       = 6,
-    SEC_ADMINISTRATOR   = 7,
-    SEC_OWNER           = 8,
-    SEC_CONSOLE = 9 // must be always last in list, accounts must have less security level always also
+    SEC_PLAYER         = 0,
+    SEC_MODERATOR      = 1,
+    SEC_GAMEMASTER     = 2,
+    SEC_ADMINISTRATOR  = 3,
+    SEC_CONSOLE        = 4                                  // must be always last in list, accounts must have less security level always also
 };
 
 enum LocaleConstant
@@ -121,10 +120,11 @@ enum LocaleConstant
     LOCALE_zhTW = 5,
     LOCALE_esES = 6,
     LOCALE_esMX = 7,
-    LOCALE_ruRU = 8
+    LOCALE_ruRU = 8,
+
+    TOTAL_LOCALES
 };
 
-const uint8 TOTAL_LOCALES = 9;
 #define DEFAULT_LOCALE LOCALE_enUS
 
 #define MAX_LOCALES 8
@@ -159,6 +159,21 @@ namespace Trinity
     {
         return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
     }
+}
+
+//! Hash implementation for std::pair to allow using pairs in unordered_set or as key for unordered_map
+//! Individual types used in pair must be hashable by boost::hash
+namespace std
+{
+    template<class K, class V>
+    struct hash<std::pair<K, V>>
+    {
+    public:
+        size_t operator()(std::pair<K, V> const& key) const
+        {
+            return boost::hash_value(key);
+        }
+    };
 }
 
 #endif
