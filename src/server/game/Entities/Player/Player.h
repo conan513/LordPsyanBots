@@ -29,6 +29,7 @@
 #include "SpellMgr.h"
 #include "SpellHistory.h"
 #include "Unit.h"
+#include "../../scripts/Custom/Transmogrification.h"
 
 #include <limits>
 #include <string>
@@ -133,9 +134,29 @@ struct SpellModifier
     Aura* const ownerAura;
 };
 
+typedef std::unordered_map<ObjectGuid, uint32> TransmogMapType;
+
+#ifdef PRESETS
+typedef std::map<uint8, uint32> PresetslotMapType;
+struct PresetData
+{
+    std::string name;
+    PresetslotMapType slotMap; // slotMap[slotId] = entry
+};
+typedef std::map<uint8, PresetData> PresetMapType;
+#endif
+
 typedef std::unordered_map<uint32, PlayerTalent*> PlayerTalentMap;
 typedef std::unordered_map<uint32, PlayerSpell*> PlayerSpellMap;
 typedef std::list<SpellModifier*> SpellModList;
+
+struct ReforgeData
+{
+    uint32 increase, decrease;
+    int32 stat_value;
+};
+
+typedef std::unordered_map<uint32, ReforgeData> ReforgeMapType;
 
 typedef std::unordered_map<uint32 /*instanceId*/, time_t/*releaseTime*/> InstanceTimeMap;
 
@@ -420,6 +441,27 @@ enum PlayerFlags
     PLAYER_FLAGS_UNK30             = 0x40000000,
     PLAYER_FLAGS_UNK31             = 0x80000000
 };
+
+#define PLAYER_TITLE_MASK_ALLIANCE_PVP             \
+    (PLAYER_TITLE_PRIVATE | PLAYER_TITLE_CORPORAL |  \
+      PLAYER_TITLE_SERGEANT_A | PLAYER_TITLE_MASTER_SERGEANT | \
+      PLAYER_TITLE_SERGEANT_MAJOR | PLAYER_TITLE_KNIGHT | \
+      PLAYER_TITLE_KNIGHT_LIEUTENANT | PLAYER_TITLE_KNIGHT_CAPTAIN | \
+      PLAYER_TITLE_KNIGHT_CHAMPION | PLAYER_TITLE_LIEUTENANT_COMMANDER | \
+      PLAYER_TITLE_COMMANDER | PLAYER_TITLE_MARSHAL | \
+      PLAYER_TITLE_FIELD_MARSHAL | PLAYER_TITLE_GRAND_MARSHAL)
+
+#define PLAYER_TITLE_MASK_HORDE_PVP                           \
+    (PLAYER_TITLE_SCOUT | PLAYER_TITLE_GRUNT |  \
+      PLAYER_TITLE_SERGEANT_H | PLAYER_TITLE_SENIOR_SERGEANT | \
+      PLAYER_TITLE_FIRST_SERGEANT | PLAYER_TITLE_STONE_GUARD | \
+      PLAYER_TITLE_BLOOD_GUARD | PLAYER_TITLE_LEGIONNAIRE | \
+      PLAYER_TITLE_CENTURION | PLAYER_TITLE_CHAMPION | \
+      PLAYER_TITLE_LIEUTENANT_GENERAL | PLAYER_TITLE_GENERAL | \
+      PLAYER_TITLE_WARLORD | PLAYER_TITLE_HIGH_WARLORD)
+
+#define PLAYER_TITLE_MASK_ALL_PVP  \
+    (PLAYER_TITLE_MASK_ALLIANCE_PVP | PLAYER_TITLE_MASK_HORDE_PVP)
 
 // used for PLAYER__FIELD_KNOWN_TITLES field (uint64), (1<<bit_index) without (-1)
 // can't use enum for uint64 values
@@ -1097,6 +1139,21 @@ private:
     bool _isPvP;
 };
 
+/* World of Warcraft Armory */
+struct WowarmoryFeedEntry {
+    uint32 guid;         // Player GUID
+    time_t date;         // Log date
+    uint32 type;         // TYPE_ACHIEVEMENT_FEED, TYPE_ITEM_FEED, TYPE_BOSS_FEED
+    uint32 data;         // TYPE_ITEM_FEED: item_entry, TYPE_BOSS_FEED: creature_entry
+    uint32 item_guid;    // Can be 0
+    uint32 item_quality; // Can be 0
+    uint8  difficulty;   // Can be 0
+    int    counter;      // Can be 0
+};
+
+typedef std::vector<WowarmoryFeedEntry> WowarmoryFeeds;
+/* World of Warcraft Armory */
+
 class Player : public Unit, public GridObject<Player>
 {
     friend class WorldSession;
@@ -1105,6 +1162,35 @@ class Player : public Unit, public GridObject<Player>
     public:
         explicit Player(WorldSession* session);
         ~Player();
+        private:
+        bool m_ForgetBGPlayers;
+        bool m_ForgetInListPlayers;
+        uint8 m_FakeRace;
+        uint8 m_RealRace;
+        uint32 m_FakeMorph;
+    public:
+        typedef std::vector<uint64> FakePlayers;
+        void SendChatMessage(const char *format, ...);
+        void FitPlayerInTeam(bool action, Battleground* pBattleGround = NULL);
+        void DoForgetPlayersInList();
+        void DoForgetPlayersInBG(Battleground* pBattleGround);
+        uint8 getORace() const { return m_RealRace; }
+        void SetORace() { m_RealRace = GetByteValue(UNIT_FIELD_BYTES_0, 0); }; // SHOULD ONLY BE CALLED ON LOGIN
+        void SetFakeRace(); // SHOULD ONLY BE CALLED ON LOGIN
+        void SetFakeRaceAndMorph(); // SHOULD ONLY BE CALLED ON LOGIN
+        uint32 GetFakeMorph() { return m_FakeMorph; };
+        uint8 getFRace() const { return m_FakeRace; }
+        void SetForgetBGPlayers(bool value) { m_ForgetBGPlayers = value; }
+        bool ShouldForgetBGPlayers() { return m_ForgetBGPlayers; }
+        void SetForgetInListPlayers(bool value) { m_ForgetInListPlayers = value; }
+        bool ShouldForgetInListPlayers() { return m_ForgetInListPlayers; }
+        bool SendBattleGroundChat(uint32 msgtype, std::string message);
+        void MorphFit(bool value);
+        bool IsPlayingNative() const { return GetTeam() == m_team; }
+        uint32 GetOTeam() const { return m_team; }
+        uint32 GetTeam() const { return m_bgData.bgTeam && GetBattleground() ? m_bgData.bgTeam : m_team; }
+        bool SendRealNameQuery();
+        FakePlayers m_FakePlayers;
 
         void CleanupsBeforeDelete(bool finalCleanup = true) override;
 
@@ -1160,7 +1246,7 @@ class Player : public Unit, public GridObject<Player>
         PlayerSocial *GetSocial() { return m_social; }
 
         PlayerTaxi m_taxi;
-        void InitTaxiNodesForLevel() { m_taxi.InitTaxiNodesForLevel(getRace(), getClass(), getLevel()); }
+        void InitTaxiNodesForLevel() { m_taxi.InitTaxiNodesForLevel(getORace(), getClass(), getLevel()); }
         bool ActivateTaxiPathTo(std::vector<uint32> const& nodes, Creature* npc = NULL, uint32 spellid = 0);
         bool ActivateTaxiPathTo(uint32 taxi_path_id, uint32 spellid = 0);
         void CleanupAfterTaxiFlight();
@@ -1189,6 +1275,12 @@ class Player : public Unit, public GridObject<Player>
         bool GetCommandStatus(uint32 command) const { return (_activeCheats & command) != 0; }
         void SetCommandStatusOn(uint32 command) { _activeCheats |= command; }
         void SetCommandStatusOff(uint32 command) { _activeCheats &= ~command; }
+
+        // PlayedTimeReward
+        uint32 ptr_Interval;
+        uint32 ptr_Money;
+        uint32 ptr_Honor;
+        uint32 ptr_Arena;
 
         // Played Time Stuff
         time_t m_logintime;
@@ -1222,6 +1314,8 @@ class Player : public Unit, public GridObject<Player>
         void TextEmote(std::string const& text, WorldObject const* = nullptr, bool = false) override;
         /// Handles whispers from Addons and players based on sender, receiver's guid and language.
         void Whisper(std::string const& text, Language language, Player* receiver, bool = false) override;
+        /// Constructs the player Chat data for the specific functions to use
+        void BuildPlayerChat(WorldPacket* data, uint8 msgtype, std::string const& text, uint32 language) const;
 
         /*********************************************************/
         /***                    STORAGE SYSTEM                 ***/
@@ -1914,8 +2008,7 @@ class Player : public Unit, public GridObject<Player>
         void CheckAreaExploreAndOutdoor(void);
 
         static uint32 TeamForRace(uint8 race);
-        uint32 GetTeam() const { return m_team; }
-        TeamId GetTeamId() const { return m_team == ALLIANCE ? TEAM_ALLIANCE : TEAM_HORDE; }
+        TeamId GetTeamId() const { return GetTeam() == ALLIANCE ? TEAM_ALLIANCE : TEAM_HORDE; }
         void setFactionForRace(uint8 race);
 
         void InitDisplayIds();
@@ -1952,6 +2045,7 @@ class Player : public Unit, public GridObject<Player>
         void ModifyHonorPoints(int32 value, SQLTransaction trans = SQLTransaction(nullptr));      //! If trans is specified, honor save query will be added to trans
         void ModifyArenaPoints(int32 value, SQLTransaction trans = SQLTransaction(nullptr));      //! If trans is specified, arena point save query will be added to trans
         uint32 GetMaxPersonalArenaRatingRequirement(uint32 minarenaslot) const;
+        void UpdateKnownTitles();
         void SetHonorPoints(uint32 value);
         void SetArenaPoints(uint32 value);
 
@@ -2058,7 +2152,6 @@ class Player : public Unit, public GridObject<Player>
         void SetBattlegroundEntryPoint();
 
         void SetBGTeam(uint32 team);
-        uint32 GetBGTeam() const;
 
         void LeaveBattleground(bool teleportToEntryPoint = true);
         bool CanJoinToBattleground(Battleground const* bg) const;
@@ -2181,6 +2274,10 @@ class Player : public Unit, public GridObject<Player>
         void SendCinematicStart(uint32 CinematicSequenceId);
         void SendMovieStart(uint32 MovieId);
 
+        /* World of Warcraft Armory */
+        void CreateWowarmoryFeed(uint32 type, uint32 data, uint32 item_guid, uint32 item_quality);
+        void InitWowarmoryFeeds();
+        /* World of Warcraft Armory */
         /*********************************************************/
         /***                 INSTANCE SYSTEM                   ***/
         /*********************************************************/
@@ -2287,6 +2384,7 @@ class Player : public Unit, public GridObject<Player>
         void SetTitle(CharTitlesEntry const* title, bool lost = false);
 
         //bool isActiveObject() const { return true; }
+        ReforgeMapType reforgeMap; // reforgeMap[iGUID] = ReforgeData
         bool CanSeeSpellClickOn(Creature const* creature) const;
 
         uint32 GetChampioningFaction() const { return m_ChampioningFaction; }
@@ -2333,7 +2431,11 @@ class Player : public Unit, public GridObject<Player>
     // 04
     // 05
     // 06
-    // 07
+        TransmogMapType transmogMap; // transmogMap[iGUID] = entry
+#ifdef PRESETS
+        PresetMapType presetMap; // presetMap[presetId] = presetData
+#endif
+
     // 08
     // 09
     // 10
@@ -2687,6 +2789,8 @@ class Player : public Unit, public GridObject<Player>
         uint32 m_timeSyncTimer;
         uint32 m_timeSyncClient;
         uint32 m_timeSyncServer;
+        // World of Warcraft Armory Feeds
+        WowarmoryFeeds m_wowarmory_feeds;
 
         InstanceTimeMap _instanceResetTimes;
         uint32 _pendingBindId;
@@ -2710,7 +2814,8 @@ class Player : public Unit, public GridObject<Player>
         // 32
         // 33
         // 34
-        // 35
+    public :
+        QuestStatusSaveMap m_RewardedQuestsSave2;
         // 36
         // 37
         // 38
