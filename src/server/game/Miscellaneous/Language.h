@@ -1251,5 +1251,6 @@ enum TrinityStrings
     // Visit http://www.realmsofwarcraft.com/bb for forums and information
     //
     // End of prepatch
+
 };
 #endif

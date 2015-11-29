@@ -18907,24 +18907,24 @@ bool Player::Satisfy(AccessRequirement const* ar, uint32 target_map, bool report
 
 bool Player::CheckInstanceLoginValid(Map* map)
 {
-    if (!map->IsDungeon() || IsInstanceLoginGameMasterException())
+    if (!map->IsDungeon() || IsGameMaster())
         return true;
 
     if (map->IsRaid())
     {
         // cannot be in raid instance without a group
         if (!GetGroup())
-            return false;
+            return IsInstanceLoginGameMasterException();
     }
     else
     {
         // cannot be in normal instance without a group and more players than 1 in instance
         if (!GetGroup() && map->GetPlayersCountExceptGMs() > 1)
-            return false;
+            return IsInstanceLoginGameMasterException();
     }
 
     // do checks for satisfy accessreqs, instance full, encounter in progress (raid), perm bind group != perm bind player
-    return sMapMgr->CanPlayerEnter(map->GetId(), this, true);
+    return sMapMgr->CanPlayerEnter(map->GetId(), this, true) || IsInstanceLoginGameMasterException();
 }
 
 bool Player::IsInstanceLoginGameMasterException() const

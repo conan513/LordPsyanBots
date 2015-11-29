@@ -23,6 +23,24 @@
 PrepatchGI.Added = 0
 
 #
+
+###################################################################################################
+#
+# Random Playerbot Configuration
+#
+#
+# If you want random bots to automatically enter world, you must set
+# this to 1.
+#
+# RandomBotAutoLogin.On
+#         default = 0 (Bot will not enter world)
+#                   1 (Random bots spawned)
+
+RandomBotAutoLogin.On = 1
+
+#
+
+#
 ###################################################################################################
 
 ###################################################################################################
@@ -2618,13 +2636,6 @@ CharDelete.KeepDays = 30
 
 AllowTrackBothResources = 0
 
-#    ResetDuelHealthMana
-#        Description: Reset health and mana before duel starts and restore them when duel ends.
-#        Default:     0  - (Disabled)
-#                     1  - (Enabled)
-
-ResetDuelHealthMana = 0
-
 #
 #    PlayerStart.AllReputation
 #        Description: Players will start with most of the high level reputations that are needed
@@ -2668,6 +2679,13 @@ HonorPointsAfterDuel = 0
 #                     1  - (Enabled)
 
 ResetCoolDownAfterDuel = 0
+
+#    ResetDuelHealthMana
+#        Description: Reset health and mana before duel starts and restore them when duel ends.
+#        Default:     0  - (Disabled)
+#                     1  - (Enabled)
+
+ResetDuelHealthMana = 0
 
 #
 #    AlwaysMaxWeaponSkill
