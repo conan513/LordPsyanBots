@@ -38,6 +38,7 @@ public:
 
     struct CooldownEntry
     {
+        uint32 SpellId = 0;
         Clock::time_point CooldownEnd;
         uint32 ItemId = 0;
         uint32 CategoryId = 0;
@@ -122,7 +123,7 @@ public:
     CooldownStorageType::size_type GetCooldownsSizeForPacket() const { return _spellCooldowns.size(); }
     void SaveCooldownStateBeforeDuel();
     void RestoreCooldownStateAfterDuel();
-    
+
 private:
     Player* GetPlayerOwner() const;
     void SendClearCooldowns(std::vector<int32> const& cooldowns) const;
@@ -134,6 +135,8 @@ private:
 
     typedef std::unordered_map<uint32, uint32> PacketCooldowns;
     void BuildCooldownPacket(WorldPacket& data, uint8 flags, PacketCooldowns const& cooldowns) const;
+
+    static void GetCooldownDurations(SpellInfo const* spellInfo, uint32 itemId, int32* cooldown, uint32* categoryId, int32* categoryCooldown);
 
     Unit* _owner;
     CooldownStorageType _spellCooldowns;
