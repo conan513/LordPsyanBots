@@ -29,7 +29,11 @@
 #include "SpellMgr.h"
 #include "SpellHistory.h"
 #include "Unit.h"
+<<<<<<< HEAD
 #include "../../scripts/Custom/Transmogrification.h"
+=======
+#include "TradeData.h"
+>>>>>>> master
 
 #include <limits>
 #include <string>
@@ -737,14 +741,6 @@ struct ItemPosCount
 };
 typedef std::vector<ItemPosCount> ItemPosCountVec;
 
-enum TradeSlots
-{
-    TRADE_SLOT_COUNT            = 7,
-    TRADE_SLOT_TRADED_COUNT     = 6,
-    TRADE_SLOT_NONTRADED        = 6,
-    TRADE_SLOT_INVALID          = -1
-};
-
 enum TransferAbortReason
 {
     TRANSFER_ABORT_NONE                     = 0x00,
@@ -1057,6 +1053,7 @@ struct TradeStatusInfo
     uint8 Slot;
 };
 
+<<<<<<< HEAD
 class TradeData
 {
     public:                                                 // constructors
@@ -1154,6 +1151,8 @@ struct WowarmoryFeedEntry {
 typedef std::vector<WowarmoryFeedEntry> WowarmoryFeeds;
 /* World of Warcraft Armory */
 
+=======
+>>>>>>> master
 class Player : public Unit, public GridObject<Player>
 {
     friend class WorldSession;
@@ -1255,6 +1254,7 @@ class Player : public Unit, public GridObject<Player>
         bool isAcceptWhispers() const { return (m_ExtraFlags & PLAYER_EXTRA_ACCEPT_WHISPERS) != 0; }
         void SetAcceptWhispers(bool on) { if (on) m_ExtraFlags |= PLAYER_EXTRA_ACCEPT_WHISPERS; else m_ExtraFlags &= ~PLAYER_EXTRA_ACCEPT_WHISPERS; }
         bool IsGameMaster() const { return (m_ExtraFlags & PLAYER_EXTRA_GM_ON) != 0; }
+        bool CanBeGameMaster() const;
         void SetGameMaster(bool on);
         bool isGMChat() const { return (m_ExtraFlags & PLAYER_EXTRA_GM_CHAT) != 0; }
         void SetGMChat(bool on) { if (on) m_ExtraFlags |= PLAYER_EXTRA_GM_CHAT; else m_ExtraFlags &= ~PLAYER_EXTRA_GM_CHAT; }
@@ -1427,7 +1427,7 @@ class Player : public Unit, public GridObject<Player>
 
         float GetReputationPriceDiscount(Creature const* creature) const;
 
-        Player* GetTrader() const { return m_trade ? m_trade->GetTrader() : NULL; }
+        Player* GetTrader() const { return m_trade ? m_trade->GetTrader() : nullptr; }
         TradeData* GetTradeData() const { return m_trade; }
         void TradeCancel(bool sendback);
 
@@ -2048,6 +2048,12 @@ class Player : public Unit, public GridObject<Player>
         void UpdateKnownTitles();
         void SetHonorPoints(uint32 value);
         void SetArenaPoints(uint32 value);
+
+        // duel health and mana reset methods
+        void SaveHealthBeforeDuel() { healthBeforeDuel = GetHealth(); }
+        void SaveManaBeforeDuel() { manaBeforeDuel = GetPower(POWER_MANA); }
+        void RestoreHealthAfterDuel() { SetHealth(healthBeforeDuel); }
+        void RestoreManaAfterDuel() { SetPower(POWER_MANA, manaBeforeDuel); }
 
         //End of PvP System
 
@@ -2749,6 +2755,8 @@ class Player : public Unit, public GridObject<Player>
         bool IsHasDelayedTeleport() const { return m_bHasDelayedTeleport; }
         void SetDelayedTeleportFlag(bool setting) { m_bHasDelayedTeleport = setting; }
         void ScheduleDelayedOperation(uint32 operation) { if (operation < DELAYED_END) m_DelayedOperations |= operation; }
+        
+        bool IsInstanceLoginGameMasterException() const;
 
         MapReference m_mapRef;
 
@@ -2797,6 +2805,10 @@ class Player : public Unit, public GridObject<Player>
         uint32 _pendingBindTimer;
 
         uint32 _activeCheats;
+
+        // variables to save health and mana before duel and restore them after duel
+        uint32 healthBeforeDuel;
+        uint32 manaBeforeDuel;
 
         WorldLocation _corpseLocation;
         // Prepatch by LordPsyan

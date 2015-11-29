@@ -503,7 +503,7 @@ void ObjectMgr::LoadCreatureTemplate(Field* fields)
     creatureTemplate.RegenHealth        = fields[71].GetBool();
     creatureTemplate.MechanicImmuneMask = fields[72].GetUInt32();
     creatureTemplate.flags_extra        = fields[73].GetUInt32();
-    creatureTemplate.ScriptID           = GetScriptId(fields[74].GetCString());
+    creatureTemplate.ScriptID           = GetScriptId(fields[74].GetString());
 }
 
 void ObjectMgr::LoadCreatureTemplateAddons()
@@ -554,6 +554,12 @@ void ObjectMgr::LoadCreatureTemplateAddons()
 
             if (AdditionalSpellInfo->HasAura(SPELL_AURA_CONTROL_VEHICLE))
                 TC_LOG_ERROR("sql.sql", "Creature (Entry: %u) has SPELL_AURA_CONTROL_VEHICLE aura %lu defined in `auras` field in `creature_template_addon`.", entry, atoul(*itr));
+
+            if (std::find(creatureAddon.auras.begin(), creatureAddon.auras.end(), atoul(*itr)) != creatureAddon.auras.end())
+            {
+                TC_LOG_ERROR("sql.sql", "Creature (Entry: %u) has duplicate aura (spell %lu) in `auras` field in `creature_template_addon`.", entry, atoul(*itr));
+                continue;
+            }
 
             creatureAddon.auras[i++] = atoul(*itr);
         }
@@ -1002,6 +1008,12 @@ void ObjectMgr::LoadCreatureAddons()
 
             if (AdditionalSpellInfo->HasAura(SPELL_AURA_CONTROL_VEHICLE))
                 TC_LOG_ERROR("sql.sql", "Creature (GUID: %u) has SPELL_AURA_CONTROL_VEHICLE aura %lu defined in `auras` field in `creature_addon`.", guid, atoul(*itr));
+
+            if (std::find(creatureAddon.auras.begin(), creatureAddon.auras.end(), atoul(*itr)) != creatureAddon.auras.end())
+            {
+                TC_LOG_ERROR("sql.sql", "Creature (GUID: %u) has duplicate aura (spell %lu) in `auras` field in `creature_addon`.", guid, atoul(*itr));
+                continue;
+            }
 
             creatureAddon.auras[i++] = atoul(*itr);
         }
@@ -2335,6 +2347,12 @@ void ObjectMgr::LoadItemTemplates()
         itemTemplate.ContainerSlots            = uint32(fields[26].GetUInt8());
         itemTemplate.StatsCount                = uint32(fields[27].GetUInt8());
 
+        if (itemTemplate.StatsCount > MAX_ITEM_PROTO_STATS)
+        {
+            TC_LOG_ERROR("sql.sql", "Item (Entry: %u) has too large value in statscount (%u), replace by hardcoded limit (%u).", entry, itemTemplate.StatsCount, MAX_ITEM_PROTO_STATS);
+            itemTemplate.StatsCount = MAX_ITEM_PROTO_STATS;
+        }
+
         for (uint8 i = 0; i < itemTemplate.StatsCount; ++i)
         {
             itemTemplate.ItemStat[i].ItemStatType  = uint32(fields[28 + i*2].GetUInt8());
@@ -2405,7 +2423,7 @@ void ObjectMgr::LoadItemTemplates()
         itemTemplate.Duration                = fields[129].GetUInt32();
         itemTemplate.ItemLimitCategory       = uint32(fields[130].GetInt16());
         itemTemplate.HolidayId               = fields[131].GetUInt32();
-        itemTemplate.ScriptId                = sObjectMgr->GetScriptId(fields[132].GetCString());
+        itemTemplate.ScriptId                = sObjectMgr->GetScriptId(fields[132].GetString());
         itemTemplate.DisenchantID            = fields[133].GetUInt32();
         itemTemplate.FoodType                = uint32(fields[134].GetUInt8());
         itemTemplate.MinMoneyLoot            = fields[135].GetUInt32();
@@ -2580,12 +2598,6 @@ void ObjectMgr::LoadItemTemplates()
         {
             TC_LOG_ERROR("sql.sql", "Item (Entry: %u) has too large value in ContainerSlots (%u), replace by hardcoded limit (%u).", entry, itemTemplate.ContainerSlots, MAX_BAG_SIZE);
             itemTemplate.ContainerSlots = MAX_BAG_SIZE;
-        }
-
-        if (itemTemplate.StatsCount > MAX_ITEM_PROTO_STATS)
-        {
-            TC_LOG_ERROR("sql.sql", "Item (Entry: %u) has too large value in statscount (%u), replace by hardcoded limit (%u).", entry, itemTemplate.StatsCount, MAX_ITEM_PROTO_STATS);
-            itemTemplate.StatsCount = MAX_ITEM_PROTO_STATS;
         }
 
         for (uint8 j = 0; j < itemTemplate.StatsCount; ++j)
@@ -5103,8 +5115,8 @@ void ObjectMgr::LoadSpellScriptNames()
 
         Field* fields = result->Fetch();
 
-        int32 spellId          = fields[0].GetInt32();
-        char const* scriptName = fields[1].GetCString();
+        int32 spellId                = fields[0].GetInt32();
+        std::string const scriptName = fields[1].GetString();
 
         bool allRanks = false;
         if (spellId < 0)
@@ -5116,18 +5128,18 @@ void ObjectMgr::LoadSpellScriptNames()
         SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(spellId);
         if (!spellInfo)
         {
-            TC_LOG_ERROR("sql.sql", "Scriptname: `%s` spell (Id: %d) does not exist.", scriptName, spellId);
+            TC_LOG_ERROR("sql.sql", "Scriptname: `%s` spell (Id: %d) does not exist.", scriptName.c_str(), spellId);
             continue;
         }
 
         if (allRanks)
         {
             if (!spellInfo->IsRanked())
-                TC_LOG_ERROR("sql.sql", "Scriptname: `%s` spell (Id: %d) has no ranks of spell.", scriptName, fields[0].GetInt32());
+                TC_LOG_ERROR("sql.sql", "Scriptname: `%s` spell (Id: %d) has no ranks of spell.", scriptName.c_str(), fields[0].GetInt32());
 
             if (spellInfo->GetFirstRankSpell()->Id != uint32(spellId))
             {
-                TC_LOG_ERROR("sql.sql", "Scriptname: `%s` spell (Id: %d) is not first rank of spell.", scriptName, fields[0].GetInt32());
+                TC_LOG_ERROR("sql.sql", "Scriptname: `%s` spell (Id: %d) is not first rank of spell.", scriptName.c_str(), fields[0].GetInt32());
                 continue;
             }
 
@@ -5140,7 +5152,7 @@ void ObjectMgr::LoadSpellScriptNames()
         else
         {
             if (spellInfo->IsRanked())
-                TC_LOG_ERROR("sql.sql", "Scriptname: `%s` spell (Id: %d) is ranked spell. Perhaps not all ranks are assigned to this script.", scriptName, spellId);
+                TC_LOG_ERROR("sql.sql", "Scriptname: `%s` spell (Id: %d) is ranked spell. Perhaps not all ranks are assigned to this script.", scriptName.c_str(), spellId);
 
             _spellScriptsStore.insert(SpellScriptsContainer::value_type(spellInfo->Id, GetScriptId(scriptName)));
         }
@@ -5178,7 +5190,7 @@ void ObjectMgr::ValidateSpellScripts()
             bool valid = true;
             if (!spellScript && !auraScript)
             {
-                TC_LOG_ERROR("scripts", "Functions GetSpellScript() and GetAuraScript() of script `%s` do not return objects - script skipped",  GetScriptName(sitr->second->second));
+                TC_LOG_ERROR("scripts", "Functions GetSpellScript() and GetAuraScript() of script `%s` do not return objects - script skipped",  GetScriptName(sitr->second->second).c_str());
                 valid = false;
             }
             if (spellScript)
@@ -5314,7 +5326,7 @@ void ObjectMgr::LoadInstanceTemplate()
 
         instanceTemplate.AllowMount = fields[3].GetBool();
         instanceTemplate.Parent     = uint32(fields[1].GetUInt16());
-        instanceTemplate.ScriptId   = sObjectMgr->GetScriptId(fields[2].GetCString());
+        instanceTemplate.ScriptId   = sObjectMgr->GetScriptId(fields[2].GetString());
 
         _instanceTemplateStore[mapID] = instanceTemplate;
 
@@ -5779,8 +5791,8 @@ void ObjectMgr::LoadAreaTriggerScripts()
     {
         Field* fields = result->Fetch();
 
-        uint32 triggerId       = fields[0].GetUInt32();
-        char const* scriptName = fields[1].GetCString();
+        uint32 triggerId             = fields[0].GetUInt32();
+        std::string const scriptName = fields[1].GetString();
 
         AreaTriggerEntry const* atEntry = sAreaTriggerStore.LookupEntry(triggerId);
         if (!atEntry)
@@ -6001,7 +6013,8 @@ WorldSafeLocsEntry const* ObjectMgr::GetClosestGraveYard(float x, float y, float
     // not need to check validity of map object; MapId _MUST_ be valid here
     if (range.first == range.second && !map->IsBattlegroundOrArena())
     {
-        TC_LOG_ERROR("sql.sql", "Table `game_graveyard_zone` incomplete: Zone %u Team %u does not have a linked graveyard.", zoneId, team);
+        if (zoneId != 0) // zone == 0 can't be fixed, used by bliz for bugged zones
+            TC_LOG_ERROR("sql.sql", "Table `game_graveyard_zone` incomplete: Zone %u Team %u does not have a linked graveyard.", zoneId, team);
         return GetDefaultGraveYard(team);
     }
 
@@ -6637,7 +6650,7 @@ void ObjectMgr::LoadGameObjectTemplate()
             got.raw.data[i] = fields[10 + i].GetInt32(); // data1 and data6 can be -1
 
         got.AIName = fields[34].GetString();
-        got.ScriptId = GetScriptId(fields[35].GetCString());
+        got.ScriptId = GetScriptId(fields[35].GetString());
 
         // Checks
 
@@ -8661,11 +8674,18 @@ void ObjectMgr::LoadScriptNames()
     TC_LOG_INFO("server.loading", ">> Loaded " SZFMTD " ScriptNames in %u ms", _scriptNamesStore.size(), GetMSTimeDiffToNow(oldMSTime));
 }
 
-uint32 ObjectMgr::GetScriptId(char const* name)
+std::string const& ObjectMgr::GetScriptName(uint32 id) const
+{
+    static std::string const empty = "";
+    return id < _scriptNamesStore.size() ? _scriptNamesStore[id] : empty;
+}
+
+
+uint32 ObjectMgr::GetScriptId(std::string const& name)
 {
     // use binary search to find the script name in the sorted vector
     // assume "" is the first element
-    if (!name)
+    if (name.empty())
         return 0;
 
     ScriptNameContainer::const_iterator itr = std::lower_bound(_scriptNamesStore.begin(), _scriptNamesStore.end(), name);

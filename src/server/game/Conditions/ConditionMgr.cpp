@@ -324,7 +324,7 @@ bool Condition::Meets(ConditionSourceInfo& sourceInfo) const
                 Unit* unit = object->ToUnit();
                 if (toUnit && unit)
                 {
-                    switch (ConditionValue2)
+                    switch (static_cast<RelationType>(ConditionValue2))
                     {
                         case RELATION_SELF:
                             condMeets = unit == toUnit;
@@ -343,6 +343,8 @@ bool Condition::Meets(ConditionSourceInfo& sourceInfo) const
                             break;
                         case RELATION_CREATED_BY:
                             condMeets = unit->GetCreatorGUID() == toUnit->GetGUID();
+                            break;
+                        default:
                             break;
                     }
                 }
@@ -967,7 +969,7 @@ void ConditionMgr::LoadConditions(bool isReload)
         cond->NegativeCondition         = fields[10].GetBool();
         cond->ErrorType                 = fields[11].GetUInt32();
         cond->ErrorTextId               = fields[12].GetUInt32();
-        cond->ScriptId                  = sObjectMgr->GetScriptId(fields[13].GetCString());
+        cond->ScriptId                  = sObjectMgr->GetScriptId(fields[13].GetString());
 
         if (iConditionTypeOrReference >= 0)
             cond->ConditionType = ConditionTypes(iConditionTypeOrReference);
