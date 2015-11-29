@@ -29,11 +29,9 @@
 #include "SpellMgr.h"
 #include "SpellHistory.h"
 #include "Unit.h"
-<<<<<<< HEAD
 #include "../../scripts/Custom/Transmogrification.h"
-=======
+
 #include "TradeData.h"
->>>>>>> master
 
 #include <limits>
 #include <string>
@@ -1053,7 +1051,6 @@ struct TradeStatusInfo
     uint8 Slot;
 };
 
-<<<<<<< HEAD
 class TradeData
 {
     public:                                                 // constructors
@@ -1151,8 +1148,6 @@ struct WowarmoryFeedEntry {
 typedef std::vector<WowarmoryFeedEntry> WowarmoryFeeds;
 /* World of Warcraft Armory */
 
-=======
->>>>>>> master
 class Player : public Unit, public GridObject<Player>
 {
     friend class WorldSession;
