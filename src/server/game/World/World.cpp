@@ -85,7 +85,9 @@
 // playerbot mod
 #include "../../plugins/ahbot/AhBot.h"
 #include "../../plugins/playerbot/PlayerbotAIConfig.h"
+#include "../../plugins/playerbot/playerbot.h"
 #include "../../plugins/playerbot/RandomPlayerbotMgr.h"
+#include "../../plugins/playerbot/RandomPlayerbotFactory.h"
 // 19
 // 20
 // Visit http://www.realmsofwarcraft.com/bb for forums and information
@@ -1317,9 +1319,8 @@ void World::LoadConfigSettings(bool reload)
         m_timers[WUPDATE_AUTOBROADCAST].Reset();
     }
 
-    /** World of Warcraft Armory **/
-    m_bool_configs[CONFIG_ARMORY_ENABLE] = sConfigMgr->GetBoolDefault("Armory.Enable", true);
-    /** World of Warcraft Armory **/
+    // RandomBot AutoLogin
+    m_bool_configs[CONFIG_RANDOMBOTAUTOLOGIN] = sConfigMgr->GetBoolDefault("RandomBotAutoLogin.On", true);
 
     // MySQL ping time interval
     m_int_configs[CONFIG_DB_PING_INTERVAL] = sConfigMgr->GetIntDefault("MaxPingTime", 30);
@@ -2175,6 +2176,13 @@ void World::SetInitialWorldSettings()
     auctionbot.Init();
 
     sPlayerbotAIConfig.Initialize();
+    uint8 randomBotAutologin = sWorld->getBoolConfig(CONFIG_RANDOMBOTAUTOLOGIN);
+    if (randomBotAutologin == 0)
+    {
+        return;
+    } else {
+        sRandomPlayerbotMgr.UpdateAIInternal(0);
+    }
 }
 
 void World::DetectDBCLang()

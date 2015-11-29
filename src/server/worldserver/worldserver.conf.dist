@@ -23,6 +23,24 @@
 PrepatchGI.Added = 0
 
 #
+
+###################################################################################################
+#
+# Random Playerbot Configuration
+#
+#
+# If you want random bots to automatically enter world, you must set
+# this to 1.
+#
+# RandomBotAutoLogin.On
+#         default = 0 (Bot will not enter world)
+#                   1 (Random bots spawned)
+
+RandomBotAutoLogin.On = 1
+
+#
+
+#
 ###################################################################################################
 
 ###################################################################################################
@@ -2622,13 +2640,6 @@ CharDelete.KeepDays = 30
 
 AllowTrackBothResources = 0
 
-#    ResetDuelHealthMana
-#        Description: Reset health and mana before duel starts and restore them when duel ends.
-#        Default:     0  - (Disabled)
-#                     1  - (Enabled)
-
-ResetDuelHealthMana = 0
-
 #
 #    PlayerStart.AllReputation
 #        Description: Players will start with most of the high level reputations that are needed
@@ -2672,6 +2683,13 @@ HonorPointsAfterDuel = 0
 #                     1  - (Enabled)
 
 ResetCoolDownAfterDuel = 0
+
+#    ResetDuelHealthMana
+#        Description: Reset health and mana before duel starts and restore them when duel ends.
+#        Default:     0  - (Disabled)
+#                     1  - (Enabled)
+
+ResetDuelHealthMana = 0
 
 #
 #    AlwaysMaxWeaponSkill
@@ -2906,13 +2924,6 @@ AuctionHouseBot.Alliance.Items.Amount.Ratio = 100
 #       Default: 100 (Enabled with 100% of items specified in AuctionHouse.Items.Amount.color section)
 
 AuctionHouseBot.Horde.Items.Amount.Ratio = 100
-
-#    Armory.Enable
-#        Description: Activates the WowArmory.
-#        Default:     0 - (Disable)
-#                     1 - (Enable)
-
-Armory.Enable = 1
 
 #
 #    AuctionHouseBot.Neutral.Items.Amount.Ratio
@@ -3192,19 +3203,6 @@ AuctionHouseBot.forceIncludeItems = ""
 
 AuctionHouseBot.forceExcludeItems = ""
 
-#
-###################################################################################################
-
-#    Fake.WHO.List
-#        Add fake players to fill in WHO LIST (who is online list, "O" button) if there is less then
-#        49 real players online
-#        Default: 0 (disabled)
-#                 1 (enabled)
-
-Fake.WHO.List = 0
-Fake.WHO.Online.Interval = 5
-Fake.WHO.LevelUp.Interval = 2
-
 ###################################################################################################
 # AUCTION HOUSE BOT BUYER CONFIG
 #
@@ -3482,276 +3480,6 @@ PacketSpoof.BanDuration = 86400
 ###################################################################################################
 
 ###################################################################################################
-# NPCBOT CONFIGURATION
-#
-#    NpcBot.Enable
-#        Description: Enable NpcBot system
-#        Default:   1 - enable
-#                   0 - disable
-
-NpcBot.Enable = 1
-
-#
-#    NpcBot.AllowGM
-#        Description: Allow GM's to have NpcBots
-#        Default:   1 - Allow
-#                   0 - disable
-
-NpcBot.AllowGM = 1
-
-#    NpcBot.MaxBots
-#        Description: Maximum number of bots allowed for players.
-#        Default:   1
-#        Recommend: 1-2
-#        Max:       4
-
-NpcBot.MaxBots = 1
-
-#    NpcBot.MaxBotsPerClass
-#        Description: Maximum bots of each class allowed for players.
-#        Default:   1
-#                   0 - no limit
-
-NpcBot.MaxBotsPerClass = 1
-
-#    NpcBot.BaseFollowDistance
-#        Description: Default bot follow distance.
-#        Note: This parameter determines bots' formation size, distance at which bots will chase and attack enemies.
-#        Note2: This parameter is set for each player at login.
-#        Default:   30
-
-NpcBot.BaseFollowDistance = 20
-
-#    NpcBot.XpReduction
-#        Description: XP percent penalty for each bot used starting with second.
-#        Example: 3 bots, xp reduction is 20: ((3-1)*20) = 40%, 60% exp gained only.
-#        Note: Maximum overall xp reduction is 90%.
-#        Default:   0
-
-NpcBot.XpReduction = 0
-
-#    NpcBot.HealTargetIconsMask
-#        Description: Icon number bitmask which bots use to search for additional targets to heal (out of party).
-#        Note: Many creatures cannot accept heal.
-#        Example: to check Star, Triangle and Square we need 1 + 8 + 32 = 41.
-#        Default:   0 (Disable)
-#                   1 - Star
-#                   2 - Circle
-#                   4 - Diamond
-#                   8 - Triangle
-#                   16 - Moon
-#                   32 - Square
-#                   64 - Cross
-#                   128 - Skull
-
-NpcBot.HealTargetIconsMask = 0
-
-#    NpcBot.Mult.Damage.Melee
-#    NpcBot.Mult.Damage.Spell
-#    NpcBot.Mult.Healing
-#        Description: Multipliers for bots' damage and healing. Allows to balance bots vs players.
-#        Minimum:   0.1
-#        Maximum:  10.0
-#        Default:   1.0
-
-NpcBot.Mult.Damage.Melee = 1.0
-NpcBot.Mult.Damage.Spell = 1.0
-NpcBot.Mult.Healing      = 1.0
-
-#    NpcBot.Enable.Dungeon
-#    NpcBot.Enable.Raid
-#    NpcBot.Enable.BG
-#    NpcBot.Enable.Arena
-#    NpcBot.Enable.DungeonFinder
-#        Description: Allow bots to enter PvE/PvP areas and Dungeon Finder query
-#        Default:   1 - (NpcBot.Enable.Dungeon)
-#                   0 - (NpcBot.Enable.Raid)
-#                   0 - (NpcBot.Enable.BG)
-#                   0 - (NpcBot.Enable.Arena)
-#                   1 - (NpcBot.Enable.DungeonFinder)
-
-NpcBot.Enable.Dungeon       = 1
-NpcBot.Enable.Raid          = 0
-NpcBot.Enable.BG            = 0
-NpcBot.Enable.Arena         = 0
-NpcBot.Enable.DungeonFinder = 1
-
-#    NpcBot.Limit.Dungeon
-#    NpcBot.Limit.Raid
-#        Description: Enable/Disable instance players limitation rules for bots.
-#        Default:   1 - (NpcBot.Limit.Dungeon)
-#                   1 - (NpcBot.Limit.Raid)
-
-NpcBot.Limit.Dungeon = 1
-NpcBot.Limit.Raid    = 1
-
-#    NpcBot.Cost
-#        Description: Bot recruitment cost (in copper).
-#        Note: This value is for level 80 characters.
-#              Cost is reduced for lower levels by simple formula: (cost * level / 80).
-#        Default:   1000000 (100 gold, 1g25s at level 1)
-
-NpcBot.Cost = 1000000
-
-#    NpcBot.PvP
-#        Description: Allow bots to attack player-controlled units (players, pets, bots, etc.)
-#        Note: This rule only applies to player-controlled bots
-#        Default:   1
-
-NpcBot.PvP = 1
-
-#
-###################################################################################################
-
-###################################################################################################
-#
-# CROSSFACTION BG CONFIG
-#
-#    CrossfactionBG.enable = 1 - Mixed battleground enabled.
-#    CrossfactionBG.enable = 0 - Mixed battleground disabled.
-
-CrossfactionBG.enable = 1
-
-#
-###################################################################################################
-
-###################################################################################################
-#
-# BeastMaster Configuration
-#
-# BeastMaster Hunter Only
-#                 = 0 (Anyone can use)
-#         default = 1 (Hunter only)
-
-BeastMaster.OnlyHunter = 1
-
-#
-# BeastMaster Enable Normal Pets
-#                 = 0  (Normal pets disabled)
-#         default = 1  (Normal Pets enabled)
-#
-
-BeastMaster.EnableNormalPet = 1
-
-#
-# BeastMaster Enable Exotic Pets
-#                 = 0  (Anyone Can get Exotic pets)
-#         default = 1  (Can only get Exotic Pets if you know how)
-#
-
-BeastMaster.EnableExoticPet = 1
-
-#
-###################################################################################################
-
-###################################################################################################
-#    Level NPC
-###################################################################################################
-
-LevelNPC.OnlyGMs = 0
-LevelNPC.EnableLevel80 = 1
-LevelNPC.EnableLevel100 = 1
-LevelNPC.EnableLevel150 = 1
-LevelNPC.EnableLevel200 = 0
-LevelNPC.EnableLevel255 = 0
-LevelNPC.UseTokens = 0
-LevelNPC.ItemEntryNum = 99999
-LevelNPC.SkillGoldCost = 10
-
-#
-###################################################################################################
-
-###################################################################################################
-#
-# NPC Buff rewritten by LordPsyan
-#
-#        GM Only
-#         Default 0 = Any Player
-#                 1 = GM1 or higher
-
-Npc_Buff.OnlyGMs = 0
-
-#     Enables Small Buff
-#         Default 0 = Disable
-#                 1 = Enable
-
-Npc_Buff.EnableSmallBuff = 1
-
-#     Enables Geat Buff
-#         Default 0 = Disable
-#                 1 = Enable
-
-Npc_Buff.EnableGreatBuff = 1
-
-#     Enables GM Only Buff
-#         Default 0 = Disable
-#                 1 = Enable
-
-Npc_Buff.EnableGMBuff = 1
-
-#     Enables Player Tools
-#         Default 0 = Disable
-#                 1 = Enable
-
-Npc_Buff.EnablePlayerTools = 1
-
-#     Enables Remove Res Sickness
-#         Default 0 = Disable
-#                 1 = Enable
-
-Npc_Buff.EnableRemoveResSickness = 1
-
-#
-###################################################################################################
-
-###################################################################################################
-#
-#       Profession NPC
-#
-# Enable or Disable Primary Professions
-#         default = 1 (Enabled)
-#                   = 0 (Disabled)
-
-ProfessionNPC.EnableProfessions = 1
-
-# Enable or Disable Secondary Professions
-#         default = 1 (Enabled)
-#                   = 0 (Disabled)
-
-ProfessionNPC.EnableSecondarySkills = 1
-
-# Number of Skill points
-#         default = 10
-
-SkillPoints = 10
-
-# GM Only
-#         default = 0 (Anyone can use)
-#                   = 1 (GM only)
-
-ProfessionNPC.OnlyGMs = 0
-
-# Cost of skill points (in copper)
-#         default = 10000 (10 gold)
-
-SkillGoldCost = 10000
-
-# Use Tokens instead of gold
-#         default = 0 (Use Gold)
-#                 = 1 (Use Tokens)
-
-ProfessionNPC.UseTokens = 1
-
-# Entry number of "token" Item
-#         default = 0 (No item. ProfessionNPC.UseTokens must = 0)
-#                 = n (n = entry number of item)
-
-ProfessionNPC.ItemEntryNum = 99999
-
-#
-###################################################################################################
-
-###################################################################################################
 #
 # Custom.SpeedGame
 # Set it to a number upper than 1 to speed up realm timer
@@ -3827,6 +3555,18 @@ Custom.AttackSpeedForMobs = 1.0
 
 ###################################################################################################
 #
+# CROSSFACTION BG CONFIG
+#
+#    CrossfactionBG.enable = 1 - Mixed battleground enabled.
+#    CrossfactionBG.enable = 0 - Mixed battleground disabled.
+
+CrossfactionBG.enable = 1
+
+#
+###################################################################################################
+
+###################################################################################################
+#
 # Custom.GainHonorOnGuardKill
 # Set it to 1 to gain honor when you kill a guard.
 # Note that not all city guards will give you honor. It seems only capital and big city guards are flagged
@@ -3877,212 +3617,6 @@ StartGuild.Alliance = 45
 #
 
 StartGuild.Horde = 46
-
-#
-###################################################################################################
-
-###################################################################################################
-#    Transmogrification config
-###################################################################################################
-#
-#    SETTINGS
-#
-#    Logger.custom.transmog
-#        Description: Transmogrification logging setting, see logger settings
-#        Default:    3, Console Server
-#
-#    Transmogrification.EnableTransmogInfo
-#        Description: Enables / Disables the info button for transmogrification
-#        Default:    1
-#
-#    Transmogrification.TransmogNpcText
-#        Description: The npc_text entry of the info menu for transmogrification
-#        Default:    50000
-#
-#    Transmogrification.Allowed
-#        Description: A list of item entries that are allowed for transmogrification (skips quality and CanUseItem check)
-#                     Example: "25 35674 5623"
-#        Default:    ""
-#
-#    Transmogrification.NotAllowed
-#        Description: A list of item entries that are NOT allowed for transmogrification
-#                     Example: "25 35674 5623"
-#        Default:    ""
-
-Logger.custom.transmog = 3, Console Server
-
-Transmogrification.EnableTransmogInfo = 1
-Transmogrification.TransmogNpcText = 50000
-
-Transmogrification.Allowed = ""
-Transmogrification.NotAllowed = ""
-
-#
-#    COPPER COST
-#
-#    Transmogrification.ScaledCostModifier
-#        Description: A multiplier for the default gold cost (change to 0 for no default cost)
-#        Default:    1.0
-#
-#    Transmogrification.CopperCost
-#        Description: Cost added on top of other costs (can be negative)
-#        Default:    0
-#
-#    For custom gold cost set ScaledCostModifier to 0.0 and CopperCost to what ever cost you want
-
-Transmogrification.ScaledCostModifier = 1.0
-Transmogrification.CopperCost = 0
-
-#
-#    TOKEN COST
-#
-#    Transmogrification.RequireToken
-#        Description: Adds/disables token cost
-#        Default:    0
-#
-#    Transmogrification.TokenEntry
-#        Description: Entry of the token item
-#        Default:    49426
-#
-#    Transmogrification.TokenAmount
-#        Description: Amount of tokens required
-#        Default:    1
-
-Transmogrification.RequireToken = 0
-Transmogrification.TokenEntry = 49426
-Transmogrification.TokenAmount = 1
-
-#
-#    REQUIREMENTS
-#
-#    Transmogrification.AllowPoor
-#        Description: Allow poor quality items to be used as source and target items
-#        Default:    0
-#
-#    Transmogrification.AllowCommon
-#        Description: Allow common quality items to be used as source and target items
-#        Default:    0
-#
-#    Transmogrification.AllowUncommon
-#        Description: Allow uncommon quality items to be used as source and target items
-#        Default:    1
-#
-#    Transmogrification.AllowRare
-#        Description: Allow rare quality items to be used as source and target items
-#        Default:    1
-#
-#    Transmogrification.AllowEpic
-#        Description: Allow epic quality items to be used as source and target items
-#        Default:    1
-#
-#    Transmogrification.AllowLegendary
-#        Description: Allow legendary quality items to be used as source and target items
-#        Default:    0
-#
-#    Transmogrification.AllowArtifact
-#        Description: Allow artifact quality items to be used as source and target items
-#        Default:    0
-#
-#    Transmogrification.AllowHeirloom
-#        Description: Allow heirloom quality items to be used as source and target items
-#        Default:    1
-#
-#    Transmogrification.AllowMixedArmorTypes
-#        Description: Allow cloth items to be transmogrified with plate for example
-#        Default:    0
-#
-#    Transmogrification.AllowMixedWeaponTypes
-#        Description: Allow axe to be transmogrified with dagger for example
-#        Default:    0
-#
-#    Transmogrification.AllowFishingPoles
-#        Description: Allow fishing poles to be transmogrified
-#        Default:    0
-#
-#    Transmogrification.IgnoreReqRace
-#        Description: Ignore required race for source items
-#        Default:    0
-#
-#    Transmogrification.IgnoreReqClass
-#        Description: Ignore required class for source items
-#        Default:    0
-#
-#    Transmogrification.IgnoreReqSkill
-#        Description: Ignore required skill for source items
-#        Default:    0
-#
-#    Transmogrification.IgnoreReqSpell
-#        Description: Ignore required spell for source items
-#        Default:    0
-#
-#    Transmogrification.IgnoreReqLevel
-#        Description: Ignore required level for source items
-#        Default:    0
-#
-#    Transmogrification.IgnoreReqEvent
-#        Description: Ignore required event for source items
-#        Default:    0
-#
-#    Transmogrification.IgnoreReqStats
-#        Description: Ignore stat count > 0 requirement for source items
-#        Default:    0
-
-Transmogrification.AllowPoor = 0
-Transmogrification.AllowCommon = 0
-Transmogrification.AllowUncommon = 1
-Transmogrification.AllowRare = 1
-Transmogrification.AllowEpic = 1
-Transmogrification.AllowLegendary = 0
-Transmogrification.AllowArtifact = 0
-Transmogrification.AllowHeirloom = 1
-
-Transmogrification.AllowMixedArmorTypes = 0
-Transmogrification.AllowMixedWeaponTypes = 0
-Transmogrification.AllowFishingPoles = 0
-
-Transmogrification.IgnoreReqRace = 0
-Transmogrification.IgnoreReqClass = 0
-Transmogrification.IgnoreReqSkill = 0
-Transmogrification.IgnoreReqSpell = 0
-Transmogrification.IgnoreReqLevel = 0
-Transmogrification.IgnoreReqEvent = 0
-Transmogrification.IgnoreReqStats = 0
-
-#
-#    SET FEATURE
-#
-#    Transmogrification.EnableSets
-#        Description: Enables / Disables the set feature. If you want permanent disable, check Transmogrification.h
-#        Default:    1
-#
-#    Transmogrification.MaxSets
-#        Description: Maximum amount of sets a player can save (hardcap at 25)
-#        Default:    10
-#
-#    Transmogrification.EnableSetInfo
-#        Description: Enables / Disables the info button for set fature
-#        Default:    1
-#
-#    Transmogrification.SetNpcText
-#        Description: The npc_text entry of the info menu for the set feature
-#        Default:    50001
-#
-#    Transmogrification.SetCostModifier
-#        Description: A multiplier for the default gold cost (all costs summed together) (change to 0 for no default cost)
-#        Default:    3.0
-#
-#    Transmogrification.SetCopperCost
-#        Description: Cost added on top of other costs (can be negative)
-#        Default:    0
-
-Transmogrification.EnableSets = 1
-Transmogrification.MaxSets = 10
-
-Transmogrification.EnableSetInfo = 1
-Transmogrification.SetNpcText = 50001
-
-Transmogrification.SetCostModifier = 3.0
-Transmogrification.SetCopperCost = 0
 
 #
 ###################################################################################################
@@ -4356,6 +3890,513 @@ irc.gm5 = "[Game Master]"
 irc.gm6 = "[Admin]"
 irc.gm7 = "[Developer]"
 irc.gm8 = "[Owner]"
+
+#
+###################################################################################################
+
+###################################################################################################
+# GuildHouse
+#
+# Settings for the GuildHouse Keeper.
+#
+#    Guildhouse.TokenOrGold
+#        Description: Use tokens or money to buy guild houses.
+#        Default:     0 - Use Money
+#                     1 - Use Token
+#
+
+Guildhouse.TokenOrGold = 0
+
+#    GuildHouse.BuyCost
+#        Description: Amount of gold or quantity of tokens to buy guildhouse.
+#        Default:     1000 - 1000 gold
+#
+
+Guildhouse.BuyCost = 1000
+
+#    GuildHouse.BuyCost
+#        Description: Amount of gold or quantity of tokens gained when selling guildhouse.
+#        Default:     5000000 - 500 gold
+#
+
+Guildhouse.SellCost = 500
+
+#
+###################################################################################################
+
+###################################################################################################
+#
+# BeastMaster Configuration
+#
+# BeastMaster Hunter Only
+#                 = 0 (Anyone can use)
+#         default = 1 (Hunter only)
+
+BeastMaster.OnlyHunter = 1
+
+#
+# BeastMaster Enable Normal Pets
+#                 = 0  (Normal pets disabled)
+#         default = 1  (Normal Pets enabled)
+#
+
+BeastMaster.EnableNormalPet = 1
+
+#
+# BeastMaster Enable Exotic Pets
+#                 = 0  (Anyone Can get Exotic pets)
+#         default = 1  (Can only get Exotic Pets if you know how)
+#
+
+BeastMaster.EnableExoticPet = 1
+
+#
+###################################################################################################
+
+###################################################################################################
+#    Level NPC
+###################################################################################################
+
+LevelNPC.OnlyGMs = 0
+LevelNPC.EnableLevel80 = 1
+LevelNPC.EnableLevel100 = 1
+LevelNPC.EnableLevel150 = 1
+LevelNPC.EnableLevel200 = 0
+LevelNPC.EnableLevel255 = 0
+LevelNPC.UseTokens = 0
+LevelNPC.ItemEntryNum = 99999
+LevelNPC.SkillGoldCost = 10
+
+#
+###################################################################################################
+
+###################################################################################################
+#
+# NPC Buff rewritten by LordPsyan
+#
+#        GM Only
+#         Default 0 = Any Player
+#                 1 = GM1 or higher
+
+Npc_Buff.OnlyGMs = 0
+
+#     Enables Small Buff
+#         Default 0 = Disable
+#                 1 = Enable
+
+Npc_Buff.EnableSmallBuff = 1
+
+#     Enables Geat Buff
+#         Default 0 = Disable
+#                 1 = Enable
+
+Npc_Buff.EnableGreatBuff = 1
+
+#     Enables GM Only Buff
+#         Default 0 = Disable
+#                 1 = Enable
+
+Npc_Buff.EnableGMBuff = 1
+
+#     Enables Player Tools
+#         Default 0 = Disable
+#                 1 = Enable
+
+Npc_Buff.EnablePlayerTools = 1
+
+#     Enables Remove Res Sickness
+#         Default 0 = Disable
+#                 1 = Enable
+
+Npc_Buff.EnableRemoveResSickness = 1
+
+#
+###################################################################################################
+
+###################################################################################################
+#
+#       Profession NPC
+#
+# Enable or Disable Primary Professions
+#         default = 1 (Enabled)
+#                   = 0 (Disabled)
+
+ProfessionNPC.EnableProfessions = 1
+
+# Enable or Disable Secondary Professions
+#         default = 1 (Enabled)
+#                   = 0 (Disabled)
+
+ProfessionNPC.EnableSecondarySkills = 1
+
+# Number of Skill points
+#         default = 10
+
+SkillPoints = 10
+
+# GM Only
+#         default = 0 (Anyone can use)
+#                   = 1 (GM only)
+
+ProfessionNPC.OnlyGMs = 0
+
+# Cost of skill points (in copper)
+#         default = 10000 (10 gold)
+
+SkillGoldCost = 10000
+
+# Use Tokens instead of gold
+#         default = 0 (Use Gold)
+#                 = 1 (Use Tokens)
+
+ProfessionNPC.UseTokens = 1
+
+# Entry number of "token" Item
+#         default = 0 (No item. ProfessionNPC.UseTokens must = 0)
+#                 = n (n = entry number of item)
+
+ProfessionNPC.ItemEntryNum = 99999
+
+#
+###################################################################################################
+
+###################################################################################################
+#    Transmogrification config
+###################################################################################################
+#
+#    SETTINGS
+#
+#    Logger.custom.transmog
+#        Description: Transmogrification logging setting, see logger settings
+#        Default:    3, Console Server
+#
+#    Transmogrification.EnableTransmogInfo
+#        Description: Enables / Disables the info button for transmogrification
+#        Default:    1
+#
+#    Transmogrification.TransmogNpcText
+#        Description: The npc_text entry of the info menu for transmogrification
+#        Default:    50000
+#
+#    Transmogrification.Allowed
+#        Description: A list of item entries that are allowed for transmogrification (skips quality and CanUseItem check)
+#                     Example: "25 35674 5623"
+#        Default:    ""
+#
+#    Transmogrification.NotAllowed
+#        Description: A list of item entries that are NOT allowed for transmogrification
+#                     Example: "25 35674 5623"
+#        Default:    ""
+
+Logger.custom.transmog = 3, Console Server
+
+Transmogrification.EnableTransmogInfo = 1
+Transmogrification.TransmogNpcText = 50000
+
+Transmogrification.Allowed = ""
+Transmogrification.NotAllowed = ""
+
+#
+#    COPPER COST
+#
+#    Transmogrification.ScaledCostModifier
+#        Description: A multiplier for the default gold cost (change to 0 for no default cost)
+#        Default:    1.0
+#
+#    Transmogrification.CopperCost
+#        Description: Cost added on top of other costs (can be negative)
+#        Default:    0
+#
+#    For custom gold cost set ScaledCostModifier to 0.0 and CopperCost to what ever cost you want
+
+Transmogrification.ScaledCostModifier = 1.0
+Transmogrification.CopperCost = 0
+
+#
+#    TOKEN COST
+#
+#    Transmogrification.RequireToken
+#        Description: Adds/disables token cost
+#        Default:    0
+#
+#    Transmogrification.TokenEntry
+#        Description: Entry of the token item
+#        Default:    49426
+#
+#    Transmogrification.TokenAmount
+#        Description: Amount of tokens required
+#        Default:    1
+
+Transmogrification.RequireToken = 0
+Transmogrification.TokenEntry = 49426
+Transmogrification.TokenAmount = 1
+
+#
+#    REQUIREMENTS
+#
+#    Transmogrification.AllowPoor
+#        Description: Allow poor quality items to be used as source and target items
+#        Default:    0
+#
+#    Transmogrification.AllowCommon
+#        Description: Allow common quality items to be used as source and target items
+#        Default:    0
+#
+#    Transmogrification.AllowUncommon
+#        Description: Allow uncommon quality items to be used as source and target items
+#        Default:    1
+#
+#    Transmogrification.AllowRare
+#        Description: Allow rare quality items to be used as source and target items
+#        Default:    1
+#
+#    Transmogrification.AllowEpic
+#        Description: Allow epic quality items to be used as source and target items
+#        Default:    1
+#
+#    Transmogrification.AllowLegendary
+#        Description: Allow legendary quality items to be used as source and target items
+#        Default:    0
+#
+#    Transmogrification.AllowArtifact
+#        Description: Allow artifact quality items to be used as source and target items
+#        Default:    0
+#
+#    Transmogrification.AllowHeirloom
+#        Description: Allow heirloom quality items to be used as source and target items
+#        Default:    1
+#
+#    Transmogrification.AllowMixedArmorTypes
+#        Description: Allow cloth items to be transmogrified with plate for example
+#        Default:    0
+#
+#    Transmogrification.AllowMixedWeaponTypes
+#        Description: Allow axe to be transmogrified with dagger for example
+#        Default:    0
+#
+#    Transmogrification.AllowFishingPoles
+#        Description: Allow fishing poles to be transmogrified
+#        Default:    0
+#
+#    Transmogrification.IgnoreReqRace
+#        Description: Ignore required race for source items
+#        Default:    0
+#
+#    Transmogrification.IgnoreReqClass
+#        Description: Ignore required class for source items
+#        Default:    0
+#
+#    Transmogrification.IgnoreReqSkill
+#        Description: Ignore required skill for source items
+#        Default:    0
+#
+#    Transmogrification.IgnoreReqSpell
+#        Description: Ignore required spell for source items
+#        Default:    0
+#
+#    Transmogrification.IgnoreReqLevel
+#        Description: Ignore required level for source items
+#        Default:    0
+#
+#    Transmogrification.IgnoreReqEvent
+#        Description: Ignore required event for source items
+#        Default:    0
+#
+#    Transmogrification.IgnoreReqStats
+#        Description: Ignore stat count > 0 requirement for source items
+#        Default:    0
+
+Transmogrification.AllowPoor = 0
+Transmogrification.AllowCommon = 0
+Transmogrification.AllowUncommon = 1
+Transmogrification.AllowRare = 1
+Transmogrification.AllowEpic = 1
+Transmogrification.AllowLegendary = 0
+Transmogrification.AllowArtifact = 0
+Transmogrification.AllowHeirloom = 1
+
+Transmogrification.AllowMixedArmorTypes = 0
+Transmogrification.AllowMixedWeaponTypes = 0
+Transmogrification.AllowFishingPoles = 0
+
+Transmogrification.IgnoreReqRace = 0
+Transmogrification.IgnoreReqClass = 0
+Transmogrification.IgnoreReqSkill = 0
+Transmogrification.IgnoreReqSpell = 0
+Transmogrification.IgnoreReqLevel = 0
+Transmogrification.IgnoreReqEvent = 0
+Transmogrification.IgnoreReqStats = 0
+
+#
+#    SET FEATURE
+#
+#    Transmogrification.EnableSets
+#        Description: Enables / Disables the set feature. If you want permanent disable, check Transmogrification.h
+#        Default:    1
+#
+#    Transmogrification.MaxSets
+#        Description: Maximum amount of sets a player can save (hardcap at 25)
+#        Default:    10
+#
+#    Transmogrification.EnableSetInfo
+#        Description: Enables / Disables the info button for set fature
+#        Default:    1
+#
+#    Transmogrification.SetNpcText
+#        Description: The npc_text entry of the info menu for the set feature
+#        Default:    50001
+#
+#    Transmogrification.SetCostModifier
+#        Description: A multiplier for the default gold cost (all costs summed together) (change to 0 for no default cost)
+#        Default:    3.0
+#
+#    Transmogrification.SetCopperCost
+#        Description: Cost added on top of other costs (can be negative)
+#        Default:    0
+
+Transmogrification.EnableSets = 1
+Transmogrification.MaxSets = 10
+
+Transmogrification.EnableSetInfo = 1
+Transmogrification.SetNpcText = 50001
+
+Transmogrification.SetCostModifier = 3.0
+Transmogrification.SetCopperCost = 0
+
+#
+###################################################################################################
+
+#    Fake.WHO.List
+#        Add fake players to fill in WHO LIST (who is online list, "O" button) if there is less then
+#        49 real players online
+#        Default: 0 (disabled)
+#                 1 (enabled)
+
+Fake.WHO.List = 0
+Fake.WHO.Online.Interval = 5
+Fake.WHO.LevelUp.Interval = 2
+
+#
+###################################################################################################
+
+###################################################################################################
+# NPCBOT CONFIGURATION
+#
+#    NpcBot.Enable
+#        Description: Enable NpcBot system
+#        Default:   1 - enable
+#                   0 - disable
+
+NpcBot.Enable = 1
+
+#
+#    NpcBot.AllowGM
+#        Description: Allow GM's to have NpcBots
+#        Default:   1 - Allow
+#                   0 - disable
+
+NpcBot.AllowGM = 1
+
+#    NpcBot.MaxBots
+#        Description: Maximum number of bots allowed for players.
+#        Default:   1
+#        Recommend: 1-2
+#        Max:       4
+
+NpcBot.MaxBots = 1
+
+#    NpcBot.MaxBotsPerClass
+#        Description: Maximum bots of each class allowed for players.
+#        Default:   1
+#                   0 - no limit
+
+NpcBot.MaxBotsPerClass = 1
+
+#    NpcBot.BaseFollowDistance
+#        Description: Default bot follow distance.
+#        Note: This parameter determines bots' formation size, distance at which bots will chase and attack enemies.
+#        Note2: This parameter is set for each player at login.
+#        Default:   30
+
+NpcBot.BaseFollowDistance = 20
+
+#    NpcBot.XpReduction
+#        Description: XP percent penalty for each bot used starting with second.
+#        Example: 3 bots, xp reduction is 20: ((3-1)*20) = 40%, 60% exp gained only.
+#        Note: Maximum overall xp reduction is 90%.
+#        Default:   0
+
+NpcBot.XpReduction = 0
+
+#    NpcBot.HealTargetIconsMask
+#        Description: Icon number bitmask which bots use to search for additional targets to heal (out of party).
+#        Note: Many creatures cannot accept heal.
+#        Example: to check Star, Triangle and Square we need 1 + 8 + 32 = 41.
+#        Default:   0 (Disable)
+#                   1 - Star
+#                   2 - Circle
+#                   4 - Diamond
+#                   8 - Triangle
+#                   16 - Moon
+#                   32 - Square
+#                   64 - Cross
+#                   128 - Skull
+
+NpcBot.HealTargetIconsMask = 0
+
+#    NpcBot.Mult.Damage.Melee
+#    NpcBot.Mult.Damage.Spell
+#    NpcBot.Mult.Healing
+#        Description: Multipliers for bots' damage and healing. Allows to balance bots vs players.
+#        Minimum:   0.1
+#        Maximum:  10.0
+#        Default:   1.0
+
+NpcBot.Mult.Damage.Melee = 1.0
+NpcBot.Mult.Damage.Spell = 1.0
+NpcBot.Mult.Healing      = 1.0
+
+#    NpcBot.Enable.Dungeon
+#    NpcBot.Enable.Raid
+#    NpcBot.Enable.BG
+#    NpcBot.Enable.Arena
+#    NpcBot.Enable.DungeonFinder
+#        Description: Allow bots to enter PvE/PvP areas and Dungeon Finder query
+#        Default:   1 - (NpcBot.Enable.Dungeon)
+#                   0 - (NpcBot.Enable.Raid)
+#                   0 - (NpcBot.Enable.BG)
+#                   0 - (NpcBot.Enable.Arena)
+#                   1 - (NpcBot.Enable.DungeonFinder)
+
+NpcBot.Enable.Dungeon       = 1
+NpcBot.Enable.Raid          = 0
+NpcBot.Enable.BG            = 0
+NpcBot.Enable.Arena         = 0
+NpcBot.Enable.DungeonFinder = 1
+
+#    NpcBot.Limit.Dungeon
+#    NpcBot.Limit.Raid
+#        Description: Enable/Disable instance players limitation rules for bots.
+#        Default:   1 - (NpcBot.Limit.Dungeon)
+#                   1 - (NpcBot.Limit.Raid)
+
+NpcBot.Limit.Dungeon = 1
+NpcBot.Limit.Raid    = 1
+
+#    NpcBot.Cost
+#        Description: Bot recruitment cost (in copper).
+#        Note: This value is for level 80 characters.
+#              Cost is reduced for lower levels by simple formula: (cost * level / 80).
+#        Default:   1000000 (100 gold, 1g25s at level 1)
+
+NpcBot.Cost = 1000000
+
+#    NpcBot.PvP
+#        Description: Allow bots to attack player-controlled units (players, pets, bots, etc.)
+#        Note: This rule only applies to player-controlled bots
+#        Default:   1
+
+NpcBot.PvP = 1
 
 #
 ###################################################################################################

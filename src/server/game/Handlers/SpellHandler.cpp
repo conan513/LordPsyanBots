@@ -16,6 +16,7 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "../../scripts/Custom/TransmogDisplayVendorConf.h"
 #include "Common.h"
 #include "DBCStores.h"
 #include "WorldPacket.h"
@@ -664,7 +665,9 @@ void WorldSession::HandleMirrorImageDataRequest(WorldPacket& recvData)
                 data << uint32(0);
             else if (Item const* item = player->GetItemByPos(INVENTORY_SLOT_BAG_0, *itr))
             {
-                if (uint32 entry = sTransmogrification->GetFakeEntry(item))
+                if (uint32 entry = TransmogDisplayVendorMgr::GetFakeEntry(item))
+                    data << uint32(sObjectMgr->GetItemTemplate(entry)->DisplayInfoID);
+                else if (uint32 entry = sTransmogrification->GetFakeEntry(item))
                     data << uint32(sObjectMgr->GetItemTemplate(entry)->DisplayInfoID);
                 else
                     data << uint32(item->GetTemplate()->DisplayInfoID);

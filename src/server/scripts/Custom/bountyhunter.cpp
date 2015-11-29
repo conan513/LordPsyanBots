@@ -6,10 +6,10 @@ using namespace std;
 #define TOKEN_ID 0 // token id
 
 #if SET_CURRENCY == 0
-#define BOUNTY_1 "1000g Kopfgeld."
-#define BOUNTY_2 "2000g Kopfgeld."
-#define BOUNTY_3 "5000g Kopfgeld."
-#define BOUNTY_4 "10000g Kopfgeld."
+#define BOUNTY_1 "1000g bounty."
+#define BOUNTY_2 "2000g bounty."
+#define BOUNTY_3 "5000g bounty."
+#define BOUNTY_4 "10000g bounty."
 #endif
 #if SET_CURRENCY == 1
 #define BOUNTY_1 "I would like to place a 20 honor bounty."
@@ -54,18 +54,18 @@ bool passChecks(Player * pPlayer, const char * name)
     WorldSession * m_session = pPlayer->GetSession();
     if(!pBounty)
     {
-        m_session->SendNotification("Es ist kein Spieler mit diesem Namen online!");
+        m_session->SendNotification("There is no player with this name online!");
         return false;
     }
     QueryResult result = CharacterDatabase.PQuery("SELECT * FROM bounties WHERE guid ='%u'", pBounty->GetGUID());
     if(result)
     {
-        m_session->SendNotification("Auf diesen Spieler wurde schon ein Kopfgeld ausgesetzt!");
+        m_session->SendNotification("The bounty on these players have been suspended!");
         return false;
     }
     if(pPlayer->GetGUID() == pBounty->GetGUID())
     {
-        m_session->SendNotification("Du kannst auf dich kein Kopfgeld aussetzen!");
+        m_session->SendNotification("You can expose yourself to no bounty!");
         return false;
     }
     return true;
@@ -76,15 +76,15 @@ void alertServer(const char * name, int msg)
         std::string message;
         if(msg == 1)
         {
-                message = "Ein Kopfgeld wurde aufsgesetzt auf ";
+                message = "A bounty has been suspended on ";
                 message += name;
-                message += ". Tötet ihn und erlangt das Gold!";
+                message += ". Killed him and gained the gold!";
         }
         else if(msg == 2)
         {
-                message = "Das Kopfgeld von ";
+                message = "The Bounty of ";
                 message += name;
-                message += " wurde eingelöst!";
+                message += " was redeemed!";
         }
         sWorld->SendServerMessage(SERVER_MSG_STRING, message.c_str(), 0);
 }
@@ -101,7 +101,7 @@ bool hasCurrency(Player * pPlayer, uint32 required, int currency)
             uint32 requiredmoney = (required * 10000);
             if(currentmoney < requiredmoney)
             {
-                m_session->SendNotification("Du hast nicht genug Gold!");
+                m_session->SendNotification("You do not have enough gold!");
                 return false;
             }
             pPlayer->SetMoney(currentmoney - requiredmoney);
@@ -180,7 +180,7 @@ class BountyHunter : public CreatureScript
 #if SET_CURRENCY == 0
                     if(    Bounties->GetRowCount() > 1)
                     {
-                        pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_BATTLE, "Kopfgeld: ", GOSSIP_SENDER_MAIN, 1);
+                        pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_BATTLE, "bounty: ", GOSSIP_SENDER_MAIN, 1);
                         do
                         {
                             Field * fields = Bounties->Fetch();
@@ -196,7 +196,7 @@ class BountyHunter : public CreatureScript
                     }
                     else
                     {
-                        pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_BATTLE, "Kopfgeld: ", GOSSIP_SENDER_MAIN, 1);
+                        pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_BATTLE, "bounty: ", GOSSIP_SENDER_MAIN, 1);
                         Field * fields = Bounties->Fetch();
                         std::string option;
                         QueryResult name = CharacterDatabase.PQuery("SELECT name FROM characters WHERE guid='%u'", fields[0].GetUInt64());
@@ -212,7 +212,7 @@ class BountyHunter : public CreatureScript
 #if SET_CURRENCY == 1
                     if(    Bounties->GetRowCount() > 1)
                     {
-                        pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_BATTLE, "Kopfgeld: ", GOSSIP_SENDER_MAIN, 1);
+                        pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_BATTLE, "bounty: ", GOSSIP_SENDER_MAIN, 1);
                         do
                         {
                             Field * fields = Bounties->Fetch();
@@ -228,7 +228,7 @@ class BountyHunter : public CreatureScript
                     }
                     else
                     {
-                        pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_BATTLE, "Kopfgeld: ", GOSSIP_SENDER_MAIN, 1);
+                        pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_BATTLE, "bounty: ", GOSSIP_SENDER_MAIN, 1);
                         Field * fields = Bounties->Fetch();
                         std::string option;
                         QueryResult name = CharacterDatabase.PQuery("SELECT name FROM characters WHERE guid='%u'", fields[0].GetUInt64());
@@ -244,7 +244,7 @@ class BountyHunter : public CreatureScript
 #if SET_CURRENCY == 2
                     if(    Bounties->GetRowCount() > 1)
                     {
-                        pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_BATTLE, "Kopfgeld: ", GOSSIP_SENDER_MAIN, 1);
+                        pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_BATTLE, "bounty: ", GOSSIP_SENDER_MAIN, 1);
                         do
                         {
                             Field * fields = Bounties->Fetch();
@@ -260,7 +260,7 @@ class BountyHunter : public CreatureScript
                     }
                     else
                     {
-                        pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_BATTLE, "Kopfgeld: ", GOSSIP_SENDER_MAIN, 1);
+                        pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_BATTLE, "bounty: ", GOSSIP_SENDER_MAIN, 1);
                         Field * fields = Bounties->Fetch();
                         std::string option;
                         QueryResult name = CharacterDatabase.PQuery("SELECT name FROM characters WHERE guid='%u'", fields[0].GetUInt64());

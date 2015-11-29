@@ -102,7 +102,9 @@ void PlayerbotHolder::AddPlayerBot(uint64 playerGuid, uint32 masterAccount)
 
     WorldSession* masterSession = masterAccount ? sWorld->FindSession(masterAccount) : NULL;
     uint32 botAccountId = holder->GetAccountId();
-    WorldSession *botSession = new WorldSession(botAccountId, NULL, NULL, SEC_PLAYER, 2, 0, LOCALE_enUS, 0, false);
+    std::string accountName;
+	AccountMgr::GetName(botAccountId, accountName);
+	WorldSession *botSession = new WorldSession(botAccountId, std::move(accountName), NULL, SEC_PLAYER, 2, 0, LOCALE_enUS, 0, false);
 
     botSession->HandlePlayerLogin(holder); // will delete lqh
 

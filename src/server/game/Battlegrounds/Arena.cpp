@@ -171,50 +171,7 @@ void Arena::EndBattleground(uint32 winner)
 
                 _arenaTeamScores[winnerTeam].Assign(winnerChange, winnerMatchmakerRating, winnerArenaTeam->GetName());
                 _arenaTeamScores[loserTeam].Assign(loserChange, loserMatchmakerRating, loserArenaTeam->GetName());
-                /** World of Warcraft Armory **/
-                if (sWorld->getBoolConfig(CONFIG_ARMORY_ENABLE))
-                {
-                    uint32 maxChartID;
-                    QueryResult result = CharacterDatabase.PQuery("SELECT MAX(gameid) FROM armory_game_chart");
-                    if(!result)
-                        maxChartID = 0;
-                    else
-                    {
-                        maxChartID = (*result)[0].GetUInt32();
-                        //result.release();
-                    }
-                    uint32 gameID = maxChartID+1;
-                    for(BattlegroundScoreMap::const_iterator itr = PlayerScores.begin(); itr != PlayerScores.end(); ++itr)
-                    {
-                        Player* player = ObjectAccessor::FindConnectedPlayer(ObjectGuid(HighGuid::Player, itr->first));
-                        if (!player)
-                            continue;
-                        uint32 plTeamID = player->GetArenaTeamId(winnerArenaTeam->GetSlot());
-                        int changeType;
-                        uint32 resultRating;
-                        uint32 resultTeamID;
-                        int32 ratingChange;
-                        if (plTeamID == winnerArenaTeam->GetId())
-                        {
-                            changeType = 1; //win
-                            resultRating = winnerTeamRating;
-                            resultTeamID = plTeamID;
-                            ratingChange = winnerChange;
-                        }
-                        else
-                        {
-                            changeType = 2; //lose
-                            resultRating = loserTeamRating;
-                            resultTeamID = loserArenaTeam->GetId();
-                            ratingChange = loserChange;
-                        }
-                        std::ostringstream sql_query;
-                        //                                                        gameid,              teamid,                     guid,                    changeType,             ratingChange,               teamRating,                  damageDone,                          deaths,                          healingDone,                           damageTaken,,                           healingTaken,                         killingBlows,                      mapId,                 start,                   end
-                        sql_query << "INSERT INTO armory_game_chart VALUES ('" << gameID << "', '" << resultTeamID << "', '" << player->GetGUID() << "', '" << changeType << "', '" << ratingChange  << "', '" << resultRating << "', '" << itr->second->DamageDone << "', '" << itr->second->Deaths << "', '" << itr->second->HealingDone << "', '" << itr->second->DamageTaken << "', '" << itr->second->HealingTaken << "', '" << itr->second->KillingBlows << "', '" << m_MapId << "', '" << m_StartTime << "', '" << m_EndTime << "')";
-                        CharacterDatabase.Execute(sql_query.str().c_str());
-                    }
-                }
-                /** World of Warcraft Armory **/
+
                 TC_LOG_DEBUG("bg.arena", "Arena match Type: %u for Team1Id: %u - Team2Id: %u ended. WinnerTeamId: %u. Winner rating: +%d, Loser rating: %d",
                     GetArenaType(), GetArenaTeamIdByIndex(TEAM_ALLIANCE), GetArenaTeamIdByIndex(TEAM_HORDE), winnerArenaTeam->GetId(), winnerChange, loserChange);
 
