@@ -1514,7 +1514,8 @@ void AddSC_World_Chat();
 // start82
 // start83
 // start84
-// start85
+    //Vas AutoBalance
+    void AddSC_VAS_AutoBalance();
 // start86
 // start87
 // start88
@@ -1672,7 +1673,8 @@ AddSC_gon_playerscripts();
 // end82
 // end83
 // end84
-// end85
+    //VAS AutoBalance
+    AddSC_VAS_AutoBalance();
 // end86
 // end87
 // end88

@@ -35,6 +35,7 @@
 #include "WorldPacket.h"
 #include "WorldSession.h"
 #include "Chat.h"
+#include "Creature.h"
 
 // namespace
 // {
@@ -286,10 +287,12 @@ void ScriptMgr::Unload()
     SCR_CLEAR(ServerScript);
     SCR_CLEAR(WorldScript);
     SCR_CLEAR(FormulaScript);
+    SCR_CLEAR(AllMapScript);
     SCR_CLEAR(WorldMapScript);
     SCR_CLEAR(InstanceMapScript);
     SCR_CLEAR(BattlegroundMapScript);
     SCR_CLEAR(ItemScript);
+    SCR_CLEAR(AllCreatureScript);
     SCR_CLEAR(CreatureScript);
     SCR_CLEAR(GameObjectScript);
     SCR_CLEAR(AreaTriggerScript);
@@ -688,6 +691,8 @@ void ScriptMgr::OnPlayerEnterMap(Map* map, Player* player)
     ASSERT(map);
     ASSERT(player);
 
+    FOREACH_SCRIPT(AllMapScript)->OnPlayerEnterAll(map, player);
+
     FOREACH_SCRIPT(PlayerScript)->OnMapChanged(player);
 
     SCR_MAP_BGN(WorldMapScript, map, itr, end, entry, IsWorldMap);
@@ -707,6 +712,8 @@ void ScriptMgr::OnPlayerLeaveMap(Map* map, Player* player)
 {
     ASSERT(map);
     ASSERT(player);
+
+    FOREACH_SCRIPT(AllMapScript)->OnPlayerLeaveAll(map, player);
 
     SCR_MAP_BGN(WorldMapScript, map, itr, end, entry, IsWorldMap);
         itr->second->OnPlayerLeave(map, player);
@@ -897,8 +904,15 @@ void ScriptMgr::OnCreatureUpdate(Creature* creature, uint32 diff)
 {
     ASSERT(creature);
 
+    FOREACH_SCRIPT(AllCreatureScript)->OnAllCreatureUpdate(creature, diff);
+
     GET_SCRIPT(CreatureScript, creature->GetScriptId(), tmpscript);
     tmpscript->OnUpdate(creature, diff);
+}
+
+void ScriptMgr::Creature_SelectLevel(const CreatureTemplate *cinfo, Creature* creature)
+{
+    FOREACH_SCRIPT(AllCreatureScript)->Creature_SelectLevel(cinfo, creature);
 }
 
 bool ScriptMgr::OnGossipHello(Player* player, GameObject* go)
@@ -909,6 +923,22 @@ bool ScriptMgr::OnGossipHello(Player* player, GameObject* go)
     GET_SCRIPT_RET(GameObjectScript, go->GetScriptId(), tmpscript, false);
     player->PlayerTalkClass->ClearMenus();
     return tmpscript->OnGossipHello(player, go);
+}
+
+void ScriptMgr::SetInitialWorldSettings()
+{
+    FOREACH_SCRIPT(WorldScript)->SetInitialWorldSettings();
+}
+
+float ScriptMgr::VAS_Script_Hooks()
+{
+    float VAS_Script_Hook_Version = 1.03f;
+
+//    TC_LOG_DEBUG(LOG_FILTER_WORLDSERVER, "------------------------------------------------------------");
+//    TC_LOG_DEBUG(LOG_FILTER_WORLDSERVER, "  Powered by {VAS} Script Hooks v%4.2f : Updated by Natfoth",VAS_Script_Hook_Version);
+//    TC_LOG_DEBUG(LOG_FILTER_WORLDSERVER, "--------------------------------------------------------------");
+
+    return VAS_Script_Hook_Version;
 }
 
 bool ScriptMgr::OnGossipSelect(Player* player, GameObject* go, uint32 sender, uint32 action)
@@ -1229,6 +1259,14 @@ bool ScriptMgr::OnCriteriaCheck(uint32 scriptId, Player* source, Unit* target)
     return tmpscript->OnCheck(source, target);
 }
 
+//Called From Unit::DealDamage
+uint32 ScriptMgr::DealDamage(Unit* AttackerUnit, Unit *pVictim, uint32 damage, DamageEffectType damagetype)
+{
+    FOR_SCRIPTS_RET(UnitScript, itr, end, damage)
+        damage = itr->second->DealDamage(AttackerUnit, pVictim, damage, damagetype);
+    return damage;
+}
+
 // Player
 void ScriptMgr::OnPVPKill(Player* killer, Player* killed)
 {
@@ -1531,11 +1569,31 @@ SpellScriptLoader::SpellScriptLoader(const char* name)
     ScriptRegistry<SpellScriptLoader>::AddScript(this);
 }
 
+void ScriptMgr::ModifyHealRecieved(Unit* target, Unit* attacker, uint32& damage)
+{
+    FOREACH_SCRIPT(UnitScript)->ModifyHealRecieved(target, attacker, damage);
+}
+
+AllMapScript::AllMapScript(const char* name)
+    : ScriptObject(name)
+{
+    ScriptRegistry<AllMapScript>::AddScript(this);
+}
+
+
 ServerScript::ServerScript(const char* name)
     : ScriptObject(name)
 {
     ScriptRegistry<ServerScript>::AddScript(this);
 }
+
+AllCreatureScript::AllCreatureScript(const char* name)
+: ScriptObject(name)
+{
+    ScriptRegistry<AllCreatureScript>::AddScript(this);
+}
+
+
 
 WorldScript::WorldScript(const char* name)
     : ScriptObject(name)
@@ -1700,10 +1758,12 @@ template class ScriptRegistry<SpellScriptLoader>;
 template class ScriptRegistry<ServerScript>;
 template class ScriptRegistry<WorldScript>;
 template class ScriptRegistry<FormulaScript>;
+template class ScriptRegistry<AllMapScript>;
 template class ScriptRegistry<WorldMapScript>;
 template class ScriptRegistry<InstanceMapScript>;
 template class ScriptRegistry<BattlegroundMapScript>;
 template class ScriptRegistry<ItemScript>;
+template class ScriptRegistry<AllCreatureScript>;
 template class ScriptRegistry<CreatureScript>;
 template class ScriptRegistry<GameObjectScript>;
 template class ScriptRegistry<AreaTriggerScript>;
