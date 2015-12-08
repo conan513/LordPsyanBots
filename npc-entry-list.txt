@@ -32,3 +32,5 @@ Entry         Name                     Script
 190010        Warpweaver               Transmogrification
 
 190012        Narpweaver               Transmog Vendor
+
+535200        LordPsyan                1v1 Arena Master
