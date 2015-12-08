@@ -1487,7 +1487,8 @@ void AddSC_CS_Transmogrification();
 // start58
 // start59
 // start60
-// start61
+// 1v1 Arena
+void AddSC_npc_1v1arena();
 // start62
 // start63
 // start64
@@ -1646,7 +1647,8 @@ void AddCustomScripts()
 // end58
 // end59
 // end60
-// end61
+// 1v1 Arena
+    AddSC_npc_1v1arena();
 // end62
 // end63
 // end64
