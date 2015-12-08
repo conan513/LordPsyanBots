@@ -30,3 +30,5 @@ Entry         Name                     Script
 190011        Thaumaturge Vashreen     Reforging
 
 190010        Warpweaver               Transmogrification
+
+535200        LordPsyan                1v1 Arena Master
