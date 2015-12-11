@@ -2420,6 +2420,17 @@ void Player::RemoveAllBots(uint8 removetype)
 }
 //END BOT
 
+bool Player::IsImmunedToSpellEffect(SpellInfo const* spellInfo, uint32 index) const
+{
+    // players are immune to taunt (the aura and the spell effect).
+    if (spellInfo->Effects[index].IsAura(SPELL_AURA_MOD_TAUNT))
+        return true;
+    if (spellInfo->Effects[index].IsEffect(SPELL_EFFECT_ATTACK_ME))
+        return true;
+    
+    return Unit::IsImmunedToSpellEffect(spellInfo, index);
+}
+
 void Player::RegenerateAll()
 {
     //if (m_regenTimer <= 500)
