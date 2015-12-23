@@ -1351,7 +1351,7 @@ string PlayerbotAI::HandleRemoteCommand(string command)
     }
     else if (command == "position")
     {
-        ostringstream out; out << bot->GetMapId() << "," << bot->GetPositionX() << "," << bot->GetPositionY() << "," << bot->GetPositionZ() << "," << bot->GetOrientation();
+        ostringstream out; out << bot->GetPositionX() << " " << bot->GetPositionY() << " " << bot->GetPositionZ() << " " << bot->GetMapId() << " " << bot->GetOrientation();
         return out.str();
     }
     else if (command == "tpos")
@@ -1361,7 +1361,13 @@ string PlayerbotAI::HandleRemoteCommand(string command)
             return "";
         }
 
-        ostringstream out; out << target->GetMapId() << "," << target->GetPositionX() << "," << target->GetPositionY() << "," << target->GetPositionZ() << "," << target->GetOrientation();
+        ostringstream out; out << target->GetPositionX() << " " << target->GetPositionY() << " " << target->GetPositionZ() << " " << target->GetMapId() << " " << target->GetOrientation();
+        return out.str();
+    }
+    else if (command == "movement")
+    {
+        LastMovement& data = *GetAiObjectContext()->GetValue<LastMovement&>("last movement");
+        ostringstream out; out << data.lastMoveToX << " " << data.lastMoveToY << " " << data.lastMoveToZ << " " << bot->GetMapId() << " " << data.lastMoveToOri;
         return out.str();
     }
     else if (command == "target")
@@ -1394,6 +1400,10 @@ string PlayerbotAI::HandleRemoteCommand(string command)
     else if (command == "action")
     {
         return currentEngine->GetLastAction();
+    }
+    else if (command == "values")
+    {
+        return GetAiObjectContext()->FormatValues();
     }
     ostringstream out; out << "invalid command: " << command;
     return out.str();
