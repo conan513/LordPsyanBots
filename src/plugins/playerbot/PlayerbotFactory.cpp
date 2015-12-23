@@ -853,8 +853,7 @@ void PlayerbotFactory::EnchantItem(Item* item)
     int32 itemLevel = proto->ItemLevel;
 
     vector<uint32> ids;
-    int spellStore = sSpellStore.GetNumRows();
-    for (int id = 0; id < spellStore; ++id)
+    for (int id = 0; id < sSpellStore.GetNumRows(); ++id)
     {
         SpellInfo const *entry = sSpellMgr->GetSpellInfo(id);
         if (!entry)
@@ -1149,8 +1148,7 @@ void PlayerbotFactory::InitTalents(uint32 specNo)
             int index = urand(0, spells.size() - 1);
             TalentEntry const *talentInfo = spells[index];
             int maxRank = 0;
-            int minRank = min((uint32)MAX_TALENT_RANK, bot->GetFreeTalentPoints());
-            for (int rank = 0; rank < minRank; ++rank)
+            for (int rank = 0; rank < min((uint32)MAX_TALENT_RANK, bot->GetFreeTalentPoints()); ++rank)
             {
                 uint32 spellId = talentInfo->RankID[rank];
                 if (!spellId)
@@ -1353,9 +1351,7 @@ void PlayerbotFactory::InitPotions()
             proto->Bonding != NO_BIND)
             continue;
 
-        int botLevel = bot->getLevel();
-        int botReqLevel = proto->RequiredLevel;
-        if (botReqLevel > botLevel || botReqLevel < botLevel - 10)
+        if (proto->RequiredLevel > bot->getLevel() || proto->RequiredLevel < bot->getLevel() - 10)
             continue;
 
         if (proto->RequiredSkill && !bot->HasSkill(proto->RequiredSkill))
@@ -1414,9 +1410,7 @@ void PlayerbotFactory::InitFood()
             proto->Bonding != NO_BIND)
             continue;
 
-        int botLevel = bot->getLevel();
-        int botReqLevel = proto->RequiredLevel;
-        if (botReqLevel > botLevel || botReqLevel < botLevel - 10)
+        if (proto->RequiredLevel > bot->getLevel() || proto->RequiredLevel < bot->getLevel() - 10)
             continue;
 
         if (proto->RequiredSkill && !bot->HasSkill(proto->RequiredSkill))
@@ -1511,9 +1505,7 @@ void PlayerbotFactory::InitInventoryTrade()
         if (proto->ItemLevel < bot->getLevel())
             continue;
 
-        int botLevel = bot->getLevel();
-        int botReqLevel = proto->RequiredLevel;
-        if (botReqLevel > botLevel || botReqLevel < botLevel - 10)
+        if (proto->RequiredLevel > bot->getLevel() || proto->RequiredLevel < bot->getLevel() - 10)
             continue;
 
         if (proto->RequiredSkill && !bot->HasSkill(proto->RequiredSkill))

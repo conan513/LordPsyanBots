@@ -108,7 +108,6 @@ include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}/Addons
   ${CMAKE_CURRENT_SOURCE_DIR}/AI
   ${CMAKE_CURRENT_SOURCE_DIR}/AI/CoreAI
-  ${CMAKE_CURRENT_SOURCE_DIR}/AI/NpcBots
   ${CMAKE_CURRENT_SOURCE_DIR}/AI/ScriptedAI
   ${CMAKE_CURRENT_SOURCE_DIR}/AI/SmartScripts
   ${CMAKE_CURRENT_SOURCE_DIR}/AuctionHouse
@@ -208,7 +207,7 @@ add_library(game STATIC
   ${game_STAT_PCH_SRC}
 )
 
-add_dependencies(plugins revision_data.h)
+add_dependencies(game plugins revision.h)
 # Generate precompiled header
 if (USE_COREPCH)
   add_cxx_pch(game ${game_STAT_PCH_HDR} ${game_STAT_PCH_SRC})

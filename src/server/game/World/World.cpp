@@ -85,9 +85,7 @@
 // playerbot mod
 #include "../../plugins/ahbot/AhBot.h"
 #include "../../plugins/playerbot/PlayerbotAIConfig.h"
-#include "../../plugins/playerbot/playerbot.h"
 #include "../../plugins/playerbot/RandomPlayerbotMgr.h"
-#include "../../plugins/playerbot/RandomPlayerbotFactory.h"
 // 19
 // 20
 // Visit http://www.realmsofwarcraft.com/bb for forums and information
@@ -1302,9 +1300,6 @@ void World::LoadConfigSettings(bool reload)
         m_timers[WUPDATE_AUTOBROADCAST].Reset();
     }
 
-    // RandomBot AutoLogin
-    m_bool_configs[CONFIG_RANDOMBOTAUTOLOGIN] = sConfigMgr->GetBoolDefault("RandomBotAutoLogin.On", true);
-
     // MySQL ping time interval
     m_int_configs[CONFIG_DB_PING_INTERVAL] = sConfigMgr->GetIntDefault("MaxPingTime", 30);
 
@@ -1343,7 +1338,6 @@ void World::LoadConfigSettings(bool reload)
 
     // AHBot
     m_int_configs[CONFIG_AHBOT_UPDATE_INTERVAL] = sConfigMgr->GetIntDefault("AuctionHouseBot.Update.Interval", 20);
-    m_int_configs[CONFIG_AHBOT_USE_PLUGINS] = sConfigMgr->GetBoolDefault("AuctionHouseBot.Use.Plugins", false);
 
     m_bool_configs[CONFIG_CALCULATE_CREATURE_ZONE_AREA_DATA] = sConfigMgr->GetBoolDefault("Calculate.Creature.Zone.Area.Data", false);
     m_bool_configs[CONFIG_CALCULATE_GAMEOBJECT_ZONE_AREA_DATA] = sConfigMgr->GetBoolDefault("Calculate.Gameoject.Zone.Area.Data", false);
@@ -1567,9 +1561,6 @@ void World::SetInitialWorldSettings()
 
     TC_LOG_INFO("server.loading", "Loading Creature templates...");
     sObjectMgr->LoadCreatureTemplates();
-
-    TC_LOG_INFO("server.loading", "Loading Creature template outfits...");     // must be after LoadCreatureTemplates
-    sObjectMgr->LoadCreatureOutfits();
 
     TC_LOG_INFO("server.loading", "Loading Equipment templates...");           // must be after LoadCreatureTemplates
     sObjectMgr->LoadEquipmentTemplates();
@@ -1973,13 +1964,6 @@ void World::SetInitialWorldSettings()
     auctionbot.Init();
 
     sPlayerbotAIConfig.Initialize();
-    uint8 randomBotAutologin = sWorld->getBoolConfig(CONFIG_RANDOMBOTAUTOLOGIN);
-    if (randomBotAutologin == 0)
-    {
-        return;
-    } else {
-        sRandomPlayerbotMgr.UpdateAIInternal(0);
-    }
 }
 
 void World::DetectDBCLang()
@@ -2154,6 +2138,10 @@ void World::Update(uint32 diff)
         auctionbot.Update();
     }
 
+    // playerbot mod
+    sRandomPlayerbotMgr.UpdateAI(diff);
+    sRandomPlayerbotMgr.UpdateSessions(diff);
+
     if (m_timers[WUPDATE_AUCTIONS_PENDING].Passed())
     {
         m_timers[WUPDATE_AUCTIONS_PENDING].Reset();
@@ -2161,19 +2149,12 @@ void World::Update(uint32 diff)
         sAuctionMgr->UpdatePendingAuctions();
     }
 
-    // playerbot mod
-    // <li> Handle AHBot operations
-    if (sWorld->getIntConfig(CONFIG_AHBOT_USE_PLUGINS) == 0)
-    {
-    if (m_timers[WUPDATE_AHBOT].Passed())
-    {
-        sAuctionBot->Update();
-        m_timers[WUPDATE_AHBOT].Reset();
-    }
-    } else {
-    sRandomPlayerbotMgr.UpdateAI(diff);
-    sRandomPlayerbotMgr.UpdateSessions(diff);
-    }
+    /// <li> Handle AHBot operations
+    // if (m_timers[WUPDATE_AHBOT].Passed())
+    //{
+    //    sAuctionBot->Update();
+    //    m_timers[WUPDATE_AHBOT].Reset();
+    //}
     // end of playerbot mod
 
     /// <li> Handle session updates when the timer has passed

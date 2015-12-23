@@ -358,9 +358,9 @@ void PlayerbotAI::SpellInterrupted(uint32 spellid)
     if (now <= lastSpell.time)
         return;
 
-    int castTimeSpent = 1000 * (now - lastSpell.time);
+    uint32 castTimeSpent = 1000 * (now - lastSpell.time);
 
-    int globalCooldown = CalculateGlobalCooldown(lastSpell.id);
+    int32 globalCooldown = CalculateGlobalCooldown(lastSpell.id);
     if (castTimeSpent < globalCooldown)
         SetNextCheckDelay(globalCooldown - castTimeSpent);
     else
@@ -1352,6 +1352,16 @@ string PlayerbotAI::HandleRemoteCommand(string command)
     else if (command == "position")
     {
         ostringstream out; out << bot->GetMapId() << "," << bot->GetPositionX() << "," << bot->GetPositionY() << "," << bot->GetPositionZ() << "," << bot->GetOrientation();
+        return out.str();
+    }
+    else if (command == "tpos")
+    {
+        Unit* target = *GetAiObjectContext()->GetValue<Unit*>("current target");
+        if (!target) {
+            return "";
+        }
+
+        ostringstream out; out << target->GetMapId() << "," << target->GetPositionX() << "," << target->GetPositionY() << "," << target->GetPositionZ() << "," << target->GetOrientation();
         return out.str();
     }
     else if (command == "target")

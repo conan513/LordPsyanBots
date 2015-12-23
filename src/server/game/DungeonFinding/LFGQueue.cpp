@@ -24,6 +24,8 @@
 #include "LFGMgr.h"
 #include "Log.h"
 
+#include "../Entities/Player/Player.h"
+
 namespace lfg
 {
 
@@ -520,9 +522,6 @@ LfgCompatibility LFGQueue::CheckCompatibility(GuidList check)
         return LFG_COMPATIBLES_WITH_LESS_PLAYERS;
     }
 
-    //FEYZEE: disable this code because it effect LFG while grouped
-    //FEYZEE: normally this code seems fine
-    /*
     // playerbot mod
     bool nonBotFound = false;
     for (GuidList::const_iterator it = check.begin(); it != check.end(); ++it)
@@ -537,7 +536,6 @@ LfgCompatibility LFGQueue::CheckCompatibility(GuidList check)
     if (!nonBotFound)
         return LFG_INCOMPATIBLES_HAS_IGNORES;
     // end of playerbot mod
-    */
 
     ObjectGuid gguid = *check.begin();
     proposal.queues = check;

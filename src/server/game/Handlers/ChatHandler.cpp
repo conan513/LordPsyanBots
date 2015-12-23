@@ -63,6 +63,7 @@
 // Visit http://www.realmsofwarcraft.com/bb for forums and information
 //
 // End of prepatch
+
 void WorldSession::HandleMessagechatOpcode(WorldPacket& recvData)
 {
     uint32 type;

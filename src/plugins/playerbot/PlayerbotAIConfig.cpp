@@ -26,7 +26,7 @@ void LoadList(string value, T &list)
 
 bool PlayerbotAIConfig::Initialize()
 {
-    sLog->outMessage("playerbot", LOG_LEVEL_INFO, "Initializing AI Playerbot by ike3, based on the original Playerbot by blueboy and screwed up by LordPsyan (Had to get my name in here somehow)");
+    sLog->outMessage("playerbot", LOG_LEVEL_INFO, "Initializing AI Playerbot by ike3, based on the original Playerbot by blueboy");
 
     string error;
     if (!config.LoadInitial("aiplayerbot.conf", error))
@@ -134,9 +134,9 @@ bool PlayerbotAIConfig::Initialize()
     maxGuildTaskAdvertisementTime = config.GetIntDefault("AiPlayerbot.MaxGuildTaskAdvertisementTime", 4 * 24 * 3600);
     minGuildTaskRewardTime = config.GetIntDefault("AiPlayerbot.MinGuildTaskRewardTime", 60);
     maxGuildTaskRewardTime = config.GetIntDefault("AiPlayerbot.MaxGuildTaskRewardTime", 600);
-    sLog->outMessage("playerbot", LOG_LEVEL_INFO, "AI Playerbot configuration loaded");
-    RandomPlayerbotFactory::CreateRandomBots();
 
+    RandomPlayerbotFactory::CreateRandomBots();
+    sLog->outMessage("playerbot", LOG_LEVEL_INFO, "AI Playerbot configuration loaded");
 
     return true;
 }

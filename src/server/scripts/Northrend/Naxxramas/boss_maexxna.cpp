@@ -235,7 +235,7 @@ public:
 
         void JustDied(Unit* /*killer*/) override
         {
-            if (victimGUID && !victimGUID.IsEmpty())
+            if (victimGUID)
                 if (Unit* victim = ObjectAccessor::GetUnit(*me, victimGUID))
                     victim->RemoveAurasDueToSpell(SPELL_WEB_WRAP, me->GetGUID());
 
@@ -248,6 +248,5 @@ public:
 void AddSC_boss_maexxna()
 {
     new boss_maexxna();
-
     new npc_webwrap();
 }

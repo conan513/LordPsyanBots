@@ -50,7 +50,6 @@ include_directories(
   ${CMAKE_SOURCE_DIR}/src/server/collision/Models
   ${CMAKE_SOURCE_DIR}/src/server/collision/Maps
   ${CMAKE_SOURCE_DIR}/src/server/shared
-  ${CMAKE_SOURCE_DIR}/src/server/shared/Database
   ${CMAKE_SOURCE_DIR}/src/server/shared/Configuration
   ${CMAKE_SOURCE_DIR}/src/server/shared/Cryptography
   ${CMAKE_SOURCE_DIR}/src/server/shared/Cryptography/Authentication
@@ -149,7 +148,7 @@ add_library(plugins STATIC
   ${plugins_STAT_PCH_SRC}
 )
 
-add_dependencies(plugins revision_data.h)
+add_dependencies(plugins revision.h)
 
 if( WIN32 )
   if ( MSVC )

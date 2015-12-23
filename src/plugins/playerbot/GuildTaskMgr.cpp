@@ -384,7 +384,7 @@ uint32 GuildTaskMgr::GetMaxItemTaskCount(uint32 itemId)
 
 bool GuildTaskMgr::IsGuildTaskItem(uint32 itemId, uint32 guildId)
 {
-    bool value = 0;
+    uint32 value = 0;
 
     QueryResult results = CharacterDatabase.PQuery(
             "select `value`, `time`, validIn from ai_playerbot_guild_tasks where `value` = '%u' and guildid = '%u' and `type` = 'itemTask'",
@@ -393,7 +393,7 @@ bool GuildTaskMgr::IsGuildTaskItem(uint32 itemId, uint32 guildId)
     if (results)
     {
         Field* fields = results->Fetch();
-        bool value = fields[0].GetUInt32();
+        value = fields[0].GetUInt32();
         uint32 lastChangeTime = fields[1].GetUInt32();
         uint32 validIn = fields[2].GetUInt32();
         if ((time(0) - lastChangeTime) >= validIn)
