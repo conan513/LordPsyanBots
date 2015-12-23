@@ -3017,6 +3017,13 @@ AuctionHouseBot.Alliance.Items.Amount.Ratio = 100
 
 AuctionHouseBot.Horde.Items.Amount.Ratio = 100
 
+#    Armory.Enable
+#        Description: Activates the WowArmory.
+#        Default:     0 - (Disable)
+#                     1 - (Enable)
+
+Armory.Enable = 1
+
 #
 #    AuctionHouseBot.Neutral.Items.Amount.Ratio
 #       Description: Enable/Disable (disabled if 0) the part of AHBot that puts items up for auction on Neutral AH

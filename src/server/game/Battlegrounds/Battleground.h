@@ -520,7 +520,7 @@ class Battleground
 
         ArenaTeamScore _arenaTeamScores[BG_TEAMS_COUNT];
 
-    private:
+    public:
         // Battleground
         BattlegroundTypeId m_TypeID;
         BattlegroundTypeId m_RandomTypeID;
@@ -602,7 +602,7 @@ class Battleground
         uint32 m_MaxPlayers;
         uint32 m_MinPlayersPerTeam;
         uint32 m_MinPlayers;
-
+    public:
         // Start location
         uint32 m_MapId;
         BattlegroundMap* m_Map;
