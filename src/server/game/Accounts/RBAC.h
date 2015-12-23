@@ -699,7 +699,10 @@ enum RBACPermissions
 
     // custom permissions 1000+
     // Prepatch by LordPsyan
-    // 01
+    RBAC_PERM_COMMAND_JAIL                                   = 901,
+    RBAC_PERM_COMMAND_JAIL_INFO                              = 902,
+    RBAC_PERM_COMMAND_JAIL_UN                                = 903,
+    RBAC_PERM_COMMAND_JAIL_RELOAD                            = 904,
     // 02
     // 03
     // 04
@@ -718,7 +721,7 @@ enum RBACPermissions
     // 17
     // 18
     // 19
-    // 20
+    RBAC_PERM_COMMAND_WORLD_CHAT                             = 1015,
     // Visit http://www.realmsofwarcraft.com/bb for forums and information
     //
     // End of prepatch

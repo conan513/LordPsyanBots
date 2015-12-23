@@ -76,6 +76,7 @@ enum WorldTimers
     WUPDATE_EVENTS,
     WUPDATE_CLEANDB,
     WUPDATE_AUTOBROADCAST,
+    WUPDATE_AUTOANC,
     WUPDATE_MAILBOXQUEUE,
     WUPDATE_DELETECHARS,
     WUPDATE_AHBOT,
@@ -87,6 +88,7 @@ enum WorldTimers
 enum WorldBoolConfigs
 {
     CONFIG_DURABILITY_LOSS_IN_PVP = 0,
+    BATTLEGROUND_CROSSFACTION_ENABLED,
     CONFIG_ADDON_CHANNEL,
     CONFIG_ALLOW_PLAYER_COMMANDS,
     CONFIG_CLEAN_CHARACTER_DB,
@@ -148,6 +150,7 @@ enum WorldBoolConfigs
     CONFIG_DELETE_CHARACTER_TICKET_TRACE,
     CONFIG_DBC_ENFORCE_ITEM_ATTRIBUTES,
     CONFIG_PRESERVE_CUSTOM_CHANNELS,
+    CONFIG_ARMORY_ENABLE,
     CONFIG_PDUMP_NO_PATHS,
     CONFIG_PDUMP_NO_OVERWRITE,
     CONFIG_QUEST_IGNORE_AUTO_ACCEPT,
@@ -164,15 +167,16 @@ enum WorldBoolConfigs
     // Prepatch by LordPsyan
     // 01
     // 02
-    // 03
+    CONFIG_NO_CAST_TIME,
+    CONFIG_HURT_IN_REAL_TIME,
     // 04
     // 05
     // 06
-    // 07
+    CONFIG_EXTERNAL_MAIL_ENABLE,
     // 08
     // 09
     // 10
-    // 11
+    CONFIG_FAST_FISHING,
     // 12
     // 13
     // 14
@@ -180,7 +184,8 @@ enum WorldBoolConfigs
     // 16
     // 17
     // 18
-    // 19
+    CONFIG_GAIN_HONOR_GUARD,
+    CONFIG_GAIN_HONOR_ELITE,
     // 20
     // Visit http://www.realmsofwarcraft.com/bb for forums and information
     //
@@ -206,6 +211,9 @@ enum WorldFloatConfigs
     CONFIG_CREATURE_FAMILY_ASSISTANCE_RADIUS,
     CONFIG_THREAT_RADIUS,
     CONFIG_CHANCE_OF_GM_SURVEY,
+    VAS_Config_xPlayer,
+    VAS_Min_D_Mod,
+    VAS_Min_HP_Mod,
     CONFIG_STATS_LIMITS_DODGE,
     CONFIG_STATS_LIMITS_PARRY,
     CONFIG_STATS_LIMITS_BLOCK,
@@ -217,15 +225,16 @@ enum WorldFloatConfigs
     // Prepatch by LordPsyan
     // 21
     // 22
-    // 23
+    CONFIG_SPEED_GAME,
     // 24
     // 25
     // 26
-    // 27
+    CONFIG_ATTACKSPEED_PLAYER,
+    CONFIG_ATTACKSPEED_ALL,
     // 28
     // 29
     // 30
-    // 31
+    CONFIG_RESPAWNSPEED,
     // 32
     // 33
     // 34
@@ -399,6 +408,9 @@ enum WorldIntConfigs
     CONFIG_WARDEN_CLIENT_BAN_DURATION,
     CONFIG_WARDEN_NUM_MEM_CHECKS,
     CONFIG_WARDEN_NUM_OTHER_CHECKS,
+    VAS_VasDebug,
+    VAS_AutoInstance,
+    VAS_PlayerChangeNotify,
     CONFIG_WINTERGRASP_PLR_MAX,
     CONFIG_WINTERGRASP_PLR_MIN,
     CONFIG_WINTERGRASP_PLR_MIN_LVL,
@@ -418,6 +430,7 @@ enum WorldIntConfigs
     CONFIG_BIRTHDAY_TIME,
     CONFIG_CREATURE_PICKPOCKET_REFILL,
     CONFIG_AHBOT_UPDATE_INTERVAL,
+    CONFIG_EXTERNAL_MAIL_INTERVAL,
     CONFIG_CHARTER_COST_GUILD,
     CONFIG_CHARTER_COST_ARENA_2v2,
     CONFIG_CHARTER_COST_ARENA_3v3,
@@ -511,6 +524,7 @@ enum Rates
     RATE_CORPSE_DECAY_LOOTED,
     RATE_INSTANCE_RESET_TIME,
     RATE_TARGET_POS_RECALCULATION_RANGE,
+    RATE_PVP_RANK_EXTRA_HONOR,
     RATE_DURABILITY_LOSS_ON_DEATH,
     RATE_DURABILITY_LOSS_DAMAGE,
     RATE_DURABILITY_LOSS_PARRY,
@@ -520,6 +534,26 @@ enum Rates
     RATE_MONEY_QUEST,
     RATE_MONEY_MAX_LEVEL_QUEST,
     MAX_RATES
+};
+
+enum HonorKillPvPRank
+{
+    HKRANK00,
+    HKRANK01,
+    HKRANK02,
+    HKRANK03,
+    HKRANK04,
+    HKRANK05,
+    HKRANK06,
+    HKRANK07,
+    HKRANK08,
+    HKRANK09,
+    HKRANK10,
+    HKRANK11,
+    HKRANK12,
+    HKRANK13,
+    HKRANK14,
+    HKRANKMAX
 };
 
 /// Can be used in SMSG_AUTH_RESPONSE packet
@@ -651,6 +685,9 @@ class World
         void AddSession(WorldSession* s);
         void SendAutoBroadcast();
         bool RemoveSession(uint32 id);
+
+        void SendRNDBroadcastIRC();
+
         /// Get the number of current active sessions
         void UpdateMaxSessionCounters();
         const SessionMap& GetAllSessions() const { return m_sessions; }
@@ -716,6 +753,14 @@ class World
         /// Get the path where data (dbc, maps) are stored on disk
         std::string const& GetDataPath() const { return m_dataPath; }
 
+     /// Return the Mob IDs to be Autobalanced
+        std::string GetVAS40() const { return VAS_AutoBalance_40_Name; }
+        std::string GetVAS25() const { return VAS_AutoBalance_25_Name; }
+        std::string GetVAS20() const { return VAS_AutoBalance_20_Name; }
+        std::string GetVAS10() const { return VAS_AutoBalance_10_Name; }
+        std::string GetVAS5() const { return VAS_AutoBalance_5_Name; }
+        std::string GetVAS2() const { return VAS_AutoBalance_2_Name; }
+
         /// When server started?
         time_t const& GetStartTime() const { return m_startTime; }
         /// What time is it?
@@ -749,6 +794,8 @@ class World
         void SendGlobalGMMessage(WorldPacket* packet, WorldSession* self = nullptr, uint32 team = 0);
         bool SendZoneMessage(uint32 zone, WorldPacket* packet, WorldSession* self = nullptr, uint32 team = 0);
         void SendZoneText(uint32 zone, const char *text, WorldSession* self = nullptr, uint32 team = 0);
+
+        uint32 pvp_ranks[HKRANKMAX];
 
         /// Are we in the middle of a shutdown?
         bool IsShuttingDown() const { return m_ShutdownTimer > 0; }
@@ -891,6 +938,14 @@ class World
         uint32 m_ShutdownTimer;
         uint32 m_ShutdownMask;
 
+        std::string VAS_AutoBalance_40_Name;
+        std::string VAS_AutoBalance_25_Name;
+        std::string VAS_AutoBalance_20_Name;
+        std::string VAS_AutoBalance_10_Name;
+        std::string VAS_AutoBalance_5_Name;
+        std::string VAS_AutoBalance_2_Name;
+        std::string VAS_color;
+
         uint32 m_CleaningFlags;
 
         bool m_isClosed;
@@ -898,6 +953,7 @@ class World
         time_t m_startTime;
         time_t m_gameTime;
         IntervalTimer m_timers[WUPDATE_COUNT];
+        IntervalTimer extmail_timer;
         time_t mail_timer;
         time_t mail_timer_expires;
         uint32 m_updateTime, m_updateTimeSum;

@@ -264,9 +264,10 @@ void WorldSession::HandleWhoOpcode(WorldPacket& recvData)
             continue;
 
         // check if target is globally visible for player
+        /* Remove check so Level 255 shows up in who list
         if (!target->IsVisibleGloballyFor(_player))
             continue;
-
+*/
         // check if target's level is in level range
         uint8 lvl = target->getLevel();
         if (lvl < level_min || lvl > level_max)
@@ -1370,6 +1371,21 @@ void WorldSession::HandleSetTitleOpcode(WorldPacket& recvData)
 
 void WorldSession::HandleTimeSyncResp(WorldPacket& recvData)
 {
+    Battleground* bg = _player->GetBattleground();
+    if (bg)
+    {
+        if (_player->ShouldForgetBGPlayers() && bg)
+        {
+            _player->DoForgetPlayersInBG(bg);
+            _player->SetForgetBGPlayers(false);
+        }
+    }
+    else if (_player->ShouldForgetInListPlayers())
+    {
+        _player->DoForgetPlayersInList();
+        _player->SetForgetInListPlayers(false);
+    }
+
     TC_LOG_DEBUG("network", "CMSG_TIME_SYNC_RESP");
 
     uint32 counter, clientTicks;
