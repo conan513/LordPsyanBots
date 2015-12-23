@@ -57,7 +57,7 @@ struct PlayerLevelInfo;
 struct PageText
 {
     std::string Text;
-    uint16 NextPage;
+    uint32 NextPage;
 };
 
 /// Key for storing temp summon data in TempSummonDataContainer
@@ -135,21 +135,6 @@ struct GameTele
 };
 
 typedef std::unordered_map<uint32, GameTele > GameTeleContainer;
-
-#define MAX_CREATURE_OUTFIT_DISPLAYS 11
-struct CreatureOutfit
-{
-    uint8 race;
-    uint8 gender;
-    uint8 face;
-    uint8 skin;
-    uint8 hair;
-    uint8 facialhair;
-    uint8 haircolor;
-    uint32 outfit[MAX_CREATURE_OUTFIT_DISPLAYS];
-};
-
-typedef std::unordered_map<uint32, CreatureOutfit > CreatureOutfitContainer;
 
 enum ScriptsType
 {
@@ -1049,7 +1034,6 @@ class ObjectMgr
 
         void LoadNPCSpellClickSpells();
 
-        void LoadCreatureOutfits();
         void LoadGameTele();
 
         void LoadGossipMenu();
@@ -1058,29 +1042,6 @@ class ObjectMgr
         void LoadVendors();
         void LoadTrainerSpell();
         void AddSpellToTrainer(uint32 entry, uint32 spell, uint32 spellCost, uint32 reqSkill, uint32 reqSkillValue, uint32 reqLevel);
-
-        // Loads the jail conf out of the database
-        void LoadJailConf(void);
-
-        // Jail Config...
-        std::string m_jail_obt;
-        uint32 m_jailconf_max_jails;    // Jail times when the char will be deleted
-        uint32 m_jailconf_max_duration; // Max. jail duration in hours
-        uint32 m_jailconf_min_reason;   // Min. char length of the reason
-        uint32 m_jailconf_warn_player;  // Warn player every login if max_jails is nearly reached?
-        uint32 m_jailconf_amnestie;     // player amnestie
-        float m_jailconf_ally_x;        // Coords of the jail for the allies
-        float m_jailconf_ally_y;
-        float m_jailconf_ally_z;
-        float m_jailconf_ally_o;
-        uint32 m_jailconf_ally_m;
-        float m_jailconf_horde_x;       // Coords of the jail for the horde
-        float m_jailconf_horde_y;
-        float m_jailconf_horde_z;
-        float m_jailconf_horde_o;
-        uint32 m_jailconf_horde_m;
-        uint32 m_jailconf_ban;          // Ban acc if max. jailtimes is reached?
-        uint32 m_jailconf_radius;       // Radius in which a jailed char can walk
 
         std::string GeneratePetName(uint32 entry);
         uint32 GetBaseXP(uint8 level);
@@ -1287,8 +1248,6 @@ class ObjectMgr
         bool AddGameTele(GameTele& data);
         bool DeleteGameTele(std::string const& name);
 
-        CreatureOutfitContainer const& GetCreatureOutfitMap() const { return _creatureOutfitStore; }
-
         TrainerSpellData const* GetNpcTrainerSpells(uint32 entry) const
         {
             CacheTrainerSpellContainer::const_iterator  iter = _cacheTrainerSpellStore.find(entry);
@@ -1439,8 +1398,6 @@ class ObjectMgr
 
         PageTextContainer _pageTextStore;
         InstanceTemplateContainer _instanceTemplateStore;
-
-        CreatureOutfitContainer _creatureOutfitStore;
 
     private:
         void LoadScripts(ScriptsType type);

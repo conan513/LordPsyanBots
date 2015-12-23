@@ -10,13 +10,16 @@
 
 add_subdirectory(genrev)
 add_subdirectory(common)
-add_subdirectory(plugins)
 
 if(SERVERS)
   add_subdirectory(server)
+  add_subdirectory(plugins)
 endif(SERVERS)
 
 if(TOOLS)
   add_subdirectory(tools)
 endif(TOOLS)
 
+if(TESTS)
+  add_subdirectory(test)
+endif(TESTS)

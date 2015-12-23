@@ -36,9 +36,6 @@ void AddSC_holiday_spell_scripts();
 
 void AddSC_SmartScripts();
 
-//TeleNPC2
-void AddSC_npc_teleport();
-
 //Commands
 void AddSC_account_commandscript();
 void AddSC_achievement_commandscript();
@@ -60,7 +57,6 @@ void AddSC_group_commandscript();
 void AddSC_guild_commandscript();
 void AddSC_honor_commandscript();
 void AddSC_instance_commandscript();
-void AddSC_jail_commandscript();
 void AddSC_learn_commandscript();
 void AddSC_lfg_commandscript();
 void AddSC_list_commandscript();
@@ -689,6 +685,7 @@ void AddSC_outdoorpvp_zm();
 // player
 void AddSC_chat_log();
 void AddSC_action_ip_logger();
+
 #endif
 
 void AddScripts()
@@ -750,7 +747,6 @@ void AddCommandScripts()
     AddSC_guild_commandscript();
     AddSC_honor_commandscript();
     AddSC_instance_commandscript();
-    AddSC_jail_commandscript();
     AddSC_learn_commandscript();
     AddSC_lookup_commandscript();
     AddSC_lfg_commandscript();
@@ -1415,53 +1411,43 @@ void AddBattlegroundScripts()
 
 #ifdef SCRIPTS
 /* This is where custom scripts' loading functions should be declared. */
-    // All In One NPC
-    void AddSC_npc_all();
+// start01
 // start02
 // start03
 // start04
-// Arena Gambler
-void AddSC_ArenaGambler();
+// start05
 // start06
 // start07
 // start08
-    // Beastmaster
-    void AddSC_Npc_Beastmaster();
+// start09
 // start10
 // start11
 // start12
-    // Bounty Hunter
-    void AddSC_BountyHunter();
+// start13
 // start14
 // start15
 // start16
-    //GuildHouse NPC
-    void AddSC_guildmaster();
+// start17
 // start18
 // start19
 // start20
-// Killstreak
-void AddSC_PvP_System();
+// start21
 // start22
 // start23
 // start24
-    // Level NPC
-    void AddSC_levelnpc();
+// start25
 // start26
 // start27
 // start28
-    // Lottery NPC
-    void AddSC_npc_lottery();
+// start29
 // start30
 // start31
 // start32
-    // Buff NPC
-    void AddSC_Npc_Buff();
+// start33
 // start34
 // start35
 // start36
-    // Enchant NPC
-    void AddSC_npc_enchantment();
+// start37
 // start38
 // start39
 // start40
@@ -1469,56 +1455,47 @@ void AddSC_PvP_System();
 // start42
 // start43
 // start44
-    // Profession Npc
-    void AddSC_professionnpc();
+// start45
 // start46
 // start47
 // start48
-// IceRune
-void AddSC_summon();
+// start49
 // start50
 // start51
 // start52
-// TeleNPC2
-void AddSC_npc_teleport();
+// start53
 // start54
 // start55
 // start56
-void AddSC_PWS_Transmogrification();
-void AddSC_CS_Transmogrification();
+// start57
 // start58
 // start59
 // start60
-// 1v1 Arena
-void AddSC_npc_1v1arena();
+// start61
 // start62
 // start63
 // start64
 // start65
 // start66
 // start67
-// Vote Rewarder NPC
-    void AddSC_npc_vote_rewarder();
+// start68
 // start69
 // start70
 // start71
 // start72
-// Reforging
-void AddSC_REFORGER_NPC();
+// start73
 // start74
 // start75
 // start76
-// Start Guild
-    void AddSC_gon_playerscripts();
+// start77
 // start78
 // start79
 // start80
-void AddSC_World_Chat();
+// start81
 // start82
 // start83
 // start84
-    //Vas AutoBalance
-    void AddSC_VAS_AutoBalance();
+// start85
 // start86
 // start87
 // start88
@@ -1533,30 +1510,15 @@ void AddSC_World_Chat();
 // start97
 // start98
 // start99
-//Bots
-void AddSC_death_knight_bot();
-void AddSC_druid_bot();
-void AddSC_hunter_bot();
-void AddSC_mage_bot();
-void AddSC_paladin_bot();
-void AddSC_priest_bot();
-void AddSC_rogue_bot();
-void AddSC_shaman_bot();
-void AddSC_warlock_bot();
-void AddSC_warrior_bot();
-void AddSC_blademaster_bot();
-void AddSC_script_bot_commands();
-//advanced
-//void AddSC_BotQuests_chapter1();
-//end Bots
+// start100
 // start101
 // start102
 // start103
-void AddSC_TemplateNPC();
+// start104
 // start105
 // start106
 // start107
-void AddSC_NPC_TransmogDisplayVendor();
+// start108
 // start109
 // start100
 // start111
@@ -1575,53 +1537,43 @@ void AddCustomScripts()
 {
 #ifdef SCRIPTS
     /* This is where custom scripts should be added. */
-    // All In One NPC
-    AddSC_npc_all();
+// end01
 // end02
 // end03
 // end04
-    // Arena Gambler
-    AddSC_ArenaGambler();
+// end05
 // end06
 // end07
 // end08
-    // Beastmaster
-    AddSC_Npc_Beastmaster();
+// end09
 // end10
 // end11
 // end12
-    // Bounty Hunter
-    AddSC_BountyHunter();
+// end13
 // end14
 // end15
 // end16
-    // GuildHouse NPC
-    AddSC_guildmaster();
+// end17
 // end18
 // end19
 // end20
-    // Killstreak
-    AddSC_PvP_System();
+// end21
 // end22
 // end23
 // end24
-    // Level NPC
-    AddSC_levelnpc();
+// end25
 // end26
 // end27
 // end28
-    // Lottery NPC
-    AddSC_npc_lottery();
+// end29
 // end30
 // end31
 // end32
-    // Buff NPC
-    AddSC_Npc_Buff();
+// end33
 // end34
 // end35
 // end36
-    // Enchant NPC
-    AddSC_npc_enchantment();
+// end37
 // end38
 // end39
 // end40
@@ -1629,56 +1581,47 @@ void AddCustomScripts()
 // end42
 // end43
 // end44
-    // Profession Npc
-    AddSC_professionnpc();
+// end45
 // end46
 // end47
 // end48
-    // IceRune
-    AddSC_summon();
+// end49
 // end50
 // end51
 // end52
-    // TeleNPC2
-    AddSC_npc_teleport();
+// end53
 // end54
 // end55
 // end56
-    AddSC_PWS_Transmogrification();
-    AddSC_CS_Transmogrification();
+// end57
 // end58
 // end59
 // end60
-// 1v1 Arena
-    AddSC_npc_1v1arena();
+// end61
 // end62
 // end63
 // end64
 // end65
 // end66
 // end67
-// Vote Rewarder NPC
-    AddSC_npc_vote_rewarder();
+// end68
 // end69
 // end70
 // end71
 // end72
-    // Reforging
-    AddSC_REFORGER_NPC();
+// end73
 // end74
 // end75
 // end76
-// Start Guild
-AddSC_gon_playerscripts();
+// end77
 // end78
 // end79
 // end80
-    AddSC_World_Chat();
+// end81
 // end82
 // end83
 // end84
-    //VAS AutoBalance
-    AddSC_VAS_AutoBalance();
+// end85
 // end86
 // end87
 // end88
@@ -1693,30 +1636,15 @@ AddSC_gon_playerscripts();
 // end97
 // end98
 // end99
-    //Bots
-    AddSC_death_knight_bot();
-    AddSC_druid_bot();
-    AddSC_hunter_bot();
-    AddSC_mage_bot();
-    AddSC_paladin_bot();
-    AddSC_priest_bot();
-    AddSC_rogue_bot();
-    AddSC_shaman_bot();
-    AddSC_warlock_bot();
-    AddSC_warrior_bot();
-    AddSC_blademaster_bot();
-    AddSC_script_bot_commands();
-    //advanced
-    //AddSC_BotQuests_chapter1();
-    //end Bots
+// end100
 // end101
 // end102
 // end103
-    AddSC_TemplateNPC();
+// end104
 // end105
 // end106
 // end107
-    AddSC_NPC_TransmogDisplayVendor();
+// end108
 // end109
 // end100
 // end111

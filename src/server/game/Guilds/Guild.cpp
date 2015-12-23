@@ -1516,31 +1516,6 @@ void Guild::HandleInviteMember(WorldSession* session, std::string const& name)
     Player* pInvitee = ObjectAccessor::FindPlayerByName(name);
     if (!pInvitee)
     {
-        if (sWorld->getBoolConfig(CONFIG_FAKE_WHO_LIST))
-        {
-            PreparedStatement* fake = CharacterDatabase.GetPreparedStatement(FAKE_CHAR_SEL_RACE_BY_NAME_IS_ONLINE);
-            fake->setUInt32(0, sWorld->getIntConfig(CONFIG_FAKE_WHO_ONLINE_INTERVAL));
-            fake->setString(1, name);
-            PreparedQueryResult fakeresult = CharacterDatabase.Query(fake);
-
-            if (fakeresult)
-            {
-                Field* fields = fakeresult->Fetch();
-                uint32 team = Player::TeamForRace(fields[0].GetUInt8());
-
-                if (!sWorld->getBoolConfig(CONFIG_ALLOW_TWO_SIDE_INTERACTION_GUILD) && team != session->GetPlayer()->GetTeam())
-                {
-                    SendCommandResult(session, GUILD_COMMAND_INVITE, ERR_GUILD_NOT_ALLIED, name);
-                }
-                else
-                {
-                    ChatHandler(session->GetPlayer()->GetSession()).PSendSysMessage(LANG_FAKE_NOT_DISTURB);
-                }
-
-                return;
-            }
-        }
-
         SendCommandResult(session, GUILD_COMMAND_INVITE, ERR_GUILD_PLAYER_NOT_FOUND_S, name);
         return;
     }

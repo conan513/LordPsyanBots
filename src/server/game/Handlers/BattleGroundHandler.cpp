@@ -37,11 +37,11 @@
 // Prepatch by LordPsyan
 // 01
 // 02
-#include "../../scripts/Custom/npc_arena1v1.h"
+// 03
 // 04
 // 05
 // 06
-#include "../Cfbg/Cfbg.h"
+// 07
 // 08
 // 09
 // 10
@@ -468,10 +468,6 @@ void WorldSession::HandleBattleFieldPortOpcode(WorldPacket &recvData)
         if (!_player->IsInvitedForBattlegroundQueueType(bgQueueTypeId))
             return;                                 // cheating?
 
-        // 1v1 Arena. Player can't join arena when forbidden talents are used.
-        if(bgQueueTypeId == BATTLEGROUND_QUEUE_5v5 && Arena1v1CheckTalents(_player) == false)
-            return;
-
         if (!_player->InBattleground())
             _player->SetBattlegroundEntryPoint();
 
@@ -588,7 +584,7 @@ void WorldSession::HandleBattlefieldStatusOpcode(WorldPacket & /*recvData*/)
             {
                 // this line is checked, i only don't know if GetStartTime is changing itself after bg end!
                 // send status in Battleground
-                sBattlegroundMgr->BuildBattlegroundStatusPacket(&data, bg, i, STATUS_IN_PROGRESS, bg->GetEndTime(), bg->GetStartTime(), arenaType, _player->GetTeam());
+                sBattlegroundMgr->BuildBattlegroundStatusPacket(&data, bg, i, STATUS_IN_PROGRESS, bg->GetEndTime(), bg->GetStartTime(), arenaType, _player->GetBGTeam());
                 SendPacket(&data);
                 continue;
             }

@@ -41,7 +41,7 @@
 // Prepatch by LordPsyan
 // 61
 // 62
-#include "IRCClient.h"
+// 63
 // 64
 // 65
 // 66
@@ -63,6 +63,7 @@
 // Visit http://www.realmsofwarcraft.com/bb for forums and information
 //
 // End of prepatch
+
 void WorldSession::HandleMessagechatOpcode(WorldPacket& recvData)
 {
     uint32 type;
@@ -71,18 +72,6 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recvData)
     recvData >> type;
     recvData >> lang;
 
-    if (sWorld->getBoolConfig(BATTLEGROUND_CROSSFACTION_ENABLED) && lang != LANG_ADDON)
-    {
-        switch (type)
-        {
-        case CHAT_MSG_BATTLEGROUND:
-        case CHAT_MSG_BATTLEGROUND_LEADER:
-            lang = LANG_UNIVERSAL;
-        default:
-            break;
-        }
-    }
-
     if (type >= MAX_CHAT_MSG_TYPE)
     {
         TC_LOG_ERROR("network", "CHAT: Wrong message type received: %u", type);
@@ -90,7 +79,7 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recvData)
         return;
     }
 
-    if (lang == CHAT_MSG_AFK && type != CHAT_MSG_DND)
+    if (lang == LANG_UNIVERSAL && type != CHAT_MSG_AFK && type != CHAT_MSG_DND)
     {
         TC_LOG_ERROR("network", "CMSG_MESSAGECHAT: Possible hacking-attempt: %s tried to send a message in universal language", GetPlayerInfo().c_str());
         SendNotification(LANG_UNKNOWN_LANGUAGE);
@@ -288,10 +277,6 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recvData)
                 return;
             }
 
-            if (!GetPlayer()->IsGameMaster())
-                if (GetPlayer()->SendBattleGroundChat(type, msg))
-                    return;
-
             if (type == CHAT_MSG_SAY)
                 sender->Say(msg, Language(lang));
             else if (type == CHAT_MSG_EMOTE)
@@ -310,15 +295,7 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recvData)
             Player* receiver = ObjectAccessor::FindConnectedPlayerByName(to);
             if (!receiver || (lang != LANG_ADDON && !receiver->isAcceptWhispers() && receiver->GetSession()->HasPermission(rbac::RBAC_PERM_CAN_FILTER_WHISPERS) && !receiver->IsInWhisperWhiteList(sender->GetGUID())))
             {
-                // If Fake WHO List system on then show player DND
-                if (sWorld->getBoolConfig(CONFIG_FAKE_WHO_LIST))
-                {
-                    ChatHandler(sender->GetSession()).PSendSysMessage(LANG_FAKE_NOT_DISTURB);
-                }
-                else
-                {
-                    SendPlayerNotFoundNotice(to);
-                }
+                SendPlayerNotFoundNotice(to);
                 return;
             }
             if (!sender->IsGameMaster() && sender->getLevel() < sWorld->getIntConfig(CONFIG_CHAT_WHISPER_LEVEL_REQ) && !receiver->IsInWhisperWhiteList(sender->GetGUID()))
@@ -553,7 +530,6 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recvData)
 
             if (ChannelMgr* cMgr = ChannelMgr::forTeam(sender->GetTeam()))
             {
-                sIRC->Send_WoW_IRC(sender, channel, msg);
                 if (Channel* chn = cMgr->GetChannel(channel, sender))
                 {
                     // Playerbot mod: broadcast message to bot members

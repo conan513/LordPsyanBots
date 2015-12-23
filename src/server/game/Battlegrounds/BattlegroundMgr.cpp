@@ -421,7 +421,7 @@ Battleground* BattlegroundMgr::CreateNewBattleground(BattlegroundTypeId original
                 maxPlayersPerTeam = 3;
                 break;
             case ARENA_TYPE_5v5:
-                maxPlayersPerTeam = 1; // 1v1 Arena
+                maxPlayersPerTeam = 5;
                 break;
         }
 
@@ -693,7 +693,7 @@ void BattlegroundMgr::SendToBattleground(Player* player, uint32 instanceId, Batt
     if (Battleground* bg = GetBattleground(instanceId, bgTypeId))
     {
         uint32 mapid = bg->GetMapId();
-        uint32 team = player->GetTeam();
+        uint32 team = player->GetBGTeam();
         if (team == 0)
             team = player->GetTeam();
 

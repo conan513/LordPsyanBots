@@ -21,11 +21,7 @@
 #include "Common.h"
 #include "Log.h"
 
-#ifdef _WIN32
 #include <mysql.h>
-#else
-#include </usr/include/mysql/mysql.h>
-#endif
 
 /**
     @class Field

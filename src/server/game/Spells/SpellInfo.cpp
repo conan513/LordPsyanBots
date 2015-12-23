@@ -25,7 +25,6 @@
 #include "Battleground.h"
 #include "Vehicle.h"
 #include "Pet.h"
-#include "World.h"
 
 uint32 GetTargetFlagMask(SpellTargetObjectTypes objType)
 {
@@ -2115,10 +2114,7 @@ uint32 SpellInfo::CalcCastTime(Spell* spell /*= NULL*/) const
     if (HasAttribute(SPELL_ATTR0_REQ_AMMO) && (!IsAutoRepeatRangedSpell()))
         castTime += 500;
 
-    if (!sWorld->getBoolConfig(CONFIG_NO_CAST_TIME))
-        return (castTime > 0) ? uint32(castTime) : 0;
-    else
-        return 0;
+    return (castTime > 0) ? uint32(castTime) : 0;
 }
 
 uint32 SpellInfo::GetMaxTicks() const
@@ -2233,11 +2229,6 @@ int32 SpellInfo::CalcPowerCost(Unit const* caster, SpellSchoolMask schoolMask) c
                 powerCost *= casterScaler->ratio / spellScaler->ratio;
         }
     }
-
-    //npcbot - apply bot spell cost mods
-    if (powerCost > 0 && caster->GetTypeId() == TYPEID_UNIT && caster->ToCreature()->GetBotAI())
-        caster->ToCreature()->ApplyCreatureSpellCostMods(this, powerCost);
-    //end npcbot
 
     // PCT mod from user auras by school
     powerCost = int32(powerCost * (1.0f + caster->GetFloatValue(UNIT_FIELD_POWER_COST_MULTIPLIER + school)));

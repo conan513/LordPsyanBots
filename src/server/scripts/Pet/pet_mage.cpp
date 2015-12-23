@@ -63,9 +63,9 @@ class npc_pet_mage_mirror_image : public CreatureScript
                 Trinity::UnitListSearcher<Trinity::AnyUnfriendlyUnitInObjectRangeCheck> searcher(me, targets, u_check);
                 me->VisitNearbyObject(40.0f, searcher);
 
-                Unit* highestThreatUnit = NULL;
+                Unit* highestThreatUnit = nullptr;
                 float highestThreat = 0.0f;
-                Unit* nearestPlayer = NULL;
+                Unit* nearestPlayer = nullptr;
                 for (std::list<Unit*>::const_iterator iter = targets.begin(); iter != targets.end(); ++iter)
                 {
                     // Consider only units without CC
@@ -111,7 +111,6 @@ class npc_pet_mage_mirror_image : public CreatureScript
                 // Prioritize units with threat referenced to owner
                 if (highestThreat > 0.0f && highestThreatUnit)
                     me->Attack(highestThreatUnit, false);
-
                 // If there is no such target, try to attack nearest hostile unit if such exists
                 else if (nearestPlayer)
                     me->Attack(nearestPlayer, false);
@@ -197,9 +196,9 @@ class npc_pet_mage_mirror_image : public CreatureScript
                     return;
 
                 // assign target if image doesnt have any or the target is not actual
-                if (me->GetVictim() && me->GetVictim() != target || !me->GetVictim())
+                if (!target || me->GetVictim() != target)
                 {
-                    Unit* ownerTarget = NULL;
+                    Unit* ownerTarget = nullptr;
                     if (Player* owner = me->GetCharmerOrOwner()->ToPlayer())
                         ownerTarget = owner->GetSelectedUnit();
 
