@@ -2134,6 +2134,18 @@ class Unit : public WorldObject
         void TextEmote(uint32 textId, WorldObject const* target = nullptr, bool isBossEmote = false);
         void Whisper(uint32 textId, Player* target, bool isBossWhisper = false);
 
+        //npcbot
+        bool HasReactive(ReactiveType reactive) const { return m_reactiveTimer[reactive] > 0; }
+        void ClearReactive(ReactiveType reactive);
+
+        void SuspendDelayedSwing();
+        void ExecuteDelayedSwingHit(bool extra = false);
+        CalcDamageInfo _damageInfo;
+        ObjectGuid _delayedTargetGuid;
+        uint32 _swingDelayTimer;
+        bool _swingLanded;
+        //end npcbot
+
     protected:
         explicit Unit (bool isWorldObject);
 
