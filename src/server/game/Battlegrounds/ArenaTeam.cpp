@@ -439,7 +439,7 @@ void ArenaTeam::Query(WorldSession* session)
     WorldPacket data(SMSG_ARENA_TEAM_QUERY_RESPONSE, 4*7+GetName().size()+1);
     data << uint32(GetId());                                // team id
     data << GetName();                                      // team name
-    data << uint32(GetType());                              // arena team type (2=2x2, 3=3x3 or 5=5x5)
+    data << uint32(GetType() == 1 ? 5 : GetType());         // arena team type (2=2x2, 3=3x3 or 1=1x1(modify 1 to 5, so player can see arenateam in 5v5 slot))
     data << uint32(BackgroundColor);                        // background color
     data << uint32(EmblemStyle);                            // emblem style
     data << uint32(EmblemColor);                            // emblem color
@@ -611,6 +611,8 @@ uint32 ArenaTeam::GetPoints(uint32 memberRating)
         points *= 0.76f;
     else if (Type == ARENA_TEAM_3v3)
         points *= 0.88f;
+    else if (Type == ARENA_TEAM_5v5) // 1v1 Arena
+        points *= sWorld->getFloatConfig(CONFIG_ARENA_1V1_ARENAPOINTS_MULTI);
 
     points *= sWorld->getRate(RATE_ARENA_POINTS);
 

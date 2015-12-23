@@ -1090,6 +1090,14 @@ void World::LoadConfigSettings(bool reload)
     m_float_configs[CONFIG_ARENA_LOSE_RATING_MODIFIER]               = sConfigMgr->GetFloatDefault("Arena.ArenaLoseRatingModifier", 24.0f);
     m_float_configs[CONFIG_ARENA_MATCHMAKER_RATING_MODIFIER]         = sConfigMgr->GetFloatDefault("Arena.ArenaMatchmakerRatingModifier", 24.0f);
 
+    m_bool_configs[CONFIG_ARENA_1V1_ENABLE]                             = sConfigMgr->GetBoolDefault("Arena.1v1.Enable", true);
+    m_bool_configs[CONFIG_ARENA_1V1_ANNOUNCER]                         = sConfigMgr->GetBoolDefault("Arena.1v1.Announcer", false);
+    m_int_configs[CONFIG_ARENA_1V1_MIN_LEVEL]                         = sConfigMgr->GetIntDefault("Arena.1v1.MinLevel", 80);
+    m_int_configs[CONFIG_ARENA_1V1_COSTS]                             = sConfigMgr->GetIntDefault("Arena.1v1.Costs", 400000);
+    m_bool_configs[CONFIG_ARENA_1V1_VENDOR_RATING]                     = sConfigMgr->GetBoolDefault("Arena.1v1.VendorRating", false);
+    m_float_configs[CONFIG_ARENA_1V1_ARENAPOINTS_MULTI]                 = sConfigMgr->GetFloatDefault("Arena.1v1.ArenaPointsMulti", 0.64f);
+    m_bool_configs[CONFIG_ARENA_1V1_BLOCK_FORBIDDEN_TALENTS]         = sConfigMgr->GetBoolDefault("Arena.1v1.BlockForbiddenTalents", true);
+
     m_bool_configs[CONFIG_OFFHAND_CHECK_AT_SPELL_UNLEARN]            = sConfigMgr->GetBoolDefault("OffhandCheckAtSpellUnlearn", true);
 
     m_int_configs[CONFIG_CREATURE_PICKPOCKET_REFILL] = sConfigMgr->GetIntDefault("Creature.PickPocketRefillDelay", 10 * MINUTE);
@@ -1317,10 +1325,6 @@ void World::LoadConfigSettings(bool reload)
         m_timers[WUPDATE_AUTOBROADCAST].SetInterval(m_int_configs[CONFIG_AUTOBROADCAST_INTERVAL]);
         m_timers[WUPDATE_AUTOBROADCAST].Reset();
     }
-
-    /** World of Warcraft Armory **/
-    m_bool_configs[CONFIG_ARMORY_ENABLE] = sConfigMgr->GetBoolDefault("Armory.Enable", true);
-    /** World of Warcraft Armory **/
 
     // MySQL ping time interval
     m_int_configs[CONFIG_DB_PING_INTERVAL] = sConfigMgr->GetIntDefault("MaxPingTime", 30);
@@ -2023,10 +2027,6 @@ void World::SetInitialWorldSettings()
     ///- Handle outdated emails (delete/return)
     TC_LOG_INFO("server.loading", "Returning old mails...");
     sObjectMgr->ReturnOrDeleteOldMails(false);
-
-    // Loads the jail conf out of the database
-    TC_LOG_INFO("server.loading", "Loading JailConfing...");    
-    sObjectMgr->LoadJailConf();
 
     TC_LOG_INFO("server.loading", "Loading Autobroadcasts...");
     LoadAutobroadcasts();

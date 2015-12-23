@@ -699,10 +699,7 @@ enum RBACPermissions
 
     // custom permissions 1000+
     // Prepatch by LordPsyan
-    RBAC_PERM_COMMAND_JAIL                                   = 901,
-    RBAC_PERM_COMMAND_JAIL_INFO                              = 902,
-    RBAC_PERM_COMMAND_JAIL_UN                                = 903,
-    RBAC_PERM_COMMAND_JAIL_RELOAD                            = 904,
+    // 01
     // 02
     // 03
     // 04

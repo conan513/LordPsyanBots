@@ -2511,6 +2511,71 @@ ArenaLog.ExtendedInfo = 0
 
 #
 ###################################################################################################
+# 1V1 ARENA CONFIG
+#
+#     Arena.1v1.Enable
+#         Description: Enable the 1v1 arena.
+#         Default:     0 - (Disabled)
+#                      1 - (Enabled)
+
+Arena.1v1.Enable = 1
+
+#
+#    Arena.1v1.Announcer
+#        Description: Announce 1v1 arena queue status to chat.
+#                      Arena.QueueAnnouncer.Enable must be enabled.
+#        Default:     0 - (Disabled)
+#                     1 - (Enabled)
+
+Arena.1v1.Announcer = 0
+
+#
+#    Arena.1v1.MinLevel
+#        Description: Min level to create an arena team
+#        Default:     80
+
+Arena.1v1.MinLevel = 80
+
+#
+#    Arena.1v1.Costs
+#        Description: Costs for create an arena team
+#        Default:     400000 - (40 gold)
+
+Arena.1v1.Costs = 400000
+
+#
+#    Arena.1v1.VendorRating
+#        Description: If true, 1v1 rating will use to calculate highest personal-rating (extended costs).
+#                      Note: The vendor-item will show as not buyable (red), but players can buy it, if enabled and rating is high enough.
+#        Default:     0 - (false)
+#                      1 - (true)
+
+Arena.1v1.VendorRating = 0
+
+#
+#    Arena.1v1.ArenaPointsMulti
+#        Description: An 5v5 arena team with 1500 rating will gain 344 points per week (blizzlike).
+#                      3v3 with same rating will gain 302 points (5v5points * 0.88)
+#                      2v2 will gain 261 points (5v5points * 0.76)
+#                      and 1v1 will gain 167 points (5v5points * 0.64)
+#                      With this multiplier you can modify the arenapoints for 1v1.
+#        Default:     0.64
+
+Arena.1v1.ArenaPointsMulti = 0.64
+
+#
+#    Arena.1v1.BlockForbiddenTalents
+#        Description: If true, healers can't join 1v1 arena, if they invested more than 35 talentpoints in a healing-talenttree.
+#                      You can also block tanks and other talents, if you modify FORBIDDEN_TALENTS_IN_1V1_ARENA in the npc_arena1v1.h file (hardcoding). See TalentTab.dbc for available talents (you will need an DBC-Editor).
+#        Default:     1 - (true)
+#                      0 - (false)
+
+Arena.1v1.BlockForbiddenTalents = 1
+
+#
+###################################################################################################
+
+###################################################################################################
 
 ###################################################################################################
 # NETWORK CONFIG
@@ -2951,13 +3016,6 @@ AuctionHouseBot.Alliance.Items.Amount.Ratio = 100
 #       Default: 100 (Enabled with 100% of items specified in AuctionHouse.Items.Amount.color section)
 
 AuctionHouseBot.Horde.Items.Amount.Ratio = 100
-
-#    Armory.Enable
-#        Description: Activates the WowArmory.
-#        Default:     0 - (Disable)
-#                     1 - (Enable)
-
-Armory.Enable = 1
 
 #
 #    AuctionHouseBot.Neutral.Items.Amount.Ratio
