@@ -2035,6 +2035,10 @@ void World::SetInitialWorldSettings()
     TC_LOG_INFO("server.loading", "Returning old mails...");
     sObjectMgr->ReturnOrDeleteOldMails(false);
 
+    // Loads the jail conf out of the database
+    TC_LOG_INFO("server.loading", "Loading JailConfing...");    
+    sObjectMgr->LoadJailConf();
+
     TC_LOG_INFO("server.loading", "Loading Autobroadcasts...");
     LoadAutobroadcasts();
 
