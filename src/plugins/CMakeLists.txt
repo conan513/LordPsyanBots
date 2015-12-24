@@ -148,7 +148,7 @@ add_library(plugins STATIC
   ${plugins_STAT_PCH_SRC}
 )
 
-add_dependencies(plugins revision.h)
+add_dependencies(plugins revision_data.h)
 
 if( WIN32 )
   if ( MSVC )
