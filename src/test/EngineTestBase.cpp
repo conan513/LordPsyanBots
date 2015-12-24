@@ -56,7 +56,8 @@ public:
         if (name.find("purify") != string ::npos)
             name = "purify";
 
-        ai->spellCooldowns.push_back(name);
+        if (name != "shoot" && name != "auto shot")
+            ai->spellCooldowns.push_back(name);
     }
 
     void remove(string & name, string pattern)
@@ -123,6 +124,15 @@ void EngineTestBase::setupEngineCallback(const char* name)
 void EngineTestBase::tick()
 {
 	engine->DoNextAction(NULL);
+}
+
+void EngineTestBase::ticks(int count)
+{
+    for (int i = 0; i < count; ++i)
+    {
+        tick();
+        ai->buffer.append(",");
+    }
 }
 
 void EngineTestBase::assertActions(string  expected)
@@ -476,4 +486,72 @@ void EngineTestBase::tickWithEnemyHealerIsCastingInterruptableSpell(string inter
     set<Unit*>("enemy healer target", interrupt, MockedTargets::GetEnemyHealer());
     tick();
     set<Unit*>("enemy healer target", interrupt, NULL);
+}
+
+void EngineTestBase::runStressTest()
+{
+    int count = 20;
+    std::cout << "\n";
+
+    ai->buffer = "";
+    ai->spellCooldowns.clear();
+    ticks(count);
+    std::cout << "Normal:\n" << ai->buffer << "\n\n";
+    CPPUNIT_ASSERT(ai->buffer.find(",,,,,,,") == string::npos);
+
+    ai->targetIsCastingNonMeleeSpell = true;
+    ai->buffer = "";
+    ai->spellCooldowns.clear();
+    ticks(count);
+    std::cout << "Spell Cast:\n" << ai->buffer << "\n\n";
+    CPPUNIT_ASSERT(ai->buffer.find(",,,,,,,") == string::npos);
+
+    set<uint8>("attacker count", 5);
+    ai->buffer = "";
+    ai->spellCooldowns.clear();
+    ticks(count);
+    std::cout << "AOE:\n" << ai->buffer << "\n\n";
+    CPPUNIT_ASSERT(ai->buffer.find(",,,,,,,") == string::npos);
+
+    set<uint8>("health", "current target", 10);
+    ai->buffer = "";
+    ai->spellCooldowns.clear();
+    ticks(count);
+    std::cout << "Target Low Health:\n" << ai->buffer << "\n\n";
+    CPPUNIT_ASSERT(ai->buffer.find(",,,,,,,") == string::npos);
+
+    ai->dispels[MockedTargets::GetCurrentTarget()] = DISPEL_DISEASE;
+    ai->buffer = "";
+    ai->spellCooldowns.clear();
+    ticks(count);
+    std::cout << "Dispel:\n" << ai->buffer << "\n\n";
+    CPPUNIT_ASSERT(ai->buffer.find(",,,,,,,") == string::npos);
+
+    context->GetValue<Unit*>("cc target", "entangling roots")->Set(MockedTargets::GetCc());
+    ai->buffer = "";
+    ai->spellCooldowns.clear();
+    ticks(count);
+    std::cout << "CC:\n" << ai->buffer << "\n\n";
+    CPPUNIT_ASSERT(ai->buffer.find(",,,,,,,") == string::npos);
+
+    set<bool>("moving", "current target", true);
+    ai->buffer = "";
+    ai->spellCooldowns.clear();
+    ticks(count);
+    std::cout << "Snare:\n" << ai->buffer << "\n\n";
+    CPPUNIT_ASSERT(ai->buffer.find(",,,,,,,") == string::npos);
+
+    lowHealth(10);
+    ai->buffer = "";
+    ai->spellCooldowns.clear();
+    ticks(count);
+    std::cout << "Low Health:\n" << ai->buffer << "\n\n";
+    CPPUNIT_ASSERT(ai->buffer.find(",,,,,,,") == string::npos);
+
+    lowMana(20);
+    ai->buffer = "";
+    ai->spellCooldowns.clear();
+    ticks(count);
+    std::cout << "Low Mana:\n" << ai->buffer << "\n\n";
+    CPPUNIT_ASSERT(ai->buffer.find(",,,,,,,") == string::npos);
 }

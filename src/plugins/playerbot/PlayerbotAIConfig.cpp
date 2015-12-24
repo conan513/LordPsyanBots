@@ -68,7 +68,7 @@ bool PlayerbotAIConfig::Initialize()
     randomGearLoweringChance = config.GetFloatDefault("AiPlayerbot.RandomGearLoweringChance", 0.15);
     randomBotMaxLevelChance = config.GetFloatDefault("AiPlayerbot.RandomBotMaxLevelChance", 0.4);
 
-    iterationsPerTick = config.GetIntDefault("AiPlayerbot.IterationsPerTick", 4);
+    iterationsPerTick = config.GetIntDefault("AiPlayerbot.IterationsPerTick", 10);
 
     allowGuildBots = config.GetBoolDefault("AiPlayerbot.AllowGuildBots", true);
 
@@ -105,7 +105,7 @@ bool PlayerbotAIConfig::Initialize()
 
     randomChangeMultiplier = config.GetFloatDefault("AiPlayerbot.RandomChangeMultiplier", 1.0);
 
-    randomBotCombatStrategies = config.GetStringDefault("AiPlayerbot.RandomBotCombatStrategies", "+dps,+attack weak");
+    randomBotCombatStrategies = config.GetStringDefault("AiPlayerbot.RandomBotCombatStrategies", "+dps,+attack weak,-threat");
     randomBotNonCombatStrategies = config.GetStringDefault("AiPlayerbot.RandomBotNonCombatStrategies", "+grind,+move random,+loot");
 
     commandPrefix = config.GetStringDefault("AiPlayerbot.CommandPrefix", "");
