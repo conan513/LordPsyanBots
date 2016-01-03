@@ -75,7 +75,6 @@ protected:
     {
         runStressTest();
     }
-
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION( DpsRogueTestCase );
