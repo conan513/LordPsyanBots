@@ -218,7 +218,6 @@ protected:
         addAura("dire bear form");
         runStressTest();
     }
-
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION( BearTankDruidTestCase );
