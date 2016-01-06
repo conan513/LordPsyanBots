@@ -486,7 +486,7 @@ public:
                 if (TaintedElementalTimer <= diff)
                 {
                     uint32 pos = rand32() % 8;
-                    me->SummonCreature(TAINTED_ELEMENTAL, ElementPos[pos][0], ElementPos[pos][1], ElementPos[pos][2], ElementPos[pos][3], TEMPSUMMON_DEAD_DESPAWN, 0);
+                    me->SummonCreature(TAINTED_ELEMENTAL, ElementPos[pos][0], ElementPos[pos][1], ElementPos[pos][2], ElementPos[pos][3], TEMPSUMMON_DEAD_DESPAWN, 120000);
 
                     TaintedElementalTimer = 120000;
                 } else TaintedElementalTimer -= diff;
