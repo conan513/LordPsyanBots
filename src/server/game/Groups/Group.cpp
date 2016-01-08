@@ -389,7 +389,10 @@ bool Group::AddMember(Player* player)
     //npcbot
     }
     //end npcbot
-    player->m_InstanceValid = player->CheckInstanceValidity(false);
+
+
+
+    player->m_InstanceValid = player->CheckInstanceValidity(falsebot
 
     if (!isRaidGroup())                                      // reset targetIcons for non-raid-groups
     {
