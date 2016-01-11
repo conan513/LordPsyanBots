@@ -683,28 +683,31 @@ void Battleground::RewardReputationToTeam(uint32 a_faction_id, uint32 h_faction_
     FactionEntry const* a_factionEntry = sFactionStore.LookupEntry(a_faction_id);
     FactionEntry const* h_factionEntry = sFactionStore.LookupEntry(h_faction_id);
 
-    if (!a_factionEntry || !h_factionEntry)
-        return;
-
     for (BattlegroundPlayerMap::const_iterator itr = m_Players.begin(); itr != m_Players.end(); ++itr)
     {
-       if (itr->second.OfflineRemoveTime)
-            continue;
+        Player* player = _GetPlayerForTeam(TeamID, itr, "RewardReputationToTeam");
+        if (!a_factionEntry || !h_factionEntry)
+             return;
 
-        Player* plr = ObjectAccessor::FindPlayer(itr->first);
-
-        if (!plr)
-        {
-            //TC_LOG_ERROR("bg.battleground", "BattleGround:RewardReputationToTeam: %u not found!", itr->first);
-            continue;
-        }
-
-        //uint32 team = plr->GetTeam();
-
-        //if (team == TeamId)
-        if (Player* plr = _GetPlayerForTeam(TeamID, itr, "RewardReputationToTeam"))
-            {
-            plr->GetReputationMgr().ModifyReputation(plr->GetOTeam() == ALLIANCE ? a_factionEntry : h_factionEntry, Reputation);
+        for (BattlegroundPlayerMap::const_iterator itr = m_Players.begin(); itr != m_Players.end(); ++itr)
+             {
+            if (itr->second.OfflineRemoveTime)
+                 continue;
+            
+                Player* player = ObjectAccessor::FindPlayer(itr->first);
+            
+                if (!player)
+                 {
+                TC_LOG_ERROR("bg.battleground", "BattleGround:RewardReputationToTeam: %u not found!", itr->first);
+                continue;
+                }
+            uint32 team = player->GetTeam();
+            if (team == TeamID)
+                
+                if (Player* player = _GetPlayerForTeam(TeamID, itr, "RewardReputationToTeam"))
+                 {
+                player->GetReputationMgr().ModifyReputation(player->GetCFSTeam() == ALLIANCE ? a_factionEntry : h_factionEntry, Reputation);
+                }
             }
     }
 }
@@ -1106,7 +1109,6 @@ void Battleground::AddPlayer(Player* player)
     // setup BG group membership
     PlayerAddedToBGCheckIfBGIsRunning(player);
     AddOrSetPlayerToCorrectBgGroup(player, team);
-
     player->FitPlayerInTeam(true, this);
 }
 
@@ -1178,7 +1180,7 @@ void Battleground::EventPlayerLoggedOut(Player* player)
         // 1 player is logging out, if it is the last, then end arena!
         if (isArena())
             if (GetAlivePlayersCountByTeam(player->GetTeam()) <= 1 && GetPlayersCountByTeam(GetOtherTeam(player->GetTeam())))
-                EndBattleground(GetOtherTeam(player->GetTeam()));
+                 EndBattleground(GetOtherTeam(player->GetTeam()));
     }
 }
 

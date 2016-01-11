@@ -383,17 +383,10 @@ bool Group::AddMember(Player* player)
         player->SetGroup(this, subGroup);
 
     // if the same group invites the player back, cancel the homebind timer
-    InstanceGroupBind* bind = GetBoundInstance(player);
-    if (bind && bind->save->GetInstanceId() == player->GetInstanceId())
-        player->m_InstanceValid = true;
+    player->m_InstanceValid = player->CheckInstanceValidity(false);
     //npcbot
     }
     //end npcbot
-
-
-
-    player->m_InstanceValid = player->CheckInstanceValidity(falsebot
-
     if (!isRaidGroup())                                      // reset targetIcons for non-raid-groups
     {
         for (uint8 i = 0; i < TARGETICONCOUNT; ++i)

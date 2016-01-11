@@ -88,7 +88,7 @@ enum WorldTimers
 enum WorldBoolConfigs
 {
     CONFIG_DURABILITY_LOSS_IN_PVP = 0,
-    BATTLEGROUND_CROSSFACTION_ENABLED,
+    CROSSFACTION_SYSTEM_BATTLEGROUNDS,
     CONFIG_ADDON_CHANNEL,
     CONFIG_ALLOW_PLAYER_COMMANDS,
     CONFIG_CLEAN_CHARACTER_DB,
@@ -176,7 +176,7 @@ enum WorldBoolConfigs
     // 04
     // 05
     // 06
-    CONFIG_EXTERNAL_MAIL_ENABLE,
+    // 07
     // 08
     // 09
     // 10
@@ -190,6 +190,7 @@ enum WorldBoolConfigs
     // 18
     CONFIG_GAIN_HONOR_GUARD,
     CONFIG_GAIN_HONOR_ELITE,
+    CONFIG_EXTERNAL_MAIL_ENABLE,
     // 20
     // Visit http://www.realmsofwarcraft.com/bb for forums and information
     //

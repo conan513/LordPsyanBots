@@ -69,12 +69,10 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z)
         }
         else
             mm.MovePoint(mapId, x, y, z, generatePath);
-
-        AI_VALUE(LastMovement&, "last movement").Set(x, y, z, bot->GetOrientation());
-        return true;
     }
 
-    return false;
+    AI_VALUE(LastMovement&, "last movement").Set(x, y, z, bot->GetOrientation());
+    return true;
 }
 
 bool MovementAction::MoveTo(Unit* target, float distance)

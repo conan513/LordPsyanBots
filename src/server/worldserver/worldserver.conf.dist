@@ -2572,9 +2572,6 @@ Arena.1v1.ArenaPointsMulti = 0.64
 
 Arena.1v1.BlockForbiddenTalents = 1
 
-#
-###################################################################################################
-
 ###################################################################################################
 
 ###################################################################################################
@@ -2675,20 +2672,6 @@ SOAP.IP = "127.0.0.1"
 SOAP.Port = 7878
 
 #
-#    External.Mail.Enable
-#        Enable external mail delivery from mail_external table.
-#        Default: 0 (disabled)
-#                 1 (enabled)
-#
-#    External.Mail.Interval
-#        Mail delivery delay time for item sending from mail_external table, in minutes.
-#        Default: 5 minutes
-#
-
-External.Mail.Enable = 1
-External.Mail.Interval = 5
-
-#
 ###################################################################################################
 
 ###################################################################################################
@@ -2725,6 +2708,23 @@ CharDelete.Heroic.MinLevel = 0
 #                     0  - (Disabled, Don't delete any characters)
 
 CharDelete.KeepDays = 30
+
+#
+#    External.Mail.Enable
+#        Enable external mail delivery from mail_external table.
+#        Default: 0 (disabled)
+#                 1 (enabled)
+#
+#    External.Mail.Interval
+#        Mail delivery delay time for item sending from mail_external table, in minutes.
+#        Default: 5 minutes
+#
+
+External.Mail.Enable = 1
+External.Mail.Interval = 5
+
+#
+###################################################################################################
 
 ###################################################################################################
 # CUSTOM SERVER OPTIONS
@@ -3751,6 +3751,461 @@ StartGuild.Horde = 46
 #
 ###################################################################################################
 
+###################################################################################################
+# GuildHouse
+#
+# Settings for the GuildHouse Keeper.
+#
+#    Guildhouse.TokenOrGold
+#        Description: Use tokens or money to buy guild houses.
+#        Default:     0 - Use Money
+#                     1 - Use Token
+#
+
+Guildhouse.TokenOrGold = 0
+
+#    GuildHouse.BuyCost
+#        Description: Amount of gold or quantity of tokens to buy guildhouse.
+#        Default:     1000 - 1000 gold
+#
+
+Guildhouse.BuyCost = 1000
+
+#    GuildHouse.BuyCost
+#        Description: Amount of gold or quantity of tokens gained when selling guildhouse.
+#        Default:     5000000 - 500 gold
+#
+
+Guildhouse.SellCost = 500
+
+#
+###################################################################################################
+
+###################################################################################################
+#
+# BeastMaster Configuration
+#
+# BeastMaster Hunter Only
+#                 = 0 (Anyone can use)
+#         default = 1 (Hunter only)
+
+BeastMaster.OnlyHunter = 1
+
+#
+# BeastMaster Enable Normal Pets
+#                 = 0  (Normal pets disabled)
+#         default = 1  (Normal Pets enabled)
+#
+
+BeastMaster.EnableNormalPet = 1
+
+#
+# BeastMaster Enable Exotic Pets
+#                 = 0  (Anyone Can get Exotic pets)
+#         default = 1  (Can only get Exotic Pets if you know how)
+#
+
+BeastMaster.EnableExoticPet = 1
+
+#
+###################################################################################################
+
+###################################################################################################
+#    Level NPC
+###################################################################################################
+
+LevelNPC.OnlyGMs = 0
+LevelNPC.EnableLevel80 = 1
+LevelNPC.EnableLevel100 = 1
+LevelNPC.EnableLevel150 = 1
+LevelNPC.EnableLevel200 = 0
+LevelNPC.EnableLevel255 = 0
+LevelNPC.UseTokens = 0
+LevelNPC.ItemEntryNum = 99999
+LevelNPC.SkillGoldCost = 10
+
+#
+###################################################################################################
+
+###################################################################################################
+#
+# NPC Buff rewritten by LordPsyan
+#
+#        GM Only
+#         Default 0 = Any Player
+#                 1 = GM1 or higher
+
+Npc_Buff.OnlyGMs = 0
+
+#     Enables Small Buff
+#         Default 0 = Disable
+#                 1 = Enable
+
+Npc_Buff.EnableSmallBuff = 1
+
+#     Enables Geat Buff
+#         Default 0 = Disable
+#                 1 = Enable
+
+Npc_Buff.EnableGreatBuff = 1
+
+#     Enables GM Only Buff
+#         Default 0 = Disable
+#                 1 = Enable
+
+Npc_Buff.EnableGMBuff = 1
+
+#     Enables Player Tools
+#         Default 0 = Disable
+#                 1 = Enable
+
+Npc_Buff.EnablePlayerTools = 1
+
+#     Enables Remove Res Sickness
+#         Default 0 = Disable
+#                 1 = Enable
+
+Npc_Buff.EnableRemoveResSickness = 1
+
+#
+###################################################################################################
+
+###################################################################################################
+#
+#       Profession NPC
+#
+# Enable or Disable Primary Professions
+#         default = 1 (Enabled)
+#                   = 0 (Disabled)
+
+ProfessionNPC.EnableProfessions = 1
+
+# Enable or Disable Secondary Professions
+#         default = 1 (Enabled)
+#                   = 0 (Disabled)
+
+ProfessionNPC.EnableSecondarySkills = 1
+
+# Number of Skill points
+#         default = 10
+
+SkillPoints = 10
+
+# GM Only
+#         default = 0 (Anyone can use)
+#                   = 1 (GM only)
+
+ProfessionNPC.OnlyGMs = 0
+
+# Cost of skill points (in copper)
+#         default = 10000 (10 gold)
+
+SkillGoldCost = 10000
+
+# Use Tokens instead of gold
+#         default = 0 (Use Gold)
+#                 = 1 (Use Tokens)
+
+ProfessionNPC.UseTokens = 1
+
+# Entry number of "token" Item
+#         default = 0 (No item. ProfessionNPC.UseTokens must = 0)
+#                 = n (n = entry number of item)
+
+ProfessionNPC.ItemEntryNum = 99999
+
+#
+###################################################################################################
+#
+# VAS AUTOBALANCE OPTIONS
+#
+#     VAS.AutoBalance.XPlayer
+#        Set Server to level of solo mode.
+#        Set to 0 to Disable VAS-SOLO Mod.
+#        Example: VAS.AutoBalance.XPlayer = 1 will set everything for a 1 player game.
+#        Default:     1
+
+VAS.AutoBalance.XPlayer = 1
+
+#
+#     VAS.AutoBalance.AutoInstance
+#        Set instances to Auto chance XPlayer depending on players in it.
+#        Default:     1 (1 = ON, 0 = OFF)
+
+VAS.AutoBalance.AutoInstance = 1
+
+#
+#     VAS.AutoBalance.Debug
+#        0 = None
+#        1 = Errors Only
+#        2 = Errors and Basic Information
+#        3 = All VAS Info
+#        Default:     1
+
+VAS.AutoBalance.Debug = 2
+
+#
+#     VAS.AutoBalance.PlayerChangeNotify
+#        Set Auto Notifications to all players in Instance that player count has changed.
+#        Default:     1 (1 = ON, 0 = OFF)
+
+VAS.AutoBalance.PlayerChangeNotify = 1
+
+#
+#     VAS.AutoBalance.Color
+#        In Game Color for mod information in chat window.
+#        Default:     cffFF8000 (Orange)
+
+VAS.AutoBalance.Color = cffFF8000
+
+#
+#     Min.HP.Mod
+#        Minimum Modifier setting for Health Modification
+#        Default:     0.20
+
+Min.HP.Mod = 0.20
+
+#
+#     Min.D.Mod
+#        Minimum Modifier setting for Damage Modification
+#        Default:     0.10
+
+Min.D.Mod = 0.10
+
+#
+#     VAS.AutoBalance.XX.Name
+#        Sets MobIDs for the group they belong to.
+#        All 5 Man Mobs should go in VAS.AutoBalance.5.Name
+#        All 10 Man Mobs should go in VAS.AutoBalance.10.Name etc.
+
+VAS.AutoBalance.40.Name = "11583,16441,30057,13020,15589,14435,18192,14889,14888,14887,14890,15302,15818,15742,15741,15740,18338"
+VAS.AutoBalance.25.Name = "22997,21966,21965,21964,21806,21215,21845,19728,12397,17711,18256,18192,"
+VAS.AutoBalance.10.Name = "15689,15550,16152,17521,17225,16028,29324,31099"
+VAS.AutoBalance.5.Name = "15203,15204,15205,15305,6109,26801,30508,26799,30495,26803,30497,27859,27249"
+VAS.AutoBalance.2.Name = "25549,24558,25574,24559,25556,25557,25578,24561,25555,24555,25541,24553,25550,24554,24552,25564,15931,29373"
+
+
+#
+###################################################################################################
+
+###################################################################################################
+#    Transmogrification config
+###################################################################################################
+#
+#    SETTINGS
+#
+#    Logger.custom.transmog
+#        Description: Transmogrification logging setting, see logger settings
+#        Default:    3, Console Server
+#
+#    Transmogrification.EnableTransmogInfo
+#        Description: Enables / Disables the info button for transmogrification
+#        Default:    1
+#
+#    Transmogrification.TransmogNpcText
+#        Description: The npc_text entry of the info menu for transmogrification
+#        Default:    50000
+#
+#    Transmogrification.Allowed
+#        Description: A list of item entries that are allowed for transmogrification (skips quality and CanUseItem check)
+#                     Example: "25 35674 5623"
+#        Default:    ""
+#
+#    Transmogrification.NotAllowed
+#        Description: A list of item entries that are NOT allowed for transmogrification
+#                     Example: "25 35674 5623"
+#        Default:    ""
+
+Logger.custom.transmog = 3, Console Server
+
+Transmogrification.EnableTransmogInfo = 1
+Transmogrification.TransmogNpcText = 50000
+
+Transmogrification.Allowed = ""
+Transmogrification.NotAllowed = ""
+
+#
+#    COPPER COST
+#
+#    Transmogrification.ScaledCostModifier
+#        Description: A multiplier for the default gold cost (change to 0 for no default cost)
+#        Default:    1.0
+#
+#    Transmogrification.CopperCost
+#        Description: Cost added on top of other costs (can be negative)
+#        Default:    0
+#
+#    For custom gold cost set ScaledCostModifier to 0.0 and CopperCost to what ever cost you want
+
+Transmogrification.ScaledCostModifier = 1.0
+Transmogrification.CopperCost = 0
+
+#
+#    TOKEN COST
+#
+#    Transmogrification.RequireToken
+#        Description: Adds/disables token cost
+#        Default:    0
+#
+#    Transmogrification.TokenEntry
+#        Description: Entry of the token item
+#        Default:    49426
+#
+#    Transmogrification.TokenAmount
+#        Description: Amount of tokens required
+#        Default:    1
+
+Transmogrification.RequireToken = 0
+Transmogrification.TokenEntry = 49426
+Transmogrification.TokenAmount = 1
+
+#
+#    REQUIREMENTS
+#
+#    Transmogrification.AllowPoor
+#        Description: Allow poor quality items to be used as source and target items
+#        Default:    0
+#
+#    Transmogrification.AllowCommon
+#        Description: Allow common quality items to be used as source and target items
+#        Default:    0
+#
+#    Transmogrification.AllowUncommon
+#        Description: Allow uncommon quality items to be used as source and target items
+#        Default:    1
+#
+#    Transmogrification.AllowRare
+#        Description: Allow rare quality items to be used as source and target items
+#        Default:    1
+#
+#    Transmogrification.AllowEpic
+#        Description: Allow epic quality items to be used as source and target items
+#        Default:    1
+#
+#    Transmogrification.AllowLegendary
+#        Description: Allow legendary quality items to be used as source and target items
+#        Default:    0
+#
+#    Transmogrification.AllowArtifact
+#        Description: Allow artifact quality items to be used as source and target items
+#        Default:    0
+#
+#    Transmogrification.AllowHeirloom
+#        Description: Allow heirloom quality items to be used as source and target items
+#        Default:    1
+#
+#    Transmogrification.AllowMixedArmorTypes
+#        Description: Allow cloth items to be transmogrified with plate for example
+#        Default:    0
+#
+#    Transmogrification.AllowMixedWeaponTypes
+#        Description: Allow axe to be transmogrified with dagger for example
+#        Default:    0
+#
+#    Transmogrification.AllowFishingPoles
+#        Description: Allow fishing poles to be transmogrified
+#        Default:    0
+#
+#    Transmogrification.IgnoreReqRace
+#        Description: Ignore required race for source items
+#        Default:    0
+#
+#    Transmogrification.IgnoreReqClass
+#        Description: Ignore required class for source items
+#        Default:    0
+#
+#    Transmogrification.IgnoreReqSkill
+#        Description: Ignore required skill for source items
+#        Default:    0
+#
+#    Transmogrification.IgnoreReqSpell
+#        Description: Ignore required spell for source items
+#        Default:    0
+#
+#    Transmogrification.IgnoreReqLevel
+#        Description: Ignore required level for source items
+#        Default:    0
+#
+#    Transmogrification.IgnoreReqEvent
+#        Description: Ignore required event for source items
+#        Default:    0
+#
+#    Transmogrification.IgnoreReqStats
+#        Description: Ignore stat count > 0 requirement for source items
+#        Default:    0
+
+Transmogrification.AllowPoor = 0
+Transmogrification.AllowCommon = 0
+Transmogrification.AllowUncommon = 1
+Transmogrification.AllowRare = 1
+Transmogrification.AllowEpic = 1
+Transmogrification.AllowLegendary = 0
+Transmogrification.AllowArtifact = 0
+Transmogrification.AllowHeirloom = 1
+
+Transmogrification.AllowMixedArmorTypes = 0
+Transmogrification.AllowMixedWeaponTypes = 0
+Transmogrification.AllowFishingPoles = 0
+
+Transmogrification.IgnoreReqRace = 0
+Transmogrification.IgnoreReqClass = 0
+Transmogrification.IgnoreReqSkill = 0
+Transmogrification.IgnoreReqSpell = 0
+Transmogrification.IgnoreReqLevel = 0
+Transmogrification.IgnoreReqEvent = 0
+Transmogrification.IgnoreReqStats = 0
+
+#
+#    SET FEATURE
+#
+#    Transmogrification.EnableSets
+#        Description: Enables / Disables the set feature. If you want permanent disable, check Transmogrification.h
+#        Default:    1
+#
+#    Transmogrification.MaxSets
+#        Description: Maximum amount of sets a player can save (hardcap at 25)
+#        Default:    10
+#
+#    Transmogrification.EnableSetInfo
+#        Description: Enables / Disables the info button for set fature
+#        Default:    1
+#
+#    Transmogrification.SetNpcText
+#        Description: The npc_text entry of the info menu for the set feature
+#        Default:    50001
+#
+#    Transmogrification.SetCostModifier
+#        Description: A multiplier for the default gold cost (all costs summed together) (change to 0 for no default cost)
+#        Default:    3.0
+#
+#    Transmogrification.SetCopperCost
+#        Description: Cost added on top of other costs (can be negative)
+#        Default:    0
+
+Transmogrification.EnableSets = 1
+Transmogrification.MaxSets = 10
+
+Transmogrification.EnableSetInfo = 1
+Transmogrification.SetNpcText = 50001
+
+Transmogrification.SetCostModifier = 3.0
+Transmogrification.SetCopperCost = 0
+
+#
+###################################################################################################
+
+###################################################################################################
+#
+# CROSSFACTION SYSTEM
+#
+#    CrossFactionSystem.Battlegrounds = 1 - Mixed battleground enabled.
+#    CrossFactionSystem.Battlegrounds = 0 - Mixed battleground disabled.
+
+CrossFactionSystem.Battlegrounds = 1
+
+#
+###################################################################################################
+
 #########################################################
 # TriniChat IRC BOT For Trinity Core Configuration File #
 #########################################################
@@ -4020,461 +4475,6 @@ irc.gm5 = "[Game Master]"
 irc.gm6 = "[Admin]"
 irc.gm7 = "[Developer]"
 irc.gm8 = "[Owner]"
-
-#
-###################################################################################################
-
-###################################################################################################
-# GuildHouse
-#
-# Settings for the GuildHouse Keeper.
-#
-#    Guildhouse.TokenOrGold
-#        Description: Use tokens or money to buy guild houses.
-#        Default:     0 - Use Money
-#                     1 - Use Token
-#
-
-Guildhouse.TokenOrGold = 0
-
-#    GuildHouse.BuyCost
-#        Description: Amount of gold or quantity of tokens to buy guildhouse.
-#        Default:     1000 - 1000 gold
-#
-
-Guildhouse.BuyCost = 1000
-
-#    GuildHouse.BuyCost
-#        Description: Amount of gold or quantity of tokens gained when selling guildhouse.
-#        Default:     5000000 - 500 gold
-#
-
-Guildhouse.SellCost = 500
-
-#
-###################################################################################################
-
-###################################################################################################
-#
-# BeastMaster Configuration
-#
-# BeastMaster Hunter Only
-#                 = 0 (Anyone can use)
-#         default = 1 (Hunter only)
-
-BeastMaster.OnlyHunter = 1
-
-#
-# BeastMaster Enable Normal Pets
-#                 = 0  (Normal pets disabled)
-#         default = 1  (Normal Pets enabled)
-#
-
-BeastMaster.EnableNormalPet = 1
-
-#
-# BeastMaster Enable Exotic Pets
-#                 = 0  (Anyone Can get Exotic pets)
-#         default = 1  (Can only get Exotic Pets if you know how)
-#
-
-BeastMaster.EnableExoticPet = 1
-
-#
-###################################################################################################
-
-###################################################################################################
-#    Level NPC
-###################################################################################################
-
-LevelNPC.OnlyGMs = 0
-LevelNPC.EnableLevel80 = 1
-LevelNPC.EnableLevel100 = 1
-LevelNPC.EnableLevel150 = 1
-LevelNPC.EnableLevel200 = 0
-LevelNPC.EnableLevel255 = 0
-LevelNPC.UseTokens = 0
-LevelNPC.ItemEntryNum = 99999
-LevelNPC.SkillGoldCost = 10
-
-#
-###################################################################################################
-
-###################################################################################################
-#
-# NPC Buff rewritten by LordPsyan
-#
-#        GM Only
-#         Default 0 = Any Player
-#                 1 = GM1 or higher
-
-Npc_Buff.OnlyGMs = 0
-
-#     Enables Small Buff
-#         Default 0 = Disable
-#                 1 = Enable
-
-Npc_Buff.EnableSmallBuff = 1
-
-#     Enables Geat Buff
-#         Default 0 = Disable
-#                 1 = Enable
-
-Npc_Buff.EnableGreatBuff = 1
-
-#     Enables GM Only Buff
-#         Default 0 = Disable
-#                 1 = Enable
-
-Npc_Buff.EnableGMBuff = 1
-
-#     Enables Player Tools
-#         Default 0 = Disable
-#                 1 = Enable
-
-Npc_Buff.EnablePlayerTools = 1
-
-#     Enables Remove Res Sickness
-#         Default 0 = Disable
-#                 1 = Enable
-
-Npc_Buff.EnableRemoveResSickness = 1
-
-#
-###################################################################################################
-
-###################################################################################################
-#
-#       Profession NPC
-#
-# Enable or Disable Primary Professions
-#         default = 1 (Enabled)
-#                   = 0 (Disabled)
-
-ProfessionNPC.EnableProfessions = 1
-
-# Enable or Disable Secondary Professions
-#         default = 1 (Enabled)
-#                   = 0 (Disabled)
-
-ProfessionNPC.EnableSecondarySkills = 1
-
-# Number of Skill points
-#         default = 10
-
-SkillPoints = 10
-
-# GM Only
-#         default = 0 (Anyone can use)
-#                   = 1 (GM only)
-
-ProfessionNPC.OnlyGMs = 0
-
-# Cost of skill points (in copper)
-#         default = 10000 (10 gold)
-
-SkillGoldCost = 10000
-
-# Use Tokens instead of gold
-#         default = 0 (Use Gold)
-#                 = 1 (Use Tokens)
-
-ProfessionNPC.UseTokens = 1
-
-# Entry number of "token" Item
-#         default = 0 (No item. ProfessionNPC.UseTokens must = 0)
-#                 = n (n = entry number of item)
-
-ProfessionNPC.ItemEntryNum = 99999
-
-#
-###################################################################################################
-#
-# VAS AUTOBALANCE OPTIONS
-#
-#     VAS.AutoBalance.XPlayer
-#        Set Server to level of solo mode.
-#        Set to 0 to Disable VAS-SOLO Mod.
-#        Example: VAS.AutoBalance.XPlayer = 1 will set everything for a 1 player game.
-#        Default:     1
-
-VAS.AutoBalance.XPlayer = 1
-
-#
-#     VAS.AutoBalance.AutoInstance
-#        Set instances to Auto chance XPlayer depending on players in it.
-#        Default:     1 (1 = ON, 0 = OFF)
-
-VAS.AutoBalance.AutoInstance = 1
-
-#
-#     VAS.AutoBalance.Debug
-#        0 = None
-#        1 = Errors Only
-#        2 = Errors and Basic Information
-#        3 = All VAS Info
-#        Default:     1
-
-VAS.AutoBalance.Debug = 2
-
-#
-#     VAS.AutoBalance.PlayerChangeNotify
-#        Set Auto Notifications to all players in Instance that player count has changed.
-#        Default:     1 (1 = ON, 0 = OFF)
-
-VAS.AutoBalance.PlayerChangeNotify = 1
-
-#
-#     VAS.AutoBalance.Color
-#        In Game Color for mod information in chat window.
-#        Default:     cffFF8000 (Orange)
-
-VAS.AutoBalance.Color = cffFF8000
-
-#
-#     Min.HP.Mod
-#        Minimum Modifier setting for Health Modification
-#        Default:     0.20
-
-Min.HP.Mod = 0.20
-
-#
-#     Min.D.Mod
-#        Minimum Modifier setting for Damage Modification
-#        Default:     0.10
-
-Min.D.Mod = 0.10
-
-#
-#     VAS.AutoBalance.XX.Name
-#        Sets MobIDs for the group they belong to.
-#        All 5 Man Mobs should go in VAS.AutoBalance.5.Name
-#        All 10 Man Mobs should go in VAS.AutoBalance.10.Name etc.
-
-VAS.AutoBalance.40.Name = "11583,16441,30057,13020,15589,14435,18192,14889,14888,14887,14890,15302,15818,15742,15741,15740,18338"
-VAS.AutoBalance.25.Name = "22997,21966,21965,21964,21806,21215,21845,19728,12397,17711,18256,18192,"
-VAS.AutoBalance.10.Name = "15689,15550,16152,17521,17225,16028,29324,31099"
-VAS.AutoBalance.5.Name = "15203,15204,15205,15305,6109,26801,30508,26799,30495,26803,30497,27859,27249"
-VAS.AutoBalance.2.Name = "25549,24558,25574,24559,25556,25557,25578,24561,25555,24555,25541,24553,25550,24554,24552,25564,15931,29373"
-
-
-#
-###################################################################################################
-
-###################################################################################################
-#
-# CROSSFACTION BG CONFIG
-#
-#    CrossfactionBG.enable = 1 - Mixed battleground enabled.
-#    CrossfactionBG.enable = 0 - Mixed battleground disabled.
-
-CrossfactionBG.enable = 1
-
-#
-###################################################################################################
-
-###################################################################################################
-#    Transmogrification config
-###################################################################################################
-#
-#    SETTINGS
-#
-#    Logger.custom.transmog
-#        Description: Transmogrification logging setting, see logger settings
-#        Default:    3, Console Server
-#
-#    Transmogrification.EnableTransmogInfo
-#        Description: Enables / Disables the info button for transmogrification
-#        Default:    1
-#
-#    Transmogrification.TransmogNpcText
-#        Description: The npc_text entry of the info menu for transmogrification
-#        Default:    50000
-#
-#    Transmogrification.Allowed
-#        Description: A list of item entries that are allowed for transmogrification (skips quality and CanUseItem check)
-#                     Example: "25 35674 5623"
-#        Default:    ""
-#
-#    Transmogrification.NotAllowed
-#        Description: A list of item entries that are NOT allowed for transmogrification
-#                     Example: "25 35674 5623"
-#        Default:    ""
-
-Logger.custom.transmog = 3, Console Server
-
-Transmogrification.EnableTransmogInfo = 1
-Transmogrification.TransmogNpcText = 50000
-
-Transmogrification.Allowed = ""
-Transmogrification.NotAllowed = ""
-
-#
-#    COPPER COST
-#
-#    Transmogrification.ScaledCostModifier
-#        Description: A multiplier for the default gold cost (change to 0 for no default cost)
-#        Default:    1.0
-#
-#    Transmogrification.CopperCost
-#        Description: Cost added on top of other costs (can be negative)
-#        Default:    0
-#
-#    For custom gold cost set ScaledCostModifier to 0.0 and CopperCost to what ever cost you want
-
-Transmogrification.ScaledCostModifier = 1.0
-Transmogrification.CopperCost = 0
-
-#
-#    TOKEN COST
-#
-#    Transmogrification.RequireToken
-#        Description: Adds/disables token cost
-#        Default:    0
-#
-#    Transmogrification.TokenEntry
-#        Description: Entry of the token item
-#        Default:    49426
-#
-#    Transmogrification.TokenAmount
-#        Description: Amount of tokens required
-#        Default:    1
-
-Transmogrification.RequireToken = 0
-Transmogrification.TokenEntry = 49426
-Transmogrification.TokenAmount = 1
-
-#
-#    REQUIREMENTS
-#
-#    Transmogrification.AllowPoor
-#        Description: Allow poor quality items to be used as source and target items
-#        Default:    0
-#
-#    Transmogrification.AllowCommon
-#        Description: Allow common quality items to be used as source and target items
-#        Default:    0
-#
-#    Transmogrification.AllowUncommon
-#        Description: Allow uncommon quality items to be used as source and target items
-#        Default:    1
-#
-#    Transmogrification.AllowRare
-#        Description: Allow rare quality items to be used as source and target items
-#        Default:    1
-#
-#    Transmogrification.AllowEpic
-#        Description: Allow epic quality items to be used as source and target items
-#        Default:    1
-#
-#    Transmogrification.AllowLegendary
-#        Description: Allow legendary quality items to be used as source and target items
-#        Default:    0
-#
-#    Transmogrification.AllowArtifact
-#        Description: Allow artifact quality items to be used as source and target items
-#        Default:    0
-#
-#    Transmogrification.AllowHeirloom
-#        Description: Allow heirloom quality items to be used as source and target items
-#        Default:    1
-#
-#    Transmogrification.AllowMixedArmorTypes
-#        Description: Allow cloth items to be transmogrified with plate for example
-#        Default:    0
-#
-#    Transmogrification.AllowMixedWeaponTypes
-#        Description: Allow axe to be transmogrified with dagger for example
-#        Default:    0
-#
-#    Transmogrification.AllowFishingPoles
-#        Description: Allow fishing poles to be transmogrified
-#        Default:    0
-#
-#    Transmogrification.IgnoreReqRace
-#        Description: Ignore required race for source items
-#        Default:    0
-#
-#    Transmogrification.IgnoreReqClass
-#        Description: Ignore required class for source items
-#        Default:    0
-#
-#    Transmogrification.IgnoreReqSkill
-#        Description: Ignore required skill for source items
-#        Default:    0
-#
-#    Transmogrification.IgnoreReqSpell
-#        Description: Ignore required spell for source items
-#        Default:    0
-#
-#    Transmogrification.IgnoreReqLevel
-#        Description: Ignore required level for source items
-#        Default:    0
-#
-#    Transmogrification.IgnoreReqEvent
-#        Description: Ignore required event for source items
-#        Default:    0
-#
-#    Transmogrification.IgnoreReqStats
-#        Description: Ignore stat count > 0 requirement for source items
-#        Default:    0
-
-Transmogrification.AllowPoor = 0
-Transmogrification.AllowCommon = 0
-Transmogrification.AllowUncommon = 1
-Transmogrification.AllowRare = 1
-Transmogrification.AllowEpic = 1
-Transmogrification.AllowLegendary = 0
-Transmogrification.AllowArtifact = 0
-Transmogrification.AllowHeirloom = 1
-
-Transmogrification.AllowMixedArmorTypes = 0
-Transmogrification.AllowMixedWeaponTypes = 0
-Transmogrification.AllowFishingPoles = 0
-
-Transmogrification.IgnoreReqRace = 0
-Transmogrification.IgnoreReqClass = 0
-Transmogrification.IgnoreReqSkill = 0
-Transmogrification.IgnoreReqSpell = 0
-Transmogrification.IgnoreReqLevel = 0
-Transmogrification.IgnoreReqEvent = 0
-Transmogrification.IgnoreReqStats = 0
-
-#
-#    SET FEATURE
-#
-#    Transmogrification.EnableSets
-#        Description: Enables / Disables the set feature. If you want permanent disable, check Transmogrification.h
-#        Default:    1
-#
-#    Transmogrification.MaxSets
-#        Description: Maximum amount of sets a player can save (hardcap at 25)
-#        Default:    10
-#
-#    Transmogrification.EnableSetInfo
-#        Description: Enables / Disables the info button for set fature
-#        Default:    1
-#
-#    Transmogrification.SetNpcText
-#        Description: The npc_text entry of the info menu for the set feature
-#        Default:    50001
-#
-#    Transmogrification.SetCostModifier
-#        Description: A multiplier for the default gold cost (all costs summed together) (change to 0 for no default cost)
-#        Default:    3.0
-#
-#    Transmogrification.SetCopperCost
-#        Description: Cost added on top of other costs (can be negative)
-#        Default:    0
-
-Transmogrification.EnableSets = 1
-Transmogrification.MaxSets = 10
-
-Transmogrification.EnableSetInfo = 1
-Transmogrification.SetNpcText = 50001
-
-Transmogrification.SetCostModifier = 3.0
-Transmogrification.SetCopperCost = 0
 
 #
 ###################################################################################################

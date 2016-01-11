@@ -149,7 +149,7 @@ void BattlegroundAV::HandleQuestComplete(uint32 questid, Player* player)
     if (GetStatus() != STATUS_IN_PROGRESS)
         return;//maybe we should log this, cause this must be a cheater or a big bug
     uint8 team = GetTeamIndexByTeamId(player->GetTeam());
-    uint8 oteam = GetTeamIndexByTeamId(GetOtherTeam(player->GetTeam()));
+    uint8 CFSteam = GetTeamIndexByTeamId(GetOtherTeam(player->GetTeam()));
     /// @todo add reputation, events (including quest not available anymore, next quest available, go/npc de/spawning)and maybe honor
     TC_LOG_DEBUG("bg.battleground", "BG_AV Quest %i completed", questid);
     switch (questid)
@@ -174,21 +174,21 @@ void BattlegroundAV::HandleQuestComplete(uint32 questid, Player* player)
         case AV_QUEST_A_COMMANDER1:
         case AV_QUEST_H_COMMANDER1:
             m_Team_QuestStatus[team][1]++;
-            RewardReputationToTeam(team, oteam, 1, player->GetTeam());
+            RewardReputationToTeam(team, CFSteam, 1, player->GetTeam());
             if (m_Team_QuestStatus[team][1] == 30)
                 TC_LOG_DEBUG("bg.battleground", "BG_AV Quest %i completed (need to implement some events here", questid);
             break;
         case AV_QUEST_A_COMMANDER2:
         case AV_QUEST_H_COMMANDER2:
             m_Team_QuestStatus[team][2]++;
-            RewardReputationToTeam(team, oteam, 1, player->GetTeam());
+            RewardReputationToTeam(team, CFSteam, 1, player->GetTeam());
             if (m_Team_QuestStatus[team][2] == 60)
                 TC_LOG_DEBUG("bg.battleground", "BG_AV Quest %i completed (need to implement some events here", questid);
             break;
         case AV_QUEST_A_COMMANDER3:
         case AV_QUEST_H_COMMANDER3:
             m_Team_QuestStatus[team][3]++;
-            RewardReputationToTeam(team, oteam, 1, player->GetTeam());
+            RewardReputationToTeam(team, CFSteam, 1, player->GetTeam());
             if (m_Team_QuestStatus[team][3] == 120)
                 TC_LOG_DEBUG("bg.battleground", "BG_AV Quest %i completed (need to implement some events here", questid);
             break;
