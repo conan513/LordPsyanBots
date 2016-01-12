@@ -28,6 +28,7 @@
 2016_01_09-Account_Mounts.patch
 2016_01_09-Announce_Login.patch
 2016_01_09-Arena_Anti_Draw.patch
+2016_01_09-Chat_Censor.patch
 2016_01_09-Login_Reset.patch
 2016_01_09-Phased_Duels.patch
 2016_01_10-Double_XP_Weekend.patch

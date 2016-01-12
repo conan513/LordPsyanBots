@@ -1559,6 +1559,7 @@ void AddSC_TemplateNPC();
 void AddSC_NPC_TransmogDisplayVendor();
 void AddSC_PhasedDueling();
 void AddSC_XpWeekend();
+void AddSC_System_Censure();
 // start109
 // start100
 // start111
@@ -1722,6 +1723,7 @@ AddSC_gon_playerscripts();
     AddSC_NPC_TransmogDisplayVendor();
     AddSC_PhasedDueling();
     AddSC_XpWeekend();
+    AddSC_System_Censure();
 // end109
 // end100
 // end111
