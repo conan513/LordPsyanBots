@@ -149,6 +149,10 @@ void Totem::UnSummon(uint32 msTime)
                 bot->ToCreature()->OnBotDespawn(this);
     //end npcbot
 
+    // any totem unsummon look like as totem kill, req. for proper animation
+    if (IsAlive())
+        setDeathState(DEAD);
+
     AddObjectToRemoveList();
 }
 
