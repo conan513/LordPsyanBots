@@ -203,7 +203,8 @@ m_originalEntry(0), m_homePosition(), m_transportHomePosition(), m_creatureInfo(
     ResetLootMode(); // restore default loot mode
     TriggerJustRespawned = false;
     m_isTempWorldObject = false;
-    _focusSpell = 0;
+    _focusSpell = NULL;
+    _focusDelay = 0;
 
     //bot
     m_creature_owner = NULL;
