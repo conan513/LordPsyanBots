@@ -42,7 +42,7 @@ struct GroupQueueInfo                                       // stores informatio
 {
     std::map<ObjectGuid, PlayerQueueInfo*> Players;         // player queue info map
     uint32  Team;                                           // Player team (ALLIANCE/HORDE)
-    uint32  OTeam;                                          // Player team (ALLIANCE/HORDE)
+    uint32  CFSTeam;
     BattlegroundTypeId BgTypeId;                            // battleground type id
     bool    IsRated;                                        // rated
     uint8   ArenaType;                                      // 2v2, 3v3, 5v5 or 0 when BG
@@ -61,8 +61,8 @@ enum BattlegroundQueueGroupTypes
     BG_QUEUE_PREMADE_ALLIANCE   = 0,
     BG_QUEUE_PREMADE_HORDE      = 1,
     BG_QUEUE_NORMAL_ALLIANCE    = 2,
-    BG_QUEUE_NORMAL_HORDE       = 3,
-    BG_QUEUE_MIXED              = 4
+    BG_QUEUE_NORMAL_HORDE = 3,
+    BG_QUEUE_CROSSFACTION = 4
 };
 #define BG_QUEUE_GROUP_TYPES_COUNT 5
 

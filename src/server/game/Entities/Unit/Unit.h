@@ -863,22 +863,30 @@ public:
 class HealInfo
 {
 private:
-    uint32 m_heal;
-    uint32 m_absorb;
+    Unit* const _healer;
+    Unit* const _target;
+    uint32 _heal;
+    uint32 _absorb;
+    SpellInfo const* const _spellInfo;
+    SpellSchoolMask const _schoolMask;
+
 public:
-    explicit HealInfo(uint32 heal)
-        : m_heal(heal)
-    {
-        m_absorb = 0;
-    }
+    explicit HealInfo(Unit* healer, Unit* target, uint32 heal, SpellInfo const* spellInfo, SpellSchoolMask schoolMask)
+        : _healer(healer), _target(target), _heal(heal), _absorb(0), _spellInfo(spellInfo), _schoolMask(schoolMask) { }
+
     void AbsorbHeal(uint32 amount)
     {
         amount = std::min(amount, GetHeal());
-        m_absorb += amount;
-        m_heal -= amount;
+        _absorb += amount;
+        _heal -= amount;
     }
 
-    uint32 GetHeal() const { return m_heal; }
+    Unit* GetHealer() const { return _healer; }
+    Unit* GetTarget() const { return _target; }
+    uint32 GetHeal() const { return _heal; }
+    uint32 GetAbsorb() const { return _absorb; }
+    SpellInfo const* GetSpellInfo() const { return _spellInfo; };
+    SpellSchoolMask GetSchoolMask() const { return _schoolMask; };
 };
 
 class ProcEventInfo
@@ -897,14 +905,8 @@ public:
     uint32 GetSpellPhaseMask() const { return _spellPhaseMask; }
     uint32 GetHitMask() const { return _hitMask; }
 
-    SpellInfo const* GetSpellInfo() const { return NULL; }
-    SpellInfo const* EnsureSpellInfo() const
-    {
-        SpellInfo const* spellInfo = GetSpellInfo();
-        ASSERT(spellInfo);
-        return spellInfo;
-    }
-    SpellSchoolMask GetSchoolMask() const { return SPELL_SCHOOL_MASK_NONE; }
+    SpellInfo const* GetSpellInfo() const;
+    SpellSchoolMask GetSchoolMask() const;
 
     DamageInfo* GetDamageInfo() const { return _damageInfo; }
     HealInfo* GetHealInfo() const { return _healInfo; }
@@ -1274,6 +1276,7 @@ class Unit : public WorldObject
         void _removeAttacker(Unit* pAttacker);               // must be called only from Unit::AttackStop()
         Unit* getAttackerForHelper() const;                 // If someone wants to help, who to give them
         bool Attack(Unit* victim, bool meleeAttack);
+        void MustReacquireTarget() { m_shouldReacquireTarget = true; } // flags the Unit for forced target reacquisition in the next ::Attack call
         void CastStop(uint32 except_spellid = 0);
         bool AttackStop();
         void RemoveAllAttackers();
@@ -1312,9 +1315,9 @@ class Unit : public WorldObject
         uint8 getLevelForTarget(WorldObject const* /*target*/) const override { return getLevel(); }
         void SetLevel(uint8 lvl);
         uint8 getRace(bool forceoriginal = false) const;
-        uint8 getORace() { return getRace(true); }
+        uint8 getCFSRace() { return getRace(true); }
         uint32 getRaceMask() const { return 1 << (getRace()-1); }
-        uint32 getORaceMask() const { return 1 << (getRace(true) - 1); }
+        uint32 getCFSRaceMask() const { return 1 << (getRace(true) - 1); }
         uint8 getClass() const { return GetByteValue(UNIT_FIELD_BYTES_0, 1); }
         uint32 getClassMask() const { return 1 << (getClass()-1); }
         uint8 getGender() const { return GetByteValue(UNIT_FIELD_BYTES_0, 2); }
@@ -1586,7 +1589,7 @@ class Unit : public WorldObject
 
         void SetInFront(WorldObject const* target);
         void SetFacingTo(float ori);
-        void SetFacingToObject(WorldObject* object);
+        void SetFacingToObject(WorldObject const* object);
 
         void SendChangeCurrentVictimOpcode(HostileReference* pHostileReference);
         void SendClearThreatListOpcode();
@@ -1600,6 +1603,7 @@ class Unit : public WorldObject
         bool IsAlive() const { return (m_deathState == ALIVE); }
         bool isDying() const { return (m_deathState == JUST_DIED); }
         bool isDead() const { return (m_deathState == DEAD || m_deathState == CORPSE); }
+        bool IsGhouled() const { return HasAura(46619 /*SPELL_DK_RAISE_ALLY*/); }
         DeathState getDeathState() const { return m_deathState; }
         virtual void setDeathState(DeathState s);           // overwrited in Creature/Player/Pet
 
@@ -2166,6 +2170,7 @@ class Unit : public WorldObject
 
         AttackerSet m_attackers;
         Unit* m_attacking;
+        bool m_shouldReacquireTarget;
 
         DeathState m_deathState;
 

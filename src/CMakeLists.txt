@@ -19,7 +19,3 @@ endif(SERVERS)
 if(TOOLS)
   add_subdirectory(tools)
 endif(TOOLS)
-
-if(TESTS)
-  add_subdirectory(test)
-endif(TESTS)

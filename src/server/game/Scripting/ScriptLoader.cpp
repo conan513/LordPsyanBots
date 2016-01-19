@@ -93,7 +93,6 @@ void AddSC_item_scripts();
 void AddSC_npc_professions();
 void AddSC_npc_innkeeper();
 void AddSC_npcs_special();
-void AddSC_npc_taxi();
 void AddSC_achievement_scripts();
 void AddSC_action_ip_logger();
 void AddSC_duel_reset();
@@ -785,7 +784,6 @@ void AddWorldScripts()
     AddSC_npc_professions();
     AddSC_npc_innkeeper();
     AddSC_npcs_special();
-    AddSC_npc_taxi();
     AddSC_achievement_scripts();
     AddSC_chat_log(); // location: scripts\World\chat_log.cpp
     // To avoid duplicate code, we check once /*ONLY*/ if logging is permitted or not.
@@ -1522,15 +1520,15 @@ void AddSC_World_Chat();
 // start86
 // start87
 // start88
-// start89
+void AddSC_accontmounts();
 // start90
 // start91
 // start92
-// start93
+void AddSC_announce_login();
 // start94
 // start95
 // start96
-// start97
+void AddSC_Arena_AntiDraw();
 // start98
 // start99
 //Bots
@@ -1549,7 +1547,7 @@ void AddSC_script_bot_commands();
 //advanced
 //void AddSC_BotQuests_chapter1();
 //end Bots
-// start101
+void AddSC_login_script();
 // start102
 // start103
 void AddSC_TemplateNPC();
@@ -1557,16 +1555,19 @@ void AddSC_TemplateNPC();
 // start106
 // start107
 void AddSC_NPC_TransmogDisplayVendor();
+void AddSC_PhasedDueling();
+void AddSC_XpWeekend();
+void AddSC_System_Censure();
 // start109
 // start100
 // start111
 // start112
 // start113
-// start114
+void AddSC_npc_blood_money();
 // start115
 // start116
 // start117
-// start118
+void AddSC_LearnSpellsOnLevelUp();
 // start119
 // start120
 #endif
@@ -1682,15 +1683,15 @@ AddSC_gon_playerscripts();
 // end86
 // end87
 // end88
-// end89
+    AddSC_accontmounts();
 // end90
 // end91
 // end92
-// end93
+    AddSC_announce_login();
 // end94
 // end95
 // end96
-// end97
+    AddSC_Arena_AntiDraw();
 // end98
 // end99
     //Bots
@@ -1713,20 +1714,24 @@ AddSC_gon_playerscripts();
 // end102
 // end103
     AddSC_TemplateNPC();
+    AddSC_login_script();
 // end105
 // end106
 // end107
     AddSC_NPC_TransmogDisplayVendor();
+    AddSC_PhasedDueling();
+    AddSC_XpWeekend();
+    AddSC_System_Censure();
 // end109
 // end100
 // end111
 // end112
 // end113
-// end114
+    AddSC_npc_blood_money();
 // end115
 // end116
 // end117
-// end118
+    AddSC_LearnSpellsOnLevelUp();
 // end119
 // end120
 #endif

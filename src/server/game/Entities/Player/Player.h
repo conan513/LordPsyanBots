@@ -1074,35 +1074,36 @@ class Player : public Unit, public GridObject<Player>
     public:
         explicit Player(WorldSession* session);
         ~Player();
+
         private:
-        bool m_ForgetBGPlayers;
-        bool m_ForgetInListPlayers;
-        uint8 m_FakeRace;
-        uint8 m_RealRace;
-        uint32 m_FakeMorph;
-    public:
-        typedef std::vector<uint64> FakePlayers;
-        void SendChatMessage(const char *format, ...);
-        void FitPlayerInTeam(bool action, Battleground* pBattleGround = NULL);
-        void DoForgetPlayersInList();
-        void DoForgetPlayersInBG(Battleground* pBattleGround);
-        uint8 getORace() const { return m_RealRace; }
-        void SetORace() { m_RealRace = GetByteValue(UNIT_FIELD_BYTES_0, 0); }; // SHOULD ONLY BE CALLED ON LOGIN
-        void SetFakeRace(); // SHOULD ONLY BE CALLED ON LOGIN
-        void SetFakeRaceAndMorph(); // SHOULD ONLY BE CALLED ON LOGIN
-        uint32 GetFakeMorph() { return m_FakeMorph; };
-        uint8 getFRace() const { return m_FakeRace; }
-        void SetForgetBGPlayers(bool value) { m_ForgetBGPlayers = value; }
-        bool ShouldForgetBGPlayers() { return m_ForgetBGPlayers; }
-        void SetForgetInListPlayers(bool value) { m_ForgetInListPlayers = value; }
-        bool ShouldForgetInListPlayers() { return m_ForgetInListPlayers; }
-        bool SendBattleGroundChat(uint32 msgtype, std::string message);
-        void MorphFit(bool value);
-        bool IsPlayingNative() const { return GetTeam() == m_team; }
-        uint32 GetOTeam() const { return m_team; }
-        uint32 GetTeam() const { return m_bgData.bgTeam && GetBattleground() ? m_bgData.bgTeam : m_team; }
-        bool SendRealNameQuery();
-        FakePlayers m_FakePlayers;
+            bool m_ForgetBGPlayers;
+            bool m_ForgetInListPlayers;
+            uint8 m_FakeRace;
+            uint8 m_RealRace;
+            uint32 m_FakeMorph;
+            public:
+                typedef std::vector<uint64> FakePlayers;
+                void SendChatMessage(const char *format, ...);
+                void FitPlayerInTeam(bool action, Battleground* pBattleGround = NULL);          // void FitPlayerInTeam(bool action, Battleground* bg = NULL);
+                void DoForgetPlayersInList();
+                void DoForgetPlayersInBG(Battleground* pBattleGround);                                          // void DoForgetPlayersInBG(Battleground* bg);
+                uint8 getCFSRace() const { return m_RealRace; }
+                void SetCFSRace() { m_RealRace = GetByteValue(UNIT_FIELD_BYTES_0, 0); }; // SHOULD ONLY BE CALLED ON LOGIN
+                void SetFakeRace(); // SHOULD ONLY BE CALLED ON LOGIN
+                void SetFakeRaceAndMorph(); // SHOULD ONLY BE CALLED ON LOGIN
+                uint32 GetFakeMorph() { return m_FakeMorph; };
+                uint8 getFRace() const { return m_FakeRace; }
+                void SetForgetBGPlayers(bool value) { m_ForgetBGPlayers = value; }
+                bool ShouldForgetBGPlayers() { return m_ForgetBGPlayers; }
+                void SetForgetInListPlayers(bool value) { m_ForgetInListPlayers = value; }
+                bool ShouldForgetInListPlayers() { return m_ForgetInListPlayers; }
+                bool SendBattleGroundChat(uint32 msgtype, std::string message);
+                void MorphFit(bool value);
+                bool IsPlayingNative() const { return GetTeam() == m_team; }
+                uint32 GetCFSTeam() const { return m_team; }
+                uint32 GetTeam() const { return m_bgData.bgTeam && GetBattleground() ? m_bgData.bgTeam : m_team; }
+                bool SendRealNameQuery();
+                FakePlayers m_FakePlayers;
 
         void CleanupsBeforeDelete(bool finalCleanup = true) override;
 
@@ -1160,7 +1161,7 @@ class Player : public Unit, public GridObject<Player>
         PlayerSocial *GetSocial() { return m_social; }
 
         PlayerTaxi m_taxi;
-        void InitTaxiNodesForLevel() { m_taxi.InitTaxiNodesForLevel(getORace(), getClass(), getLevel()); }
+        void InitTaxiNodesForLevel() { m_taxi.InitTaxiNodesForLevel(getCFSRace(), getClass(), getLevel()); }
         bool ActivateTaxiPathTo(std::vector<uint32> const& nodes, Creature* npc = NULL, uint32 spellid = 0);
         bool ActivateTaxiPathTo(uint32 taxi_path_id, uint32 spellid = 0);
         void CleanupAfterTaxiFlight();
@@ -1229,8 +1230,6 @@ class Player : public Unit, public GridObject<Player>
         void TextEmote(std::string const& text, WorldObject const* = nullptr, bool = false) override;
         /// Handles whispers from Addons and players based on sender, receiver's guid and language.
         void Whisper(std::string const& text, Language language, Player* receiver, bool = false) override;
-        /// Constructs the player Chat data for the specific functions to use
-        void BuildPlayerChat(WorldPacket* data, uint8 msgtype, std::string const& text, uint32 language) const;
 
         /*********************************************************/
         /***                    STORAGE SYSTEM                 ***/
@@ -1679,7 +1678,7 @@ class Player : public Unit, public GridObject<Player>
         void UpdatePotionCooldown(Spell* spell = NULL);
 
         void setResurrectRequestData(ObjectGuid guid, uint32 mapId, float X, float Y, float Z, uint32 health, uint32 mana);
-        void clearResurrectRequestData() { setResurrectRequestData(ObjectGuid::Empty, 0, 0.0f, 0.0f, 0.0f, 0, 0); }
+        void clearResurrectRequestData();
         bool isResurrectRequestedBy(ObjectGuid guid) const { return !m_resurrectGUID.IsEmpty() && m_resurrectGUID == guid; }
         bool isResurrectRequested() const { return !m_resurrectGUID.IsEmpty(); }
         void ResurrectUsingRequestData();
@@ -1873,6 +1872,15 @@ class Player : public Unit, public GridObject<Player>
         void ResurrectPlayer(float restore_percent, bool applySickness = false);
         void BuildPlayerRepop();
         void RepopAtGraveyard();
+        void SendGhoulResurrectRequest(Player* target);
+        bool IsValidGhoulResurrectRequest(ObjectGuid guid)
+        {
+            return !m_ghoulResurrectPlayerGUID.IsEmpty() && m_ghoulResurrectPlayerGUID == guid;
+        }
+        void GhoulResurrect();
+        void SetGhoulResurrectGhoulGUID(ObjectGuid guid) { m_ghoulResurrectGhoulGUID = guid; }
+        ObjectGuid GetGhoulResurrectGhoulGUID() { return m_ghoulResurrectGhoulGUID; }
+        void RemoveGhoul();
 
         void DurabilityLossAll(double percent, bool inventory);
         void DurabilityLoss(Item* item, double percent);
@@ -2241,7 +2249,6 @@ class Player : public Unit, public GridObject<Player>
         bool HasPendingBind() const { return _pendingBindId > 0; }
         void SendRaidInfo();
         void SendSavedInstances();
-        static void ConvertInstancesToGroup(Player* player, Group* group, bool switchLeader);
         bool Satisfy(AccessRequirement const* ar, uint32 target_map, bool report = false);
         bool CheckInstanceValidity(bool /*isLogin*/);
         bool CheckInstanceCount(uint32 instanceId) const;
@@ -2581,6 +2588,9 @@ class Player : public Unit, public GridObject<Player>
         float m_resurrectX, m_resurrectY, m_resurrectZ;
         uint32 m_resurrectHealth, m_resurrectMana;
 
+        ObjectGuid m_ghoulResurrectPlayerGUID;
+        ObjectGuid m_ghoulResurrectGhoulGUID;
+
         WorldSession* m_session;
 
         typedef std::list<Channel*> JoinedChannelsList;
@@ -2688,7 +2698,7 @@ class Player : public Unit, public GridObject<Player>
         bool IsHasDelayedTeleport() const { return m_bHasDelayedTeleport; }
         void SetDelayedTeleportFlag(bool setting) { m_bHasDelayedTeleport = setting; }
         void ScheduleDelayedOperation(uint32 operation) { if (operation < DELAYED_END) m_DelayedOperations |= operation; }
-        
+
         bool IsInstanceLoginGameMasterException() const;
 
         MapReference m_mapRef;
