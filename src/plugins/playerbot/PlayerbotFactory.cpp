@@ -91,8 +91,10 @@ void PlayerbotFactory::Randomize(bool incremental)
     ClearInventory();
     bot->SaveToDB();
 
+/* Need to fix quest initilization.
     sLog->outMessage("playerbot", LOG_LEVEL_INFO, "Initializing quests...");
     InitQuests();
+*/
     // quest rewards boost bot level, so reduce back
     bot->SetLevel(level);
     ClearInventory();
