@@ -145,7 +145,7 @@ void SuggestWhatToDoAction::relax()
 void SuggestWhatToDoAction::achievement()
 {
     if (bot->getLevel() > 15)
-        spam("I would like to get some achievements. Would you like to join me?");
+        spam("I would like to get some achievement. Would you like to join me?");
 }
 
 class FindTradeItemsVisitor : public IterateItemsVisitor

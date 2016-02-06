@@ -89,9 +89,7 @@
 // 64
 // 65
 // 66
-//npcbot
-#include "botmgr.h"
-//end npcbot
+// 67
 // 68
 // 69
 // 70
@@ -550,10 +548,6 @@ Player::Player(WorldSession* session): Unit(true)
     m_timeSyncClient = 0;
     m_timeSyncServer = 0;
 
-    /////////////// Bot System //////////////////
-    _botMgr = NULL;
-    ///////////// End Bot System ////////////////
-
     for (uint8 i = 0; i < MAX_POWERS; ++i)
         m_powerFraction[i] = 0;
 
@@ -613,14 +607,6 @@ Player::~Player()
     delete m_runes;
     delete m_achievementMgr;
     delete m_reputationMgr;
-
-    //npcbot
-    if (_botMgr)
-    {
-        delete _botMgr;
-        _botMgr = NULL;
-    }
-    //end npcbot
 
     sWorld->DecreasePlayerCount();
 }
@@ -1599,10 +1585,7 @@ void Player::Update(uint32 p_time)
     // 88
     // 89
     // 90
-    //NpcBot mod: Update
-    if (_botMgr)
-        _botMgr->Update(p_time);
-    //end Npcbot
+    // 91
     // 92
     // 93
     // 94
@@ -2045,11 +2028,6 @@ bool Player::TeleportTo(uint32 mapid, float x, float y, float z, float orientati
             if (pet)
                 UnsummonPetTemporaryIfAny();
 
-            //bot: teleport npcbots
-            if (HaveBot())
-                _botMgr->OnTeleportFar(mapid, x, y, z, orientation);
-            //end bot
-
             // remove all dyn objects
             RemoveAllDynObjects();
 
@@ -2244,38 +2222,6 @@ bool Player::IsImmunedToSpellEffect(SpellInfo const* spellInfo, uint32 index) co
 
     return Unit::IsImmunedToSpellEffect(spellInfo, index);
 }
-
-//BOT
-bool Player::HaveBot() const
-{
-    return _botMgr && _botMgr->HaveBot();
-}
-
-uint8 Player::GetNpcBotsCount(bool inWorldOnly) const
-{
-    return HaveBot() ? _botMgr->GetNpcBotsCount(inWorldOnly) : 0;
-}
-
-uint8 Player::GetBotFollowDist() const
-{
-    return _botMgr ? _botMgr->GetBotFollowDist() : 30;
-}
-
-void Player::SetBotFollowDist(int8 dist)
-{
-    if (_botMgr) _botMgr->SetBotFollowDist(dist);
-}
-
-void Player::SetBotsShouldUpdateStats()
-{
-    if (HaveBot()) _botMgr->SetBotsShouldUpdateStats();
-}
-
-void Player::RemoveAllBots(uint8 removetype)
-{
-    if (HaveBot()) _botMgr->RemoveAllBots(removetype);
-}
-//END BOT
 
 void Player::RegenerateAll()
 {
@@ -2519,7 +2465,7 @@ bool Player::CanInteractWithQuestGiver(Object* questGiver)
     return false;
 }
 
-Creature* Player::GetNPCIfCanInteractWith(ObjectGuid guid, uint32 npcflagmask)
+Creature* Player::GetNPCIfCanInteractWith(ObjectGuid const& guid, uint32 npcflagmask)
 {
     // unit checks
     if (!guid)
@@ -2552,11 +2498,6 @@ Creature* Player::GetNPCIfCanInteractWith(ObjectGuid guid, uint32 npcflagmask)
     if (creature->GetCharmerGUID())
         return NULL;
 
-    //npcbot
-    if ((creature->IsQuestBot() || creature->IsNPCBot()) && creature->IsWithinDistInMap(this, INTERACTION_DISTANCE))
-        return creature;
-    //end npcbot
-
     // not unfriendly/hostile
     if (creature->GetReactionTo(this) <= REP_UNFRIENDLY)
         return NULL;
@@ -2568,7 +2509,21 @@ Creature* Player::GetNPCIfCanInteractWith(ObjectGuid guid, uint32 npcflagmask)
     return creature;
 }
 
-GameObject* Player::GetGameObjectIfCanInteractWith(ObjectGuid guid, GameobjectTypes type) const
+GameObject* Player::GetGameObjectIfCanInteractWith(ObjectGuid const& guid) const
+{
+    if (GameObject* go = GetMap()->GetGameObject(guid))
+    {
+        if (go->IsWithinDistInMap(this, go->GetInteractionDistance()))
+            return go;
+
+        TC_LOG_DEBUG("maps", "GetGameObjectIfCanInteractWith: GameObject '%s' [GUID: %u] is too far away from player %s [GUID: %u] to be used by him (distance=%f, maximal %f is allowed)", go->GetGOInfo()->name.c_str(),
+            go->GetGUID().GetCounter(), GetName().c_str(), GetGUID().GetCounter(), go->GetDistance(this), go->GetInteractionDistance());
+    }
+
+    return nullptr;
+}
+
+GameObject* Player::GetGameObjectIfCanInteractWith(ObjectGuid const& guid, GameobjectTypes type) const
 {
     if (GameObject* go = GetMap()->GetGameObject(guid))
     {
@@ -2577,12 +2532,12 @@ GameObject* Player::GetGameObjectIfCanInteractWith(ObjectGuid guid, GameobjectTy
             if (go->IsWithinDistInMap(this, go->GetInteractionDistance()))
                 return go;
 
-            TC_LOG_DEBUG("maps", "GetGameObjectIfCanInteractWith: GameObject '%s' [GUID: %u] is too far away from player %s [GUID: %u] to be used by him (distance=%f, maximal 10 is allowed)", go->GetGOInfo()->name.c_str(),
-                go->GetGUID().GetCounter(), GetName().c_str(), GetGUID().GetCounter(), go->GetDistance(this));
+            TC_LOG_DEBUG("maps", "GetGameObjectIfCanInteractWith: GameObject '%s' [GUID: %u] is too far away from player %s [GUID: %u] to be used by him (distance=%f, maximal %f is allowed)", go->GetGOInfo()->name.c_str(),
+                go->GetGUID().GetCounter(), GetName().c_str(), GetGUID().GetCounter(), go->GetDistance(this), go->GetInteractionDistance());
         }
     }
 
-    return NULL;
+    return nullptr;
 }
 
 bool Player::IsUnderWater() const
@@ -2769,41 +2724,6 @@ void Player::RemoveFromGroup(Group* group, ObjectGuid guid, RemoveMethod method 
         return;
 
     if (group)
-    {
-        //npcbot - player is being removed from group - remove bots from that group
-        if (Player* player = ObjectAccessor::FindPlayer(guid))
-        {
-            if (player->HaveBot())
-            {
-                uint8 players = 0;
-                Group::MemberSlotList const& members = group->GetMemberSlots();
-                for (Group::member_citerator itr = members.begin(); itr != members.end(); ++itr)
-                {
-                    if (ObjectAccessor::FindPlayer(itr->guid))
-                        ++players;
-                }
-
-                //remove npcbots and set up new group if needed
-                player->GetBotMgr()->RemoveAllBotsFromGroup(players > 1);
-                group = player->GetGroup();
-                if (!group)
-                    return; //group has been disbanded
-                }
-            }
-        //npcbot - bot is being removed from group - find master and remove bot through botmap
-        /*else if (Creature* bot = ObjectAccessor::GetObjectInOrOutOfWorld(guid, (Creature*)NULL))
-        {
-            Player* master = bot->GetBotOwner();
-            if (master && master->GetTypeId() == TYPEID_PLAYER) //check for free bot just in case
-            {
-                master->GetBotMgr()->RemoveBotFromGroup(bot);
-                group = NULL;
-                return;
-            }
-        }*/
-    }
-    //end npcbot
-
     group->RemoveMember(guid, method, kicker, reason);
 }
 
@@ -4667,14 +4587,6 @@ void Player::DeleteFromDB(ObjectGuid playerguid, uint32 accountId, bool updateRe
             trans->Append(stmt);
 
             Corpse::DeleteFromDB(playerguid, trans);
-
-            //npcbot - erase npcbots
-            stmt = CharacterDatabase.GetPreparedStatement(CHAR_UPD_NPCBOT_OWNER_ALL);
-            //"UPDATE characters_npcbot SET owner = ? WHERE owner = ?", CONNECTION_ASYNC
-            stmt->setUInt32(0, uint32(0));
-            stmt->setUInt32(1, guid);
-            trans->Append(stmt);
-            //end npcbot
 
             CharacterDatabase.CommitTransaction(trans);
             break;
@@ -6970,10 +6882,6 @@ bool Player::RewardHonor(Unit* victim, uint32 groupsize, int32 honor, bool pvpto
         }
         else
         {
-            //npcbot - honor for bots
-            if (!(victim->ToCreature()->GetIAmABot() && victim->ToCreature()->IsFreeBot())) //exclude pets
-            //TODO: honor rate
-            //end npcbot
             if (!victim->ToCreature()->IsRacialLeader())
                 return false;
 

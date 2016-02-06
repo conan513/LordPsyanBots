@@ -314,7 +314,7 @@ class boss_halion : public CreatureScript
 
             void EnterEvadeMode(EvadeReason why) override
             {
-                if(why == EVADE_REASON_BOUNDARY)
+                if (why == EVADE_REASON_BOUNDARY)
                     if (Creature* controller = ObjectAccessor::GetCreature(*me, instance->GetGuidData(DATA_HALION_CONTROLLER)))
                         controller->AI()->EnterEvadeMode();
 
