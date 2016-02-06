@@ -88,7 +88,6 @@ enum WorldTimers
 enum WorldBoolConfigs
 {
     CONFIG_DURABILITY_LOSS_IN_PVP = 0,
-    CROSSFACTION_SYSTEM_BATTLEGROUNDS,
     CONFIG_ADDON_CHANNEL,
     CONFIG_ALLOW_PLAYER_COMMANDS,
     CONFIG_CLEAN_CHARACTER_DB,
@@ -150,6 +149,7 @@ enum WorldBoolConfigs
     CONFIG_SHOW_MUTE_IN_WORLD,
     CONFIG_SHOW_BAN_IN_WORLD,
     CONFIG_AUTOBROADCAST,
+    CONFIG_RANDOMBOTAUTOLOGIN,
     CONFIG_ALLOW_TICKETS,
     CONFIG_DELETE_CHARACTER_TICKET_TRACE,
     CONFIG_DBC_ENFORCE_ITEM_ATTRIBUTES,
@@ -190,8 +190,27 @@ enum WorldBoolConfigs
     // 18
     CONFIG_GAIN_HONOR_GUARD,
     CONFIG_GAIN_HONOR_ELITE,
-    CONFIG_EXTERNAL_MAIL_ENABLE,
     // 20
+    // 21
+    // 22
+    // 23
+    // 24
+    // 25
+    // 26
+    // 27
+    // 28
+    // 29
+    // 30
+    // 31
+    // 32
+    // 33
+    // 34
+    CONFIG_EXTERNAL_MAIL_ENABLE,
+    // 36
+    // 37
+    // 38
+    // 39
+    // 40
     // Visit http://www.realmsofwarcraft.com/bb for forums and information
     //
     // End of prepatch
@@ -228,38 +247,18 @@ enum WorldFloatConfigs
     CONFIG_ARENA_LOSE_RATING_MODIFIER,
     CONFIG_ARENA_MATCHMAKER_RATING_MODIFIER,
     // Prepatch by LordPsyan
-    // 21
-    // 22
-    CONFIG_SPEED_GAME,
-    // 24
-    // 25
-    // 26
-    CONFIG_ATTACKSPEED_PLAYER,
-    CONFIG_ATTACKSPEED_ALL,
-    // 28
-    // 29
-    // 30
-    CONFIG_RESPAWNSPEED,
-    // 32
-    // 33
-    // 34
-    CONFIG_ARENA_1V1_ARENAPOINTS_MULTI,
-    // 36
-    // 37
-    // 38
-    // 39
-    // 40
     // 41
     // 42
-    // 43
+    CONFIG_SPEED_GAME,
     // 44
     // 45
     // 46
-    // 47
+    CONFIG_ATTACKSPEED_PLAYER,
+    CONFIG_ATTACKSPEED_ALL,
     // 48
     // 49
     // 50
-    // 51
+    CONFIG_RESPAWNSPEED,
     // 52
     // 53
     // 54
@@ -268,7 +267,27 @@ enum WorldFloatConfigs
     // 57
     // 58
     // 59
-    // 60
+    CONFIG_ARENA_1V1_ARENAPOINTS_MULTI,
+    // 61
+    // 62
+    // 63
+    // 64
+    // 65
+    // 66
+    // 67
+    // 68
+    // 69
+    // 70
+    // 71
+    // 72
+    // 73
+    // 74
+    // 75
+    // 76
+    // 77
+    // 78
+    // 79
+    // 80
     // Visit http://www.realmsofwarcraft.com/bb for forums and information
     //
     // End of prepatch
@@ -444,27 +463,29 @@ enum WorldIntConfigs
     CONFIG_CHARTER_COST_ARENA_5v5,
     CONFIG_NO_GRAY_AGGRO_ABOVE,
     CONFIG_NO_GRAY_AGGRO_BELOW,
+    CONFIG_AUCTION_GETALL_DELAY,
+    CONFIG_AUCTION_SEARCH_DELAY,
     // Prepatch by LordPsyan
-    // 61
-    // 62
-    // 63
-    // 64
-    // 65
-    // 66
-    // 67
-    // 68
-    // 69
-    // 70
-    // 71
-    // 72
-    // 73
-    // 74
-    // 75
-    // 76
-    // 77
-    // 78
-    // 79
-    // 80
+    // 81
+    // 82
+    // 83
+    // 84
+    // 85
+    // 86
+    // 87
+    // 88
+    // 89
+    // 90
+    // 91
+    // 92
+    // 93
+    // 94
+    // 95
+    // 96
+    // 97
+    // 98
+    // 99
+    // 100
     // Visit http://www.realmsofwarcraft.com/bb for forums and information
     //
     // End of prepatch

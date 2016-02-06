@@ -22,7 +22,7 @@
  * Scriptnames of files in this file should be prefixed with "spell_gen_"
  */
 
-#include "../Custom/TransmogDisplayVendorConf.h"
+#include "../Custom/TransmogDisplayVendor/TransmogDisplayVendorConf.h"
 #include "ScriptMgr.h"
 #include "Battleground.h"
 #include "Cell.h"
@@ -39,7 +39,7 @@
 #include "SpellScript.h"
 #include "SpellAuraEffects.h"
 #include "Vehicle.h"
-#include "../Custom/Transmogrification.h"
+#include "../Custom/Transmog/Transmogrification.h"
 
 class spell_gen_absorb0_hitlimit1 : public SpellScriptLoader
 {
@@ -864,9 +864,9 @@ class spell_gen_clone_weapon_aura : public SpellScriptLoader
                         {
                             if (Item* mainItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND))
                             {
-                                if (uint32 entry = TransmogDisplayVendorMgr::GetFakeEntry(mainItem))
+                                if (uint32 entry = sTransmogrification->GetFakeEntry(mainItem))
                                     target->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID, entry);
-                                else if (uint32 entry = sTransmogrification->GetFakeEntry(mainItem))
+                                else if (uint32 entry = TransmogDisplayVendorMgr::GetFakeEntry(mainItem))
                                     target->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID, entry);
                                 else
                                     target->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID, mainItem->GetEntry());
@@ -885,9 +885,9 @@ class spell_gen_clone_weapon_aura : public SpellScriptLoader
                         {
                             if (Item* offItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_OFFHAND))
                             {
-                                if (uint32 entry = TransmogDisplayVendorMgr::GetFakeEntry(offItem))
+                                if (uint32 entry = sTransmogrification->GetFakeEntry(offItem))
                                     target->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + 1, entry);
-                                else if (uint32 entry = sTransmogrification->GetFakeEntry(offItem))
+                                else if (uint32 entry = TransmogDisplayVendorMgr::GetFakeEntry(offItem))
                                     target->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + 1, entry);
                                 else
                                     target->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + 1, offItem->GetEntry());
@@ -905,9 +905,9 @@ class spell_gen_clone_weapon_aura : public SpellScriptLoader
                         {
                             if (Item* rangedItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_RANGED))
                             {
-                                if (uint32 entry = TransmogDisplayVendorMgr::GetFakeEntry(rangedItem))
+                                if (uint32 entry = sTransmogrification->GetFakeEntry(rangedItem))
                                     target->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + 2, entry);
-                                else if (uint32 entry = sTransmogrification->GetFakeEntry(rangedItem))
+                                else if (uint32 entry = TransmogDisplayVendorMgr::GetFakeEntry(rangedItem))
                                     target->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + 2, entry);
                                 else
                                     target->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + 2, rangedItem->GetEntry());

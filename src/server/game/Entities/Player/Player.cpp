@@ -16,8 +16,8 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "../../../scripts/Custom/TransmogDisplayVendorConf.h"
-#include "../../../scripts/Custom/Transmogrification.h"
+#include "../../../scripts/Custom/Transmog/Transmogrification.h"
+#include "../../../scripts/Custom/TransmogDisplayVendor/TransmogDisplayVendorConf.h"
 #include "Player.h"
 #include "AccountMgr.h"
 #include "AchievementMgr.h"
@@ -92,9 +92,7 @@
 // 64
 // 65
 // 66
-//npcbot
-#include "botmgr.h"
-//end npcbot
+// 67
 // 68
 // 69
 // 70
@@ -325,12 +323,6 @@ std::ostringstream& operator<< (std::ostringstream& ss, PlayerTaxi const& taxi)
 
 Player::Player(WorldSession* session): Unit(true)
 {
-    m_FakeRace = 0;
-    m_RealRace = 0;
-    m_FakeMorph = 0;
-    m_ForgetBGPlayers = false;
-    m_ForgetInListPlayers = false;
-
     m_jail_guid     = 0;
     m_jail_char     = "";
     m_jail_amnestie = false;
@@ -581,10 +573,6 @@ Player::Player(WorldSession* session): Unit(true)
     m_timeSyncClient = 0;
     m_timeSyncServer = 0;
 
-    /////////////// Bot System //////////////////
-    _botMgr = NULL;
-    ///////////// End Bot System ////////////////
-
     for (uint8 i = 0; i < MAX_POWERS; ++i)
         m_powerFraction[i] = 0;
 
@@ -644,14 +632,6 @@ Player::~Player()
     delete m_runes;
     delete m_achievementMgr;
     delete m_reputationMgr;
-
-    //npcbot
-    if (_botMgr)
-    {
-        delete _botMgr;
-        _botMgr = NULL;
-    }
-    //end npcbot
 
     sWorld->DecreasePlayerCount();
 }
@@ -724,12 +704,6 @@ bool Player::Create(ObjectGuid::LowType guidlow, CharacterCreateInfo* createInfo
     uint32 RaceClassGender = (createInfo->Race) | (createInfo->Class << 8) | (createInfo->Gender << 16);
 
     SetUInt32Value(UNIT_FIELD_BYTES_0, (RaceClassGender | (powertype << 24)));
-
-    SetCFSRace();
-    m_team = TeamForRace(getCFSRace());
-    SetFakeRaceAndMorph(); // m_team must be set before this can be used.
-    setFactionForRace(getCFSRace());
-
     InitDisplayIds();
     if (sWorld->getIntConfig(CONFIG_GAME_TYPE) == REALM_TYPE_PVP || sWorld->getIntConfig(CONFIG_GAME_TYPE) == REALM_TYPE_RPPVP)
     {
@@ -869,7 +843,6 @@ bool Player::Create(ObjectGuid::LowType guidlow, CharacterCreateInfo* createInfo
     // original action bar
     for (PlayerCreateInfoActions::const_iterator action_itr = info->action.begin(); action_itr != info->action.end(); ++action_itr)
         addActionButton(action_itr->button, action_itr->action, action_itr->type);
-
 
     // original items
     if (CharStartOutfitEntry const* oEntry = GetCharStartOutfitEntry(createInfo->Race, createInfo->Class, createInfo->Gender))
@@ -1317,16 +1290,16 @@ void Player::Update(uint32 p_time)
     {
         time_t localtime;
         localtime = time(NULL);
-        
+
         if (m_jail_release <= localtime)
         {
             m_jail_isjailed = false;
             m_jail_release = 0;
 
             _SaveJail();
-            
+
             sWorld->SendWorldText(LANG_JAIL_CHAR_FREE, GetName().c_str());
-            
+
             CastSpell(this,8690,false);
 
             return;
@@ -1349,14 +1322,14 @@ void Player::Update(uint32 p_time)
                     sObjectMgr->m_jailconf_horde_y, sObjectMgr->m_jailconf_horde_z, sObjectMgr->m_jailconf_horde_o);
                 return;
             }
-            
+
         }
     }
 
     if (m_jail_warning == true)
     {
         m_jail_warning  = false;
-        
+
         if (sObjectMgr->m_jailconf_warn_player == m_jail_times || sObjectMgr->m_jailconf_warn_player <= m_jail_times)
         {
             if ((sObjectMgr->m_jailconf_max_jails-1 == m_jail_times-1) && sObjectMgr->m_jailconf_ban-1)
@@ -1367,7 +1340,7 @@ void Player::Update(uint32 p_time)
             {
                 ChatHandler(GetSession()).PSendSysMessage(LANG_JAIL_WARNING, m_jail_times , sObjectMgr->m_jailconf_max_jails);
             }
-                
+
         }
                 return;
     }
@@ -1376,14 +1349,15 @@ if (m_jail_amnestie == true && sObjectMgr->m_jailconf_amnestie > 0)
     m_jail_amnestie =false;
     time_t localtime;
     localtime    = time(NULL);
-    
+
     if (localtime >  m_jail_amnestietime)
-    {   
+    {
         CharacterDatabase.PExecute("DELETE FROM `jail` WHERE `guid` = '%u'",GetGUID().GetCounter());
         ChatHandler(GetSession()).PSendSysMessage(LANG_JAIL_AMNESTII);
     }
     return;
 }
+
 
     time_t now = time(NULL);
 
@@ -1742,10 +1716,7 @@ if (m_jail_amnestie == true && sObjectMgr->m_jailconf_amnestie > 0)
     // 88
     // 89
     // 90
-    //NpcBot mod: Update
-    if (_botMgr)
-        _botMgr->Update(p_time);
-    //end Npcbot
+    // 91
     // 92
     // 93
     // 94
@@ -2002,7 +1973,6 @@ uint8 Player::GetChatTag() const
     if (HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_DEVELOPER))
         tag |= CHAT_TAG_DEV;
 
-
     return tag;
 }
 
@@ -2040,7 +2010,6 @@ bool Player::TeleportTo(uint32 mapid, float x, float y, float z, float orientati
     // don't let gm level > 1 either
     if (!InBattleground() && mEntry->IsBattlegroundOrArena())
         return false;
-
 
     // client without expansion support
     if (GetSession()->Expansion() < mEntry->Expansion())
@@ -2190,12 +2159,6 @@ bool Player::TeleportTo(uint32 mapid, float x, float y, float z, float orientati
             if (pet)
                 UnsummonPetTemporaryIfAny();
 
-
-            //bot: teleport npcbots
-            if (HaveBot())
-                _botMgr->OnTeleportFar(mapid, x, y, z, orientation);
-            //end bot
-
             // remove all dyn objects
             RemoveAllDynObjects();
 
@@ -2215,7 +2178,6 @@ bool Player::TeleportTo(uint32 mapid, float x, float y, float z, float orientati
                 data << uint32(mapid);
                 if (Transport* transport = GetTransport())
                     data << transport->GetEntry() << GetMapId();
-
 
                 GetSession()->SendPacket(&data);
             }
@@ -2379,15 +2341,6 @@ void Player::RemoveFromWorld()
             SetViewpoint(viewpoint, false);
         }
     }
-  //TODO: FIXME
-    if (sIRC->ajoin == 1)
-    {
-        QueryResult result = WorldDatabase.PQuery("SELECT `name` FROM `irc_inchan` WHERE `name` = '%s'", GetName().c_str());
-        if (!result)
-        {
-            sIRC->AutoJoinChannel(this);
-        }
-    }
 }
 
 bool Player::IsImmunedToSpellEffect(SpellInfo const* spellInfo, uint32 index) const
@@ -2400,38 +2353,6 @@ bool Player::IsImmunedToSpellEffect(SpellInfo const* spellInfo, uint32 index) co
 
     return Unit::IsImmunedToSpellEffect(spellInfo, index);
 }
-
-//BOT
-bool Player::HaveBot() const
-{
-    return _botMgr && _botMgr->HaveBot();
-}
-
-uint8 Player::GetNpcBotsCount(bool inWorldOnly) const
-{
-    return HaveBot() ? _botMgr->GetNpcBotsCount(inWorldOnly) : 0;
-}
-
-uint8 Player::GetBotFollowDist() const
-{
-    return _botMgr ? _botMgr->GetBotFollowDist() : 30;
-}
-
-void Player::SetBotFollowDist(int8 dist)
-{
-    if (_botMgr) _botMgr->SetBotFollowDist(dist);
-}
-
-void Player::SetBotsShouldUpdateStats()
-{
-    if (HaveBot()) _botMgr->SetBotsShouldUpdateStats();
-}
-
-void Player::RemoveAllBots(uint8 removetype)
-{
-    if (HaveBot()) _botMgr->RemoveAllBots(removetype);
-}
-//END BOT
 
 void Player::RegenerateAll()
 {
@@ -2675,7 +2596,7 @@ bool Player::CanInteractWithQuestGiver(Object* questGiver)
     return false;
 }
 
-Creature* Player::GetNPCIfCanInteractWith(ObjectGuid guid, uint32 npcflagmask)
+Creature* Player::GetNPCIfCanInteractWith(ObjectGuid const& guid, uint32 npcflagmask)
 {
     // unit checks
     if (!guid)
@@ -2708,11 +2629,6 @@ Creature* Player::GetNPCIfCanInteractWith(ObjectGuid guid, uint32 npcflagmask)
     if (creature->GetCharmerGUID())
         return NULL;
 
-    //npcbot
-    if ((creature->IsQuestBot() || creature->IsNPCBot()) && creature->IsWithinDistInMap(this, INTERACTION_DISTANCE))
-        return creature;
-    //end npcbot
-
     // not unfriendly/hostile
     if (creature->GetReactionTo(this) <= REP_UNFRIENDLY)
         return NULL;
@@ -2724,7 +2640,21 @@ Creature* Player::GetNPCIfCanInteractWith(ObjectGuid guid, uint32 npcflagmask)
     return creature;
 }
 
-GameObject* Player::GetGameObjectIfCanInteractWith(ObjectGuid guid, GameobjectTypes type) const
+GameObject* Player::GetGameObjectIfCanInteractWith(ObjectGuid const& guid) const
+{
+    if (GameObject* go = GetMap()->GetGameObject(guid))
+    {
+        if (go->IsWithinDistInMap(this, go->GetInteractionDistance()))
+            return go;
+
+        TC_LOG_DEBUG("maps", "GetGameObjectIfCanInteractWith: GameObject '%s' [GUID: %u] is too far away from player %s [GUID: %u] to be used by him (distance=%f, maximal %f is allowed)", go->GetGOInfo()->name.c_str(),
+            go->GetGUID().GetCounter(), GetName().c_str(), GetGUID().GetCounter(), go->GetDistance(this), go->GetInteractionDistance());
+    }
+
+    return nullptr;
+}
+
+GameObject* Player::GetGameObjectIfCanInteractWith(ObjectGuid const& guid, GameobjectTypes type) const
 {
     if (GameObject* go = GetMap()->GetGameObject(guid))
     {
@@ -2733,12 +2663,12 @@ GameObject* Player::GetGameObjectIfCanInteractWith(ObjectGuid guid, GameobjectTy
             if (go->IsWithinDistInMap(this, go->GetInteractionDistance()))
                 return go;
 
-            TC_LOG_DEBUG("maps", "GetGameObjectIfCanInteractWith: GameObject '%s' [GUID: %u] is too far away from player %s [GUID: %u] to be used by him (distance=%f, maximal 10 is allowed)", go->GetGOInfo()->name.c_str(),
-                go->GetGUID().GetCounter(), GetName().c_str(), GetGUID().GetCounter(), go->GetDistance(this));
+            TC_LOG_DEBUG("maps", "GetGameObjectIfCanInteractWith: GameObject '%s' [GUID: %u] is too far away from player %s [GUID: %u] to be used by him (distance=%f, maximal %f is allowed)", go->GetGOInfo()->name.c_str(),
+                go->GetGUID().GetCounter(), GetName().c_str(), GetGUID().GetCounter(), go->GetDistance(this), go->GetInteractionDistance());
         }
     }
 
-    return NULL;
+    return nullptr;
 }
 
 bool Player::IsUnderWater() const
@@ -2917,6 +2847,15 @@ void Player::UninviteFromGroup()
             delete group;
         }
     }
+  //TODO: FIXME
+    if (sIRC->ajoin == 1)
+    {
+        QueryResult result = WorldDatabase.PQuery("SELECT `name` FROM `irc_inchan` WHERE `name` = '%s'", GetName().c_str());
+        if (!result)
+        {
+            sIRC->AutoJoinChannel(this);
+        }
+    }
 }
 
 void Player::RemoveFromGroup(Group* group, ObjectGuid guid, RemoveMethod method /* = GROUP_REMOVEMETHOD_DEFAULT*/, ObjectGuid kicker /* = ObjectGuid::Empty */, const char* reason /* = NULL */)
@@ -2925,41 +2864,6 @@ void Player::RemoveFromGroup(Group* group, ObjectGuid guid, RemoveMethod method 
         return;
 
     if (group)
-    {
-        //npcbot - player is being removed from group - remove bots from that group
-        if (Player* player = ObjectAccessor::FindPlayer(guid))
-        {
-            if (player->HaveBot())
-            {
-                uint8 players = 0;
-                Group::MemberSlotList const& members = group->GetMemberSlots();
-                for (Group::member_citerator itr = members.begin(); itr != members.end(); ++itr)
-                {
-                    if (ObjectAccessor::FindPlayer(itr->guid))
-                        ++players;
-                }
-
-                //remove npcbots and set up new group if needed
-                player->GetBotMgr()->RemoveAllBotsFromGroup(players > 1);
-                group = player->GetGroup();
-                if (!group)
-                    return; //group has been disbanded
-                }
-            }
-        //npcbot - bot is being removed from group - find master and remove bot through botmap
-        /*else if (Creature* bot = ObjectAccessor::GetObjectInOrOutOfWorld(guid, (Creature*)NULL))
-        {
-            Player* master = bot->GetBotOwner();
-            if (master && master->GetTypeId() == TYPEID_PLAYER) //check for free bot just in case
-            {
-                master->GetBotMgr()->RemoveBotFromGroup(bot);
-                group = NULL;
-                return;
-            }
-        }*/
-    }
-    //end npcbot
-
     group->RemoveMember(guid, method, kicker, reason);
 }
 
@@ -3045,10 +2949,10 @@ void Player::GiveLevel(uint8 level)
         guild->UpdateMemberData(this, GUILD_MEMBER_DATA_LEVEL, level);
 
     PlayerLevelInfo info;
-    sObjectMgr->GetPlayerLevelInfo(getCFSRace(), getClass(), level, &info);
+    sObjectMgr->GetPlayerLevelInfo(getRace(), getClass(), level, &info);
 
     PlayerClassLevelInfo classInfo;
-    
+    sObjectMgr->GetPlayerClassLevelInfo(getClass(), level, &classInfo);
 
     // send levelup info to client
     WorldPacket data(SMSG_LEVELUP_INFO, (4+4+MAX_POWERS*4+MAX_STATS*4));
@@ -3194,7 +3098,7 @@ void Player::InitStatsForLevel(bool reapplyMods)
     sObjectMgr->GetPlayerClassLevelInfo(getClass(), getLevel(), &classInfo);
 
     PlayerLevelInfo info;
-    sObjectMgr->GetPlayerLevelInfo(getCFSRace(), getClass(), getLevel(), &info);
+    sObjectMgr->GetPlayerLevelInfo(getRace(), getClass(), getLevel(), &info);
 
     SetUInt32Value(PLAYER_FIELD_MAX_LEVEL, sWorld->getIntConfig(CONFIG_MAX_PLAYER_LEVEL));
     SetUInt32Value(PLAYER_NEXT_LEVEL_XP, sObjectMgr->GetXPForLevel(getLevel()));
@@ -3374,7 +3278,6 @@ void Player::SendInitialSpells()
     data.put<uint16>(countPos, spellCount);                  // write real count value
 
     GetSpellHistory()->WritePacket<Player>(data);
-
 
     GetSession()->SendPacket(&data);
 
@@ -4842,14 +4745,6 @@ void Player::DeleteFromDB(ObjectGuid playerguid, uint32 accountId, bool updateRe
             /* World of Warcraft Armory */
 
 
-            //npcbot - erase npcbots
-            stmt = CharacterDatabase.GetPreparedStatement(CHAR_UPD_NPCBOT_OWNER_ALL);
-            //"UPDATE characters_npcbot SET owner = ? WHERE owner = ?", CONNECTION_ASYNC
-            stmt->setUInt32(0, uint32(0));
-            stmt->setUInt32(1, guid);
-            trans->Append(stmt);
-            //end npcbot
-
             CharacterDatabase.CommitTransaction(trans);
             break;
         }
@@ -5141,7 +5036,7 @@ Corpse* Player::CreateCorpse()
     // prevent existence 2 corpse for player
     SpawnCorpseBones();
 
-    uint32 _uf, _pb, _pb2, _cfb1, _cfb2;
+    uint32 _pb, _pb2, _cfb1, _cfb2;
 
     Corpse* corpse = new Corpse((m_ExtraFlags & PLAYER_EXTRA_PVP_DEATH) ? CORPSE_RESURRECTABLE_PVP : CORPSE_RESURRECTABLE_PVE);
     SetPvPDeath(false);
@@ -5154,11 +5049,9 @@ Corpse* Player::CreateCorpse()
 
     _corpseLocation.WorldRelocate(*this);
 
-    _uf = getCFSRace();
     _pb = GetUInt32Value(PLAYER_BYTES);
     _pb2 = GetUInt32Value(PLAYER_BYTES_2);
 
-    uint8 race       = (uint8) (_uf);
     uint8 skin       = (uint8)(_pb);
     uint8 face       = (uint8)(_pb >> 8);
     uint8 hairstyle  = (uint8)(_pb >> 16);
@@ -5400,7 +5293,6 @@ uint32 Player::DurabilityRepair(uint16 pos, bool cost, float discountMod, bool g
                 if (!guild->HandleMemberWithdrawMoney(GetSession(), costs, true))
                     return TotalCost;
 
-
                 TotalCost = costs;
             }
             else if (!HasEnoughMoney(costs))
@@ -5549,7 +5441,6 @@ void Player::UpdateLocalChannels(uint32 newZone)
                     if (channel->flags & CHANNEL_DBC_FLAG_CITY_ONLY && usedChannel)
                         continue;                            // Already on the channel, as city channel names are not changing
 
-
                     char new_channel_name_buf[100];
                     char const* currentNameExt;
 
@@ -5622,7 +5513,6 @@ void Player::HandleBaseModValue(BaseModGroup modGroup, BaseModType modType, floa
         m_auraBaseMod[modGroup][modType] += apply ? amount : -amount;
     else // PCT_MOD
         ApplyPercentModFloatVar(m_auraBaseMod[modGroup][modType], amount, apply);
-
 
     if (!CanModifyStats())
         return;
@@ -6685,7 +6575,6 @@ bool Player::UpdatePosition(float x, float y, float z, float orientation, bool t
     if (GetGroup())
         SetGroupUpdateFlag(GROUP_UPDATE_FLAG_POSITION);
 
-
     CheckAreaExploreAndOutdoor();
 
     return true;
@@ -6843,10 +6732,10 @@ uint32 Player::TeamForRace(uint8 race)
 
 void Player::setFactionForRace(uint8 race)
 {
-    SetBGTeam(TeamForRace(race));
+    m_team = TeamForRace(race);
 
     ChrRacesEntry const* rEntry = sChrRacesStore.LookupEntry(race);
-    setFaction(rEntry ? rEntry->FactionID : getFaction());
+    setFaction(rEntry ? rEntry->FactionID : 0);
 }
 
 ReputationRank Player::GetReputationRank(uint32 faction) const
@@ -6948,27 +6837,6 @@ void Player::RewardReputation(Unit* victim, float rate)
     if (!Rep)
         return;
 
-    uint32 repfaction1 = Rep->RepFaction1;
-    uint32 repfaction2 = Rep->RepFaction2;
-    
-        if (!IsPlayingNative())
-         {
-        if (GetCFSTeam() == ALLIANCE)
-             {
-            if (repfaction1 == 729)
-                 repfaction1 = 730;
-            if (repfaction2 == 729)
-                 repfaction2 = 730;
-            }
-        else
-             {
-            if (repfaction1 == 730)
-                 repfaction1 = 729;
-            if (repfaction2 == 730)
-                 repfaction2 = 729;
-            }
-        }
-
     uint32 ChampioningFaction = 0;
 
     if (GetChampioningFaction())
@@ -6983,9 +6851,9 @@ void Player::RewardReputation(Unit* victim, float rate)
 
     uint32 team = GetTeam();
 
-    if (repfaction1 && (!Rep->TeamDependent || team == ALLIANCE))
+    if (Rep->RepFaction1 && (!Rep->TeamDependent || team == ALLIANCE))
     {
-        int32 donerep1 = CalculateReputationGain(REPUTATION_SOURCE_KILL, victim->getLevel(), Rep->RepValue1, ChampioningFaction ? ChampioningFaction : repfaction1);
+        int32 donerep1 = CalculateReputationGain(REPUTATION_SOURCE_KILL, victim->getLevel(), Rep->RepValue1, ChampioningFaction ? ChampioningFaction : Rep->RepFaction1);
         donerep1 = int32(donerep1 * rate);
 
         FactionEntry const* factionEntry1 = sFactionStore.LookupEntry(ChampioningFaction ? ChampioningFaction : Rep->RepFaction1);
@@ -6994,12 +6862,12 @@ void Player::RewardReputation(Unit* victim, float rate)
             GetReputationMgr().ModifyReputation(factionEntry1, donerep1);
     }
 
-    if (repfaction2 && (!Rep->TeamDependent || team == HORDE))
+    if (Rep->RepFaction2 && (!Rep->TeamDependent || team == HORDE))
     {
-        int32 donerep2 = CalculateReputationGain(REPUTATION_SOURCE_KILL, victim->getLevel(), Rep->RepValue2, ChampioningFaction ? ChampioningFaction : repfaction2);
+        int32 donerep2 = CalculateReputationGain(REPUTATION_SOURCE_KILL, victim->getLevel(), Rep->RepValue2, ChampioningFaction ? ChampioningFaction : Rep->RepFaction2);
         donerep2 = int32(donerep2 * rate);
 
-        FactionEntry const* factionEntry2 = sFactionStore.LookupEntry(ChampioningFaction ? ChampioningFaction : repfaction2);
+        FactionEntry const* factionEntry2 = sFactionStore.LookupEntry(ChampioningFaction ? ChampioningFaction : Rep->RepFaction2);
         uint32 current_reputation_rank2 = GetReputationMgr().GetRank(factionEntry2);
         if (factionEntry2 && current_reputation_rank2 <= Rep->ReputationMaxCap2)
             GetReputationMgr().ModifyReputation(factionEntry2, donerep2);
@@ -7094,7 +6962,7 @@ bool Player::RewardHonor(Unit* victim, uint32 groupsize, int32 honor, bool pvpto
         if (!victim || victim == this || victim->GetTypeId() != TYPEID_PLAYER)
             return false;
 
-        if (GetTeam() == victim->ToPlayer()->GetTeam())
+        if (GetBGTeam() == victim->ToPlayer()->GetBGTeam())
             return false;
 
         return true;
@@ -7222,7 +7090,6 @@ bool Player::RewardHonor(Unit* victim, uint32 groupsize, int32 honor, bool pvpto
 
             honor_f = ceil(Trinity::Honor::hk_honor_at_level_f(k_level) * (v_level - k_grey) / (k_level - k_grey));
 
-
             // count the number of playerkills in one day
             ApplyModUInt32Value(PLAYER_FIELD_KILLS, 1, true);
             // and those in a lifetime
@@ -7258,10 +7125,6 @@ bool Player::RewardHonor(Unit* victim, uint32 groupsize, int32 honor, bool pvpto
         }
         else
         {
-            //npcbot - honor for bots
-            if (!(victim->ToCreature()->GetIAmABot() && victim->ToCreature()->IsFreeBot())) //exclude pets
-            //TODO: honor rate
-            //end npcbot
             if (!victim->ToCreature()->IsRacialLeader())
                 return false;
 
@@ -7352,7 +7215,6 @@ bool Player::RewardHonor(Unit* victim, uint32 groupsize, int32 honor, bool pvpto
                 ChatHandler(GetSession()).PSendSysMessage("You have been awarded a token for slaying another player.");
         }
     }
-
 
     return true;
 }
@@ -7489,7 +7351,6 @@ uint32 Player::GetZoneIdFromDB(ObjectGuid guid)
     PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_CHAR_ZONE);
     stmt->setUInt32(0, guidLow);
     PreparedQueryResult result = CharacterDatabase.Query(stmt);
-
 
     if (!result)
         return 0;
@@ -7838,7 +7699,6 @@ void Player::_ApplyItemMods(Item* item, uint8 slot, bool apply)
 
     if (proto->Socket[0].Color)                              //only (un)equipping of items with sockets can influence metagems, so no need to waste time with normal items
         CorrectMetaGemEnchants(slot, apply);
-
 
     if (attacktype < MAX_ATTACK)
         _ApplyWeaponDependentAuraMods(item, WeaponAttackType(attacktype), apply);
@@ -9161,11 +9021,9 @@ void Player::SendLoot(ObjectGuid guid, LootType loot_type)
     // need know merged fishing/corpse loot type for achievements
     loot->loot_type = loot_type;
 
-
     if (permission != NONE_PERMISSION)
     {
         SetLootGUID(guid);
-
 
         WorldPacket data(SMSG_LOOT_RESPONSE, (9 + 50));           // we guess size
         data << uint64(guid);
@@ -12098,13 +11956,13 @@ InventoryResult Player::CanUseItem(ItemTemplate const* proto) const
     if (!proto)
         return EQUIP_ERR_ITEM_NOT_FOUND;
 
-    if ((proto->Flags2 & ITEM_FLAGS_EXTRA_HORDE_ONLY) && GetCFSTeam() != HORDE)
+    if ((proto->Flags2 & ITEM_FLAGS_EXTRA_HORDE_ONLY) && GetTeam() != HORDE)
         return EQUIP_ERR_YOU_CAN_NEVER_USE_THAT_ITEM;
 
-    if ((proto->Flags2 & ITEM_FLAGS_EXTRA_ALLIANCE_ONLY) && GetCFSTeam() != ALLIANCE)
+    if ((proto->Flags2 & ITEM_FLAGS_EXTRA_ALLIANCE_ONLY) && GetTeam() != ALLIANCE)
         return EQUIP_ERR_YOU_CAN_NEVER_USE_THAT_ITEM;
 
-    if ((proto->AllowableClass & getClassMask()) == 0 || (proto->AllowableRace & getCFSRaceMask()) == 0)
+    if ((proto->AllowableClass & getClassMask()) == 0 || (proto->AllowableRace & getRaceMask()) == 0)
         return EQUIP_ERR_YOU_CAN_NEVER_USE_THAT_ITEM;
 
     if (proto->RequiredSkill != 0)
@@ -12718,7 +12576,9 @@ void Player::RemoveItem(uint8 bag, uint8 slot, bool update)
             pItem->SendUpdateToPlayer(this);
     }
 }
+
 extern void RemoveReforge(Player* player, uint32 itemguid, bool update);
+
 // Common operation need to remove item from inventory without delete in trade, auction, guild bank, mail....
 void Player::MoveItemFromInventory(uint8 bag, uint8 slot, bool update)
 {
@@ -12729,11 +12589,12 @@ void Player::MoveItemFromInventory(uint8 bag, uint8 slot, bool update)
     // 02
     // 03
     // 04
-        TransmogDisplayVendorMgr::DeleteFakeEntry(this, it);
+    sTransmogrification->DeleteFakeEntry(this, it);
+    TransmogDisplayVendorMgr::DeleteFakeEntry(this, it);
     // 06
     // 07
     // 08
-        sTransmogrification->DeleteFakeEntry(this, it);
+    // 09
     // 10
     // 11
     // 12
@@ -16015,7 +15876,6 @@ bool Player::SatisfyQuestPrevChain(Quest const* qInfo, bool msg)
     {
         QuestStatusMap::const_iterator itr = m_QuestStatus.find(*iter);
 
-
         // If any of the previous quests in chain active, return false
         if (itr != m_QuestStatus.end() && itr->second.Status != QUEST_STATUS_NONE)
         {
@@ -16676,7 +16536,6 @@ void Player::KilledMonsterCredit(uint32 entry, ObjectGuid guid /*= ObjectGuid::E
 
                     uint32 reqkill = qInfo->RequiredNpcOrGo[j];
 
-
                     if (reqkill == real_entry)
                     {
                         uint32 reqkillcount = qInfo->RequiredNpcOrGoCount[j];
@@ -16704,7 +16563,6 @@ void Player::KilledMonsterCredit(uint32 entry, ObjectGuid guid /*= ObjectGuid::E
 void Player::KilledPlayerCredit()
 {
     uint16 addkillcount = 1;
-
 
     for (uint8 i = 0; i < MAX_QUEST_LOG_SIZE; ++i)
     {
@@ -17414,11 +17272,6 @@ bool Player::LoadFromDB(ObjectGuid guid, SQLQueryHolder *holder)
     bytes0 |= gender << 16;                                 // gender
     SetUInt32Value(UNIT_FIELD_BYTES_0, bytes0);
 
-    SetCFSRace(); //**** umisteni ****
-    m_team = TeamForRace(getCFSRace());
-    SetFakeRaceAndMorph(); // m_team must be set before this can be used.
-    setFactionForRace(getCFSRace());//Need to call it to initialize m_team (m_team can be calculated from race)
-
     // check if race/class combination is valid
     PlayerInfo const* info = sObjectMgr->GetPlayerInfo(getRace(), getClass());
     if (!info)
@@ -17487,7 +17340,9 @@ bool Player::LoadFromDB(ObjectGuid guid, SQLQueryHolder *holder)
     TC_LOG_DEBUG("entities.player.loading", "Load Basic value of player %s is: ", m_name.c_str());
     outDebugValues();
 
-   
+    //Need to call it to initialize m_team (m_team can be calculated from race)
+    //Other way is to saves m_team into characters table.
+    setFactionForRace(getRace());
 
     // load home bind and check in same time class/race pair, it used later for restore broken positions
     if (!_LoadHomeBind(holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_HOME_BIND)))
@@ -17790,7 +17645,6 @@ bool Player::LoadFromDB(ObjectGuid guid, SQLQueryHolder *holder)
         }
     }
 
-
     SetMap(map);
     StoreRaidMapDifficulty();
 
@@ -17943,7 +17797,6 @@ bool Player::LoadFromDB(ObjectGuid guid, SQLQueryHolder *holder)
     InitTalentForLevel();
     LearnDefaultSkills();
     LearnCustomSpells();
-
 
     // must be before inventory (some items required reputation check)
     m_reputationMgr->LoadFromDB(holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_REPUTATION));
@@ -18124,10 +17977,11 @@ void Player::_LoadJail(void)
             TeleportTo(sObjectMgr->m_jailconf_horde_m, sObjectMgr->m_jailconf_horde_x,
                 sObjectMgr->m_jailconf_horde_y, sObjectMgr->m_jailconf_horde_z, sObjectMgr->m_jailconf_horde_o);
         }
-         
+
         sWorld->SendWorldText(LANG_JAIL_CHAR_TELE, GetName().c_str());
     }
 }
+
 
 bool Player::isAllowedToLoot(const Creature* creature)
 {
@@ -18214,7 +18068,6 @@ void Player::_LoadAuras(PreparedQueryResult result, uint32 timediff)
                                                         11          12          13
                                                     maxDuration, remainTime, remainCharges FROM character_aura WHERE guid = '%u'", GetGUID().GetCounter());
     */
-
 
     if (result)
     {
@@ -18779,7 +18632,6 @@ void Player::_LoadQuestStatus(PreparedQueryResult result)
                 questStatusData.ItemCount[3] = fields[11].GetUInt16();
                 questStatusData.PlayerCount = fields[12].GetUInt16();
 
-
                 // add to quest log
                 if (slot < MAX_QUEST_LOG_SIZE && questStatusData.Status != QUEST_STATUS_NONE)
                 {
@@ -18925,7 +18777,6 @@ void Player::_LoadSeasonalQuestStatus(PreparedQueryResult result)
 {
     m_seasonalquests.clear();
 
-
     if (result)
     {
         do
@@ -18949,7 +18800,6 @@ void Player::_LoadSeasonalQuestStatus(PreparedQueryResult result)
 void Player::_LoadMonthlyQuestStatus(PreparedQueryResult result)
 {
     m_monthlyquests.clear();
-
 
     if (result)
     {
@@ -19437,7 +19287,7 @@ void Player::AddInstanceEnterTime(uint32 instanceId, time_t enterTime)
 
 bool Player::_LoadHomeBind(PreparedQueryResult result)
 {
-    PlayerInfo const* info = sObjectMgr->GetPlayerInfo(getCFSRace(), getClass());
+    PlayerInfo const* info = sObjectMgr->GetPlayerInfo(getRace(), getClass());
     if (!info)
     {
         TC_LOG_ERROR("entities.player", "Player (Name %s) has incorrect race/class pair. Can't be loaded.", GetName().c_str());
@@ -19543,7 +19393,7 @@ void Player::SaveToDB(bool create /*=false*/)
         stmt->setUInt32(index++, GetGUID().GetCounter());
         stmt->setUInt32(index++, GetSession()->GetAccountId());
         stmt->setString(index++, GetName());
-        stmt->setUInt8(index++, getCFSRace());
+        stmt->setUInt8(index++, getRace());
         stmt->setUInt8(index++, getClass());
         stmt->setUInt8(index++, GetByteValue(PLAYER_BYTES_3, 0));   // save gender from PLAYER_BYTES_3, UNIT_BYTES_0 changes with every transform effect
         stmt->setUInt8(index++, getLevel());
@@ -19567,7 +19417,6 @@ void Player::SaveToDB(bool create /*=false*/)
         if (GetTransport())
             transLowGUID = GetTransport()->GetGUID().GetCounter();
         stmt->setUInt32(index++, transLowGUID);
-
 
         std::ostringstream ss;
         ss << m_taxi;
@@ -19649,7 +19498,7 @@ void Player::SaveToDB(bool create /*=false*/)
         // Update query
         stmt = CharacterDatabase.GetPreparedStatement(CHAR_UPD_CHARACTER);
         stmt->setString(index++, GetName());
-        stmt->setUInt8(index++, getCFSRace());
+        stmt->setUInt8(index++, getRace());
         stmt->setUInt8(index++, getClass());
         stmt->setUInt8(index++, GetByteValue(PLAYER_BYTES_3, 0));   // save gender from PLAYER_BYTES_3, UNIT_BYTES_0 changes with every transform effect
         stmt->setUInt8(index++, getLevel());
@@ -21752,7 +21601,6 @@ void Player::ContinueTaxiFlight()
     if (!mountDisplayId)
         return;
 
-
     uint32 path = m_taxi.GetCurrentTaxiPath();
 
     // search appropriate start path node
@@ -21801,7 +21649,6 @@ void Player::InitDataForForm(bool reapplyMods)
 {
     ShapeshiftForm form = GetShapeshiftForm();
 
-
     SpellShapeshiftEntry const* ssEntry = sSpellShapeshiftStore.LookupEntry(form);
     if (ssEntry && ssEntry->attackSpeed)
     {
@@ -21847,27 +21694,22 @@ void Player::InitDataForForm(bool reapplyMods)
 
 void Player::InitDisplayIds()
 {
-    PlayerInfo const* info = sObjectMgr->GetPlayerInfo(getCFSRace(), getClass());
+    PlayerInfo const* info = sObjectMgr->GetPlayerInfo(getRace(), getClass());
     if (!info)
     {
         TC_LOG_ERROR("entities.player", "Player %s (%s) has incorrect race/class pair. Can't init display ids.", GetName().c_str(), GetGUID().ToString().c_str());
         return;
     }
 
-    bool isMorphed = GetNativeDisplayId() != GetDisplayId();
-
     uint8 gender = GetByteValue(PLAYER_BYTES_3, 0);
     switch (gender)
     {
         case GENDER_FEMALE:
-            if (!isMorphed)
-                SetDisplayId(info->displayId_f);
+            SetDisplayId(info->displayId_f);
             SetNativeDisplayId(info->displayId_f);
             break;
         case GENDER_MALE:
-            if (!isMorphed)
-                if (!isMorphed)
-                    SetDisplayId(info->displayId_m);
+            SetDisplayId(info->displayId_m);
             SetNativeDisplayId(info->displayId_m);
             break;
         default:
@@ -22479,7 +22321,10 @@ void Player::SetBGTeam(uint32 team)
     SetByteValue(PLAYER_BYTES_3, 3, uint8(team == ALLIANCE ? 1 : 0));
 }
 
-
+uint32 Player::GetBGTeam() const
+{
+    return m_bgData.bgTeam ? m_bgData.bgTeam : GetTeam();
+}
 
 void Player::LeaveBattleground(bool teleportToEntryPoint)
 {
@@ -22566,7 +22411,7 @@ void Player::ReportedAfkBy(Player* reporter)
 
 WorldLocation Player::GetStartPosition() const
 {
-    PlayerInfo const* info = sObjectMgr->GetPlayerInfo(getCFSRace(), getClass());
+    PlayerInfo const* info = sObjectMgr->GetPlayerInfo(getRace(), getClass());
     uint32 mapId = info->mapId;
     if (getClass() == CLASS_DEATH_KNIGHT && HasSpell(50977))
         mapId = 0;
@@ -22583,10 +22428,8 @@ bool Player::IsNeverVisible() const
     if (Unit::IsNeverVisible())
         return true;
 
-
     if (GetSession()->PlayerLogout() || GetSession()->PlayerLoading())
         return true;
-
 
     return false;
 }
@@ -22612,7 +22455,6 @@ bool Player::IsAlwaysDetectableFor(WorldObject const* seer) const
     if (const Player* seerPlayer = seer->ToPlayer())
         if (IsGroupVisibleFor(seerPlayer))
             return !(seerPlayer->duel && seerPlayer->duel->startTime != 0 && seerPlayer->duel->opponent == this);
-
 
     return false;
 }
@@ -23258,7 +23100,7 @@ void Player::LearnCustomSpells()
     for (PlayerCreateInfoSpells::const_iterator itr = info->customSpells.begin(); itr != info->customSpells.end(); ++itr)
     {
         uint32 tspell = *itr;
-        TC_LOG_DEBUG("entities.player.loading", "PLAYER (Class: %u Race: %u): Adding initial spell, id = %u", uint32(getClass()), uint32(getCFSRace()), tspell);
+        TC_LOG_DEBUG("entities.player.loading", "PLAYER (Class: %u Race: %u): Adding initial spell, id = %u", uint32(getClass()), uint32(getRace()), tspell);
         if (!IsInWorld())                                    // will send in INITIAL_SPELLS in list anyway at map add
             AddSpell(tspell, true, true, true, false);
         else                                                // but send in normal spell in game learn case
@@ -24317,7 +24159,6 @@ int32 Player::CalculateCorpseReclaimDelay(bool load)
             return -1;
 
         uint64 count = 0;
-
 
         if ((pvp && sWorld->getBoolConfig(CONFIG_DEATH_CORPSE_RECLAIM_DELAY_PVP)) ||
            (!pvp && sWorld->getBoolConfig(CONFIG_DEATH_CORPSE_RECLAIM_DELAY_PVE)))

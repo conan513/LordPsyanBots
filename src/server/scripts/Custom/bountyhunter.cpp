@@ -24,9 +24,9 @@ using namespace std;
 #define BOUNTY_4 "I would like to place a 10 token bounty."
 #endif
 
-#define PLACE_BOUNTY "Ich will Jemanden tot sehen!"
-#define LIST_BOUNTY "Zeig mir die Liste der Opfer!"
-#define NVM "Ich moechte doch nichts."
+#define PLACE_BOUNTY "I want to see somebody dead!"
+#define LIST_BOUNTY "Show me the list of victims!"
+#define NVM "I changed my mind."
 
 #if SET_CURRENCY != 2
 

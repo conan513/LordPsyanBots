@@ -1314,10 +1314,8 @@ class Unit : public WorldObject
         uint8 getLevel() const { return uint8(GetUInt32Value(UNIT_FIELD_LEVEL)); }
         uint8 getLevelForTarget(WorldObject const* /*target*/) const override { return getLevel(); }
         void SetLevel(uint8 lvl);
-        uint8 getRace(bool forceoriginal = false) const;
-        uint8 getCFSRace() { return getRace(true); }
+        uint8 getRace() const { return GetByteValue(UNIT_FIELD_BYTES_0, 0); }
         uint32 getRaceMask() const { return 1 << (getRace()-1); }
-        uint32 getCFSRaceMask() const { return 1 << (getRace(true) - 1); }
         uint8 getClass() const { return GetByteValue(UNIT_FIELD_BYTES_0, 1); }
         uint32 getClassMask() const { return 1 << (getClass()-1); }
         uint8 getGender() const { return GetByteValue(UNIT_FIELD_BYTES_0, 2); }
@@ -2137,18 +2135,6 @@ class Unit : public WorldObject
         void Yell(uint32 textId, WorldObject const* target = nullptr);
         void TextEmote(uint32 textId, WorldObject const* target = nullptr, bool isBossEmote = false);
         void Whisper(uint32 textId, Player* target, bool isBossWhisper = false);
-
-        //npcbot
-        bool HasReactive(ReactiveType reactive) const { return m_reactiveTimer[reactive] > 0; }
-        void ClearReactive(ReactiveType reactive);
-
-        void SuspendDelayedSwing();
-        void ExecuteDelayedSwingHit(bool extra = false);
-        CalcDamageInfo _damageInfo;
-        ObjectGuid _delayedTargetGuid;
-        uint32 _swingDelayTimer;
-        bool _swingLanded;
-        //end npcbot
 
     protected:
         explicit Unit (bool isWorldObject);

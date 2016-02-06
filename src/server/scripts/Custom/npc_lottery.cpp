@@ -30,19 +30,19 @@ public:
             if (player->getLevel() >= uint32(LOTTERY_MINLVL) && player->GetMoney() >= uint32(LOTTERY_BETCOST))
             {
                 std::stringstream str;
-                str << "Willst du dein Glück versuchen? " << LOTTERY_FIELDS << " Nummern zwischen 1 und " << LOTTERY_MAXNUMBER << " (durch Leerzeichen trennen), bezahle " << (uint32)(LOTTERY_BETCOST*0.0001f) << " Gold und warte auf die Auslosung (20:00).";
-                str << " Du kannst nur " << LOTTERY_BETCOUNT << " Los kaufen" << (LOTTERY_BETCOUNT > 1 ? "s." : ".");
+                str << "Want to try your luck? " << LOTTERY_FIELDS << " Numbers between 1 and " << LOTTERY_MAXNUMBER << " (with spaces), paid " << (uint32)(LOTTERY_BETCOST*0.0001f) << " Gold and wait for the draw (20:00).";
+                str << " You can only buy" << LOTTERY_BETCOUNT << " lot" << (LOTTERY_BETCOUNT > 1 ? "s." : ".");
 
 
                 pCreature->Whisper(str.str().c_str(), LANG_UNIVERSAL, player);
-                player->ADD_GOSSIP_ITEM_EXTENDED(0, "Kaufe ein Los", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF, "", 0, true);
+                player->ADD_GOSSIP_ITEM_EXTENDED(0, "Buy one lot", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF, "", 0, true);
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Script Info", GOSSIP_SENDER_MAIN, 9998);
                 player->SEND_GOSSIP_MENU(player->GetGossipTextId(pCreature), pCreature->GetGUID());
             }
             else
            {
                 std::stringstream str;
-                str << "Du brauchst " << LOTTERY_MINLVL << " Gold and Level " << (uint32)(LOTTERY_BETCOST*0.0001f) << "+ um ein Los zu kaufen.";
+                str << "You need " << LOTTERY_MINLVL << " Gold and Level " << (uint32)(LOTTERY_BETCOST*0.0001f) << "+ to buy a lot.";
                 pCreature->Whisper(str.str().c_str(), LANG_UNIVERSAL, player);
             }
         }
@@ -63,7 +63,7 @@ public:
                     char * tmp;
                    int32 number[LOTTERY_FIELDS];
                     std::stringstream error;
-                    error << "Du hast eine falsche Nummer eingegeben. Du musst " << LOTTERY_FIELDS << " Nummer (durch Leerzeichen trennen) zwischen 1 - " << LOTTERY_MAXNUMBER << "eingeben.";
+                    error << "You have entered a wrong number. You need to " << LOTTERY_FIELDS << " Number (with spaces) between 1 - " << LOTTERY_MAXNUMBER << "enter.";
                     std::string errordub = ("Du hast schon getipt");
                     std::string sNumbers;
 
@@ -108,7 +108,7 @@ public:
                             ssNumber << " ";
                     }
 
-                    sNumbers = "Du hast folgende Zahlen getipt: " + ssNumber.str();
+                    sNumbers = "You have typed the following numbers: " + ssNumber.str();
 
                     uint32 betMaxID = 0;
                     QueryResult qbetMaxID = WorldDatabase.Query("SELECT MAX(id) FROM lottery_bets");
@@ -134,10 +134,10 @@ public:
     {
         if(uiAction == 9998) // Script Info
         {
-            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Entwickelt von: Teiby", GOSSIP_SENDER_MAIN, uiAction);
-            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Website: www.teiby.de", GOSSIP_SENDER_MAIN, uiAction);
+            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Developed by: Tenby. Updated by LordPsyan", GOSSIP_SENDER_MAIN, uiAction);
+            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Website: www.realmsofwarcraft.com", GOSSIP_SENDER_MAIN, uiAction);
             pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Version: 1.2", GOSSIP_SENDER_MAIN, uiAction);
-            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "<-- Zurück", GOSSIP_SENDER_MAIN, 9999);
+            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "<-- Back", GOSSIP_SENDER_MAIN, 9999);
             pPlayer->SEND_GOSSIP_MENU(68, pCreature->GetGUID());
         }
         else if(uiAction == 9999)
@@ -273,9 +273,9 @@ public:
                             uint32 cash = stakes / pow(2, LOTTERY_FIELDS - itr->points) / winnerCount[itr->points-1];
 
                             std::stringstream text;
-                            text << "Gratulation du hast die Richtigen Zahlen getipt!\n\n";
+                            text << "Congratulations you have typed the correct numbers!\n\n";
                             text << "Dein Los: " << itr->bets.c_str() << "\n";
-                            text << "Lotto Resultat: " << sLuckyNumber.str().c_str() << "\n\n";
+                            text << "Lotto Results: " << sLuckyNumber.str().c_str() << "\n\n";
                             text << "Hits: " << itr->points << "\n";
                             text << "Sum of bets with " << itr->points << " hits: " << winnerCount[itr->points-1];
 
@@ -309,9 +309,9 @@ public:
                             for(tdJW::const_iterator itr = lJackpotWinners.begin(); itr != lJackpotWinners.end(); itr++)
                             {
                                 std::stringstream text;
-                                text << "Glückwunsch du hast den Jackpot geknackt\n\n";
+                                text << "Congratulations you've hit the jackpot\n\n";
                                 text << "Dein Los: " << itr->bets.c_str() << "\n";
-                                text << "Lotto Resultat: " << sLuckyNumber.str().c_str() << "\n\n";
+                                text << "Lotto Results: " << sLuckyNumber.str().c_str() << "\n\n";
                                 text << "Hits: " << itr->points << "\n";
                                 text << "Sum of bets with " << itr->points << " hits: " << winnerCount[itr->points-1];
 

@@ -105,7 +105,7 @@ void WorldSession::HandleGossipSelectOptionOpcode(WorldPacket& recvData)
     GameObject* go = NULL;
     if (guid.IsCreatureOrVehicle())
     {
-        unit = GetPlayer()->GetNPCIfCanInteractWith(guid, UNIT_NPC_FLAG_NONE);
+        unit = GetPlayer()->GetNPCIfCanInteractWith(guid, UNIT_NPC_FLAG_GOSSIP);
         if (!unit)
         {
             TC_LOG_DEBUG("network", "WORLD: HandleGossipSelectOptionOpcode - %s not found or you can't interact with him.", guid.ToString().c_str());
@@ -114,10 +114,10 @@ void WorldSession::HandleGossipSelectOptionOpcode(WorldPacket& recvData)
     }
     else if (guid.IsGameObject())
     {
-        go = _player->GetMap()->GetGameObject(guid);
+        go = _player->GetGameObjectIfCanInteractWith(guid);
         if (!go)
         {
-            TC_LOG_DEBUG("network", "WORLD: HandleGossipSelectOptionOpcode - %s not found.", guid.ToString().c_str());
+            TC_LOG_DEBUG("network", "WORLD: HandleGossipSelectOptionOpcode - %s not found or you can't interact with it.", guid.ToString().c_str());
             return;
         }
     }
@@ -1447,22 +1447,6 @@ void WorldSession::HandleSetTitleOpcode(WorldPacket& recvData)
 
 void WorldSession::HandleTimeSyncResp(WorldPacket& recvData)
 {
-
-    Battleground* bg = _player->GetBattleground();
-    if (bg)
-        {
-        if (_player->ShouldForgetBGPlayers() && bg)
-             {
-            _player->DoForgetPlayersInBG(bg);
-            _player->SetForgetBGPlayers(false);
-            }
-        }
-    else if (_player->ShouldForgetInListPlayers())
-         {
-        _player->DoForgetPlayersInList();
-        _player->SetForgetInListPlayers(false);
-        }
-
     TC_LOG_DEBUG("network", "CMSG_TIME_SYNC_RESP");
 
     uint32 counter, clientTicks;

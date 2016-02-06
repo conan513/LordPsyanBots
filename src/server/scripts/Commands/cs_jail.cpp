@@ -261,7 +261,7 @@ public:
     else chr->GetSession()->LogoutPlayer(false);
     return true;
     }
-    
+
     static bool HandleJailInfoCommand(ChatHandler* handler, char const* args)
     {
     time_t localtime;
@@ -331,7 +331,7 @@ public:
             }
 
             handler->PSendSysMessage(LANG_JAIL_WAS_UNJAILED, cname.c_str());
-            handler->PSendSysMessage(LANG_JAIL_YOURE_UNJAILED);    
+            handler->PSendSysMessage(LANG_JAIL_YOURE_UNJAILED);
             chr->CastSpell(chr,8690,false);
             //chr->GetSession()->LogoutPlayer(false);
         } else handler->PSendSysMessage(LANG_JAIL_CHAR_NOTJAILED, cname.c_str());
@@ -386,5 +386,3 @@ void AddSC_jail_commandscript()
 {
     new jail_commandscript();
 }
-
-        

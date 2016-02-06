@@ -90,8 +90,7 @@ void PlayerbotFactory::Randomize(bool incremental)
     ClearSpells();
     ClearInventory();
     bot->SaveToDB();
-
-/* Need to fix quest initilization.
+/* Disabled. Causes crash
     sLog->outMessage("playerbot", LOG_LEVEL_INFO, "Initializing quests...");
     InitQuests();
 */

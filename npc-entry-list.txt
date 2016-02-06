@@ -5,7 +5,7 @@ Entry         Name                     Script
 
 80000         Young Woman              All-In-One
 
-908001        The Lich King            Arena Gambler
+25266         The Lich King            Arena Gambler
 
 99990         LordPsyan                BeastMaster
 

@@ -29,7 +29,7 @@
 #include "SpellMgr.h"
 #include "SpellHistory.h"
 #include "Unit.h"
-#include "../../scripts/Custom/Transmogrification.h"
+#include "../../scripts/Custom/Transmog/Transmogrification.h"
 #include "TradeData.h"
 
 #include <limits>
@@ -61,10 +61,6 @@ struct CharacterCustomizeInfo;
 // Playerbot mod
 class PlayerbotAI;
 class PlayerbotMgr;
-
-// NpcBot mod
-class BotMgr;
-// end NpcBot mod
 
 typedef std::deque<Mail*> PlayerMails;
 
@@ -147,7 +143,6 @@ struct PresetData
 typedef std::map<uint8, PresetData> PresetMapType;
 #endif
 
-typedef std::unordered_map<ObjectGuid, uint32> TransmogMapType;
 typedef std::unordered_map<uint32, PlayerTalent*> PlayerTalentMap;
 typedef std::unordered_map<uint32, PlayerSpell*> PlayerSpellMap;
 typedef std::list<SpellModifier*> SpellModList;
@@ -157,7 +152,6 @@ struct ReforgeData
     uint32 increase, decrease;
     int32 stat_value;
 };
-
 typedef std::unordered_map<uint32, ReforgeData> ReforgeMapType;
 
 typedef std::unordered_map<uint32 /*instanceId*/, time_t/*releaseTime*/> InstanceTimeMap;
@@ -1075,36 +1069,6 @@ class Player : public Unit, public GridObject<Player>
         explicit Player(WorldSession* session);
         ~Player();
 
-        private:
-            bool m_ForgetBGPlayers;
-            bool m_ForgetInListPlayers;
-            uint8 m_FakeRace;
-            uint8 m_RealRace;
-            uint32 m_FakeMorph;
-            public:
-                typedef std::vector<uint64> FakePlayers;
-                void SendChatMessage(const char *format, ...);
-                void FitPlayerInTeam(bool action, Battleground* pBattleGround = NULL);          // void FitPlayerInTeam(bool action, Battleground* bg = NULL);
-                void DoForgetPlayersInList();
-                void DoForgetPlayersInBG(Battleground* pBattleGround);                                          // void DoForgetPlayersInBG(Battleground* bg);
-                uint8 getCFSRace() const { return m_RealRace; }
-                void SetCFSRace() { m_RealRace = GetByteValue(UNIT_FIELD_BYTES_0, 0); }; // SHOULD ONLY BE CALLED ON LOGIN
-                void SetFakeRace(); // SHOULD ONLY BE CALLED ON LOGIN
-                void SetFakeRaceAndMorph(); // SHOULD ONLY BE CALLED ON LOGIN
-                uint32 GetFakeMorph() { return m_FakeMorph; };
-                uint8 getFRace() const { return m_FakeRace; }
-                void SetForgetBGPlayers(bool value) { m_ForgetBGPlayers = value; }
-                bool ShouldForgetBGPlayers() { return m_ForgetBGPlayers; }
-                void SetForgetInListPlayers(bool value) { m_ForgetInListPlayers = value; }
-                bool ShouldForgetInListPlayers() { return m_ForgetInListPlayers; }
-                bool SendBattleGroundChat(uint32 msgtype, std::string message);
-                void MorphFit(bool value);
-                bool IsPlayingNative() const { return GetTeam() == m_team; }
-                uint32 GetCFSTeam() const { return m_team; }
-                uint32 GetTeam() const { return m_bgData.bgTeam && GetBattleground() ? m_bgData.bgTeam : m_team; }
-                bool SendRealNameQuery();
-                FakePlayers m_FakePlayers;
-
         void CleanupsBeforeDelete(bool finalCleanup = true) override;
 
         void AddToWorld() override;
@@ -1146,8 +1110,9 @@ class Player : public Unit, public GridObject<Player>
         void SendInstanceResetWarning(uint32 mapid, Difficulty difficulty, uint32 time, bool welcome);
 
         bool CanInteractWithQuestGiver(Object* questGiver);
-        Creature* GetNPCIfCanInteractWith(ObjectGuid guid, uint32 npcflagmask);
-        GameObject* GetGameObjectIfCanInteractWith(ObjectGuid guid, GameobjectTypes type) const;
+        Creature* GetNPCIfCanInteractWith(ObjectGuid const& guid, uint32 npcflagmask);
+        GameObject* GetGameObjectIfCanInteractWith(ObjectGuid const& guid) const;
+        GameObject* GetGameObjectIfCanInteractWith(ObjectGuid const& guid, GameobjectTypes type) const;
 
         void ToggleAFK();
         void ToggleDND();
@@ -1161,7 +1126,7 @@ class Player : public Unit, public GridObject<Player>
         PlayerSocial *GetSocial() { return m_social; }
 
         PlayerTaxi m_taxi;
-        void InitTaxiNodesForLevel() { m_taxi.InitTaxiNodesForLevel(getCFSRace(), getClass(), getLevel()); }
+        void InitTaxiNodesForLevel() { m_taxi.InitTaxiNodesForLevel(getRace(), getClass(), getLevel()); }
         bool ActivateTaxiPathTo(std::vector<uint32> const& nodes, Creature* npc = NULL, uint32 spellid = 0);
         bool ActivateTaxiPathTo(uint32 taxi_path_id, uint32 spellid = 0);
         void CleanupAfterTaxiFlight();
@@ -1931,7 +1896,8 @@ class Player : public Unit, public GridObject<Player>
         void CheckAreaExploreAndOutdoor(void);
 
         static uint32 TeamForRace(uint8 race);
-        TeamId GetTeamId() const { return GetTeam() == ALLIANCE ? TEAM_ALLIANCE : TEAM_HORDE; }
+        uint32 GetTeam() const { return m_team; }
+        TeamId GetTeamId() const { return m_team == ALLIANCE ? TEAM_ALLIANCE : TEAM_HORDE; }
         void setFactionForRace(uint8 race);
 
         void InitDisplayIds();
@@ -2081,6 +2047,7 @@ class Player : public Unit, public GridObject<Player>
         void SetBattlegroundEntryPoint();
 
         void SetBGTeam(uint32 team);
+        uint32 GetBGTeam() const;
 
         void LeaveBattleground(bool teleportToEntryPoint = true);
         bool CanJoinToBattleground(Battleground const* bg) const;
@@ -2331,7 +2298,6 @@ class Player : public Unit, public GridObject<Player>
         void SetTitle(CharTitlesEntry const* title, bool lost = false);
 
         //bool isActiveObject() const { return true; }
-        ReforgeMapType reforgeMap; // reforgeMap[iGUID] = ReforgeData
         bool CanSeeSpellClickOn(Creature const* creature) const;
 
         uint32 GetChampioningFaction() const { return m_ChampioningFaction; }
@@ -2385,27 +2351,14 @@ class Player : public Unit, public GridObject<Player>
     // 08
     // 09
     // 10
-        /*********************************************************/
-        /***                     BOT SYSTEM                    ***/
-        /*********************************************************/
-        void SetBotMgr(BotMgr* mgr) { ASSERT(!_botMgr); _botMgr = mgr; }
-        BotMgr* GetBotMgr() const { return _botMgr; }
-        bool HaveBot() const;
-        uint8 GetNpcBotsCount(bool inWorldOnly = false) const;
-        uint8 GetBotFollowDist() const;
-        void SetBotFollowDist(int8 dist);
-        void SetBotsShouldUpdateStats();
-        void RemoveAllBots(uint8 removetype = 0);
-        /*********************************************************/
-        /***                 END BOT SYSTEM                    ***/
-        /*********************************************************/
+    // 11
     // 12
     // 13
     // 14
     // 15
     // 16
     // 17
-    // 18
+        ReforgeMapType reforgeMap; // reforgeMap[iGUID] = ReforgeData
     // 19
     // 20
     // Visit http://www.realmsofwarcraft.com/bb for forums and information
@@ -2669,14 +2622,6 @@ class Player : public Unit, public GridObject<Player>
         bool m_needsZoneUpdate;
 
     private:
-        /*********************************************************/
-        /***                     BOT SYSTEM                    ***/
-        /*********************************************************/
-        BotMgr* _botMgr;
-        /*********************************************************/
-        /***                END BOT SYSTEM                     ***/
-        /*********************************************************/
-
         // internal common parts for CanStore/StoreItem functions
         InventoryResult CanStoreItem_InSpecificSlot(uint8 bag, uint8 slot, ItemPosCountVec& dest, ItemTemplate const* pProto, uint32& count, bool swap, Item* pSrcItem) const;
         InventoryResult CanStoreItem_InBag(uint8 bag, ItemPosCountVec& dest, ItemTemplate const* pProto, uint32& count, bool merge, bool non_specialized, Item* pSrcItem, uint8 skip_bag, uint8 skip_slot) const;

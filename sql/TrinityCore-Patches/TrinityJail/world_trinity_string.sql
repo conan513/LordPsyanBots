@@ -2,7 +2,7 @@
 SET NAMES 'utf8';
 DELETE FROM trinity_string WHERE `entry` IN (950, 951, 952, 953, 954, 955, 956, 957, 958, 959, 960, 961, 962, 963, 964, 965, 966, 967, 968, 969, 970, 971, 972, 973, 974, 975, 976, 977, 978, 979, 980, 981, 982, 983);
 
-INSERT INTO `trinity_string` VALUES 
+INSERT INTO `trinity_string` VALUES
 ('950', 'You are jailed by \'%s\' for %u hour(s)!', null, 'Vous tes emprisonn par \'%s\' pour %u heures!', 'Du wurdest von \'%s\' für %u Stunde(n) eingebuchtet!', null, null, null, null, null),
 ('951', '\'%s\' wrote this as reason: \'%s\'', null, '%s a crit ceci comme tant la raison de votre emprisonnement: %s.', '\'%s\' gab dies als Grund an: \'%s\'', null, null, null, null, null),
 ('952', '\'%s\' was jailed by you for %u hour(s).', null, 'Vous avez emprisonn %s pour %u heures!', '\'%s\' wurde von dir für %u Stunde(n) eingebuchtet.', null, null, null, null, null),
@@ -37,5 +37,3 @@ INSERT INTO `trinity_string` VALUES
 ('981', 'Max. jailtimes reached!', null, 'Nombre maximum d\'Jails atteint!', 'Maximale Anzahl an Jails erreicht!', null, null, null, null, null),
 ('982', 'Robotron', null, 'Robotron', 'Robotron', null, null, null, null, null),
 ('983', 'Your Jail status was reset to 0 ', null, 'Votre statut a été Jail à 0 ', 'Dein Jail status wurde auf 0 zurück gesatzt', null, null, null, null, null);
-
-

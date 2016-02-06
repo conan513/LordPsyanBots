@@ -3,6 +3,8 @@
  * Description: This file is used to apply the database tables needed for the ArenaGambler
  * Version: 1.2
 */
+
+DROP TABLE IF EXISTS `custom_duel_config`;
 create table `custom_duel_config` (
     `optionIndex` int (10),
     `optionName` varchar (60),
@@ -17,6 +19,7 @@ insert into `custom_duel_config` (`optionIndex`, `optionName`, `optionValue`) va
 insert into `custom_duel_config` (`optionIndex`, `optionName`, `optionValue`) values('6','LEVEL DIFF','3');
 insert into `custom_duel_config` (`optionIndex`, `optionName`, `optionValue`) values('7','REWARD ON FLED','1');
 
+DROP TABLE IF EXISTS `custom_duel_statistics`;
 create table `custom_duel_statistics` (
     `playerGUID` int (11),
     `duelsLost` int (10),
@@ -46,6 +49,7 @@ insert into `custom_duel_config` (`optionIndex`, `optionName`, `optionValue`) va
 insert into `custom_duel_config` (`optionIndex`, `optionName`, `optionValue`) values('9','ENABLE GM DUEL','0');
 insert into `custom_duel_config` (`optionIndex`, `optionName`, `optionValue`) values('10','ENABLE SAMEIP DUEL','0');
 
+DROP TABLE IF EXISTS `custom_duel_storage`;
 create table `custom_duel_storage` (
     `matchId` int (10),
     `challengerGUID` int (11),
