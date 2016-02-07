@@ -4,7 +4,7 @@ class login_script : public PlayerScript
 public:
     login_script() : PlayerScript("login_script") { }
 
-    void OnLogin(Player* player)
+    void OnLogin(Player* player, bool)
     {
         std::string msg;
         if (player->GetSession()->GetSecurity() != SEC_PLAYER)
