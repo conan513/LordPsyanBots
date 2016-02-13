@@ -962,11 +962,11 @@ void IRCCmd::Player_Player(_CDATA *CD)
                 Player * plr = ObjectAccessor::FindPlayerByName(pname.c_str());
                 if (plr)
                 {
-                    AreaTableEntry const* area = GetAreaEntryByAreaID(plr->GetAreaId());
+                    AreaTableEntry const* area = sAreaTableStore.LookupEntry(plr->GetAreaId());
                     ponline += " in " + (std::string) area->area_name[sWorld->GetDefaultDbcLocale()];
                     if (area->zone != 0)
                     {
-                        AreaTableEntry const* zone = GetAreaEntryByAreaID(area->zone);
+                        AreaTableEntry const* zone = sAreaTableStore.LookupEntry(area->zone);
                         ponline += " (" + (std::string)zone->area_name[sWorld->GetDefaultDbcLocale()] + ")";
                     }
                 }
@@ -1135,11 +1135,11 @@ void IRCCmd::Lookup_Player(_CDATA *CD)
                     Player * plr = ObjectAccessor::FindPlayerByName(pname.c_str());
                     if (plr)
                     {
-                        AreaTableEntry const* area = GetAreaEntryByAreaID(plr->GetAreaId());
+                        AreaTableEntry const* area = sAreaTableStore.LookupEntry(plr->GetAreaId());
                         ponline += " in " + (std::string) area->area_name[sWorld->GetDefaultDbcLocale()];
                         if (area->zone != 0)
                         {
-                            AreaTableEntry const* zone = GetAreaEntryByAreaID(area->zone);
+                            AreaTableEntry const* zone = sAreaTableStore.LookupEntry(area->zone);
                             ponline += " (" + (std::string)zone->area_name[sWorld->GetDefaultDbcLocale()] + ")";
                         }
                     }
