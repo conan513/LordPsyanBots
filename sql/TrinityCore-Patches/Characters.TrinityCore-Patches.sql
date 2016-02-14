@@ -13869,5 +13869,15 @@ UNLOCK TABLES;
 */ 
 -- Delete all 5v5 teams and members (core will crash if any 5v5 team exist)
 DELETE arena_team_member, arena_team FROM arena_team_member, arena_team WHERE arena_team_member.arenaTeamId = arena_team.arenaTeamId AND arena_team.type = 5;
- 
- 
+
+DROP TABLE IF EXISTS `custom_reforging`;
+CREATE TABLE `custom_reforging` (
+	`GUID` INT(10) UNSIGNED NOT NULL COMMENT 'item guid low',
+	`increase` INT(10) UNSIGNED NOT NULL COMMENT 'stat_type',
+	`decrease` INT(10) UNSIGNED NOT NULL COMMENT 'stat_type',
+	`stat_value` INT(10) NOT NULL DEFAULT '0' COMMENT 'stat change',
+	`Owner` INT(10) UNSIGNED NULL DEFAULT NULL COMMENT 'player guid',
+	PRIMARY KEY (`GUID`)
+)
+COLLATE='utf8_general_ci'
+ENGINE=InnoDB;
