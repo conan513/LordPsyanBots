@@ -45,6 +45,7 @@
 #include "PetAI.h"
 #include "Pet.h"
 #include "Player.h"
+#include "PlayerAI.h"
 #include "QuestDef.h"
 #include "ReputationMgr.h"
 #include "SpellAuraEffects.h"
@@ -3747,6 +3748,77 @@ void Unit::RemoveAura(Aura* aura, AuraRemoveMode mode)
         return;
     if (AuraApplication * aurApp = aura->GetApplicationOfTarget(GetGUID()))
         RemoveAura(aurApp, mode);
+}
+
+void Unit::RemoveAppliedAuras(std::function<bool(AuraApplication const*)> const& check)
+{
+    for (AuraApplicationMap::iterator iter = m_appliedAuras.begin(); iter != m_appliedAuras.end();)
+    {
+        if (check(iter->second))
+        {
+            RemoveAura(iter);
+            continue;
+        }
+        ++iter;
+    }
+}
+
+void Unit::RemoveOwnedAuras(std::function<bool(Aura const*)> const& check)
+{
+    for (AuraMap::iterator iter = m_ownedAuras.begin(); iter != m_ownedAuras.end();)
+    {
+        if (check(iter->second))
+        {
+            RemoveOwnedAura(iter);
+            continue;
+        }
+        ++iter;
+    }
+}
+
+void Unit::RemoveAppliedAuras(uint32 spellId, std::function<bool(AuraApplication const*)> const& check)
+{
+    for (AuraApplicationMap::iterator iter = m_appliedAuras.lower_bound(spellId); iter != m_appliedAuras.upper_bound(spellId);)
+    {
+        if (check(iter->second))
+        {
+            RemoveAura(iter);
+            continue;
+        }
+        ++iter;
+    }
+}
+
+void Unit::RemoveOwnedAuras(uint32 spellId, std::function<bool(Aura const*)> const& check)
+{
+    for (AuraMap::iterator iter = m_ownedAuras.lower_bound(spellId); iter != m_ownedAuras.upper_bound(spellId);)
+    {
+        if (check(iter->second))
+        {
+            RemoveOwnedAura(iter);
+            continue;
+        }
+        ++iter;
+    }
+}
+
+void Unit::RemoveAurasByType(AuraType auraType, std::function<bool(AuraApplication const*)> const& check)
+{
+    for (AuraEffectList::iterator iter = m_modAuras[auraType].begin(); iter != m_modAuras[auraType].end();)
+    {
+        Aura* aura = (*iter)->GetBase();
+        AuraApplication * aurApp = aura->GetApplicationOfTarget(GetGUID());
+        ASSERT(aurApp);
+
+        ++iter;
+        if (check(aurApp))
+        {
+            uint32 removedAuras = m_removedAurasCount;
+            RemoveAura(aurApp);
+            if (m_removedAurasCount > removedAuras + 1)
+                iter = m_modAuras[auraType].begin();
+        }
+    }
 }
 
 void Unit::RemoveAurasDueToSpell(uint32 spellId, ObjectGuid casterGUID, uint8 reqEffMask, AuraRemoveMode removeMode)
@@ -8981,10 +9053,10 @@ bool Unit::Attack(Unit* victim, bool meleeAttack)
     if (GetTypeId() == TYPEID_UNIT && !IsPet())
     {
         // should not let player enter combat by right clicking target - doesn't helps
+        AddThreat(victim, 0.0f);
         SetInCombatWith(victim);
         if (victim->GetTypeId() == TYPEID_PLAYER)
             victim->SetInCombatWith(this);
-        AddThreat(victim, 0.0f);
 
         ToCreature()->SendAIReaction(AI_REACTION_HOSTILE);
         ToCreature()->CallAssistance();
@@ -9228,7 +9300,7 @@ Unit* Unit::GetCharmer() const
     if (ObjectGuid charmerGUID = GetCharmerGUID())
         return ObjectAccessor::GetUnit(*this, charmerGUID);
 
-    return NULL;
+    return nullptr;
 }
 
 Player* Unit::GetCharmerOrOwnerPlayerOrPlayerItself() const
@@ -12342,7 +12414,7 @@ void Unit::UpdateSpeed(UnitMoveType mtype, bool forced)
                 if (Creature* creature = ToCreature())
                 {
                     uint32 immuneMask = creature->GetCreatureTemplate()->MechanicImmuneMask;
-                    if (immuneMask & (1 << MECHANIC_SNARE) || immuneMask & (1 << MECHANIC_DAZE))
+                    if (immuneMask & (1 << (MECHANIC_SNARE - 1)) || immuneMask & (1 << (MECHANIC_DAZE - 1)))
                         break;
                 }
 
@@ -13653,28 +13725,63 @@ void Unit::CleanupsBeforeDelete(bool finalCleanup)
 
 void Unit::UpdateCharmAI()
 {
-    if (GetTypeId() == TYPEID_PLAYER)
-        return;
-
-    if (i_disabledAI) // disabled AI must be primary AI
+    switch (GetTypeId())
     {
-        if (!IsCharmed())
-        {
-            delete i_AI;
-            i_AI = i_disabledAI;
-            i_disabledAI = NULL;
-        }
-    }
-    else
-    {
-        if (IsCharmed())
-        {
-            i_disabledAI = i_AI;
-            if (isPossessed() || IsVehicle())
-                i_AI = new PossessedAI(ToCreature());
+        case TYPEID_UNIT:
+            if (i_disabledAI) // disabled AI must be primary AI
+            {
+                if (!IsCharmed())
+                {
+                    delete i_AI;
+                    i_AI = i_disabledAI;
+                    i_disabledAI = nullptr;
+                }
+            }
             else
-                i_AI = new PetAI(ToCreature());
+            {
+                if (IsCharmed())
+                {
+                    i_disabledAI = i_AI;
+                    if (isPossessed() || IsVehicle())
+                        i_AI = new PossessedAI(ToCreature());
+                    else
+                        i_AI = new PetAI(ToCreature());
+                }
+            }
+            break;
+        case TYPEID_PLAYER:
+        {
+            if (Unit* charmer = GetCharmer()) // if we are currently being charmed, then we should apply charm AI
+            {
+                if (Creature* creatureCharmer = charmer->ToCreature()) // this should only ever happen for creature charmers
+                {
+                    i_disabledAI = i_AI;
+                    // first, we check if the creature's own AI specifies an override playerai for its owned players
+                    if (PlayerAI* charmAI = creatureCharmer->IsAIEnabled ? creatureCharmer->AI()->GetAIForCharmedPlayer(ToPlayer()) : nullptr)
+                        i_AI = charmAI;
+                    else // otherwise, we default to the generic one
+                        i_AI = new SimpleCharmedPlayerAI(ToPlayer());
+                }
+                else
+                {
+                    TC_LOG_ERROR("misc", "Attempt to assign charm AI to player %s who is charmed by non-creature %s.", GetGUID().ToString().c_str(), charmer->GetGUID().ToString().c_str());
+                }
+            }
+            else
+            {
+                // we allow the charmed PlayerAI to clean up
+                i_AI->OnCharmed(false);
+                // then delete it
+                delete i_AI;
+                // and restore our previous PlayerAI (if we had one)
+                i_AI = i_disabledAI;
+                i_disabledAI = nullptr;
+                // IsAIEnabled gets handled in the caller
+            }
+            break;
         }
+        default:
+            TC_LOG_ERROR("misc", "Attempt to update charm AI for unit %s, which is neither player nor creature.", GetGUID().ToString().c_str());
     }
 }
 
@@ -15903,11 +16010,17 @@ bool Unit::SetCharmedBy(Unit* charmer, CharmType type, AuraApplication const* au
         ToCreature()->AI()->OnCharmed(true);
         GetMotionMaster()->MoveIdle();
     }
-    else
+    else if (Player* player = ToPlayer())
     {
-        Player* player = ToPlayer();
         if (player->isAFK())
             player->ToggleAFK();
+
+        if (charmer->GetTypeId() == TYPEID_UNIT) // we are charmed by a creature
+        {
+            // change AI to charmed AI on next Update tick
+            NeedChangeAI = true;
+            IsAIEnabled = false;
+        }
         player->SetClientControl(this, false);
     }
 
@@ -16065,7 +16178,14 @@ void Unit::RemoveCharmedBy(Unit* charmer)
     }
 
     if (Player* player = ToPlayer())
+    {
+        if (charmer->GetTypeId() == TYPEID_UNIT) // charmed by a creature, this means we had PlayerAI
+        {
+            NeedChangeAI = true;
+            IsAIEnabled = false;
+        }
         player->SetClientControl(this, true);
+    }
 
     // a guardian should always have charminfo
     if (playerCharmer && this != charmer->GetFirstControlled())
