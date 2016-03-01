@@ -1,6 +1,6 @@
 #include "Player.h"
 #include "Chat.h"
-#define Welcome_Name "Your Servername"
+#define Welcome_Name "Blood Lust"
 
 class Player_Boa : public PlayerScript
 {
@@ -15,8 +15,9 @@ public:
         std::ostringstream ss;
         ss << "|cffFF0000["<<Welcome_Name<<"]|r Welcome " << player->GetName() << " to the server! ";
         sWorld->SendServerMessage(SERVER_MSG_STRING, ss.str().c_str());
-        uint32 shoulders = 0, chest = 0, ring = 0, trinkett = 0, weapon = 0, weapon2 = 0;
+        uint32 shoulders = 0, chest = 0, ring = 0, trinkett = 0, weapon = 0, weapon2 = 0, shoulders2 = 0, chest2 = 0, trinkett2 = 0, bag = 0;
 
+        bag = 41600;
         ring = 50255;
         switch (player->getClass())
         {
@@ -70,6 +71,9 @@ public:
                 chest = 48683;
                 trinkett = 42992;
                 weapon = 42948;
+                shoulders2 = 42951;
+                chest2 = 48683;
+                weapon2 = 42947;
                 break;
                 case CLASS_MAGE:
                 //Mage
@@ -91,6 +95,10 @@ public:
                 chest = 48687;
                 trinkett = 42992;
                 weapon = 42948;
+                shoulders2 = 42952;
+                chest2 = 48689;
+                trinkett2 = 42991;
+                weapon2 = 48718;
                 break;
                 default:
                 return;
@@ -104,6 +112,7 @@ public:
                         player->AddItem(chest, 1);
                         player->AddItem(weapon, 1);
                         player->AddItem(weapon2, 1);
+                        player->AddItem(bag, 4);
                         break;
                     case CLASS_ROGUE:
                         player->AddItem(shoulders, 1);
@@ -112,6 +121,30 @@ public:
                         player->AddItem(chest, 1);
                         player->AddItem(weapon, 1);
                         player->AddItem(weapon2, 1);
+                        player->AddItem(bag, 4);
+                        break;
+                    case CLASS_DRUID:
+                        player->AddItem(shoulders, 1);
+                        player->AddItem(trinkett, 2);
+                        player->AddItem(ring, 1);
+                        player->AddItem(chest, 1);
+                        player->AddItem(weapon, 1);
+                        player->AddItem(shoulders2, 1);
+                        player->AddItem(chest2, 1);
+                        player->AddItem(trinkett2, 2);
+                        player->AddItem(weapon2, 1);
+                        player->AddItem(bag, 4);
+                        break;
+                    case CLASS_SHAMAN:
+                        player->AddItem(shoulders, 1);
+                        player->AddItem(trinkett, 2);
+                        player->AddItem(ring, 1);
+                        player->AddItem(chest, 1);
+                        player->AddItem(weapon, 1);
+                        player->AddItem(shoulders2, 1);
+                        player->AddItem(chest2, 1);
+                        player->AddItem(weapon2, 1);
+                        player->AddItem(bag, 4);
                         break;
                     default:
                         player->AddItem(shoulders, 1);
@@ -119,6 +152,7 @@ public:
                         player->AddItem(ring, 1);
                         player->AddItem(chest, 1);
                         player->AddItem(weapon, 1);
+            player->AddItem(bag, 4);
                     }
             }
 };

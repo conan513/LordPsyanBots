@@ -134,9 +134,9 @@ public:
     {
         if(uiAction == 9998) // Script Info
         {
-            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Developed by: Tenby. Updated by LordPsyan", GOSSIP_SENDER_MAIN, uiAction);
-            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Website: www.realmsofwarcraft.com", GOSSIP_SENDER_MAIN, uiAction);
-            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Version: 1.2", GOSSIP_SENDER_MAIN, uiAction);
+            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Developed by: Tenby. Updated by LordPsyan", GOSSIP_SENDER_MAIN, 9999);
+            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Website: www.realmsofwarcraft.com", GOSSIP_SENDER_MAIN, 9999);
+            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Version: 1.21", GOSSIP_SENDER_MAIN, 9999);
             pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "<-- Back", GOSSIP_SENDER_MAIN, 9999);
             pPlayer->SEND_GOSSIP_MENU(68, pCreature->GetGUID());
         }
