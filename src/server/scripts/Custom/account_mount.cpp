@@ -12,7 +12,7 @@ public:
         if (!result1)
             return;
 
-        do 
+        do
         {
             Field* fields = result1->Fetch();
 

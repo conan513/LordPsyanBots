@@ -329,9 +329,6 @@ class Group
         Rolls* GetRolls() { return &RollId; }
         // end
 
-        //Bot
-        ObjectGuid const *GetTargetIcons() const { return m_targetIcons; }
-
     protected:
         bool _setMembersGroup(ObjectGuid guid, uint8 group);
         void _homebindIfInstance(Player* player);

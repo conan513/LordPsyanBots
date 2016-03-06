@@ -1,10 +1,10 @@
 #include "DisableMgr.h"
- 
+
 class LearnSpellsOnLevelUp : public PlayerScript
 {
         public:
                 std::vector<uint32> ignoreSpells;
- 
+
                 LearnSpellsOnLevelUp() : PlayerScript("LearnSpellsOnLevelUp")
                 {
                         uint32 temp[] = {
@@ -39,16 +39,16 @@ class LearnSpellsOnLevelUp : public PlayerScript
                                 61391, 61390, 61388, 61387, 64801, 5421, 9635, 1178,
                                 20186, 20185, 20184, 20187, 25899, 24406, 50581, 30708
                                                         };
- 
+
                                 ignoreSpells = std::vector<uint32> (temp, temp + sizeof(temp)/sizeof(temp[0]));
                 }
- 
+
         void OnLevelChanged(Player* player, uint8 oldLevel)
         {
                 if (oldLevel < player->getLevel())
                         LearnSpellsForNewLevel(player, oldLevel);
         }
- 
+
         bool IsIgnoredSpell(uint32 spellID)
         {
                 for (std::vector<uint32>::const_iterator itr = ignoreSpells.begin(); itr != ignoreSpells.end(); ++itr)
@@ -56,7 +56,7 @@ class LearnSpellsOnLevelUp : public PlayerScript
                                 return true;
                 return false;
         }
- 
+
         void LearnSpellsForNewLevel(Player* player, uint8 level)
         {
                 if (level == player->getLevel() + 1)
@@ -112,9 +112,9 @@ class LearnSpellsOnLevelUp : public PlayerScript
                                 continue;
             if (spellInfo->BaseLevel != level && sSpellMgr->IsSpellValid(spellInfo, player))
                 continue;
- 
+
                         bool valid = false;
- 
+
                         SkillLineAbilityMapBounds bounds = sSpellMgr->GetSkillLineAbilityMapBounds(spellInfo->Id);
                         for (SkillLineAbilityMap::const_iterator itr = bounds.first; itr != bounds.second; ++itr)
                         {
@@ -133,14 +133,14 @@ class LearnSpellsOnLevelUp : public PlayerScript
                     break;
                                 }
                         }
- 
+
                         if (valid)
                                 player->LearnSpell(spellInfo->Id, false);
                 }
                 LearnSpellsForNewLevel(player, ++level);
         }
 };
- 
+
 void AddSC_LearnSpellsOnLevelUp()
 {
         new LearnSpellsOnLevelUp();

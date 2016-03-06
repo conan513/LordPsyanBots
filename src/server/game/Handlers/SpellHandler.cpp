@@ -16,7 +16,7 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "../../scripts/Custom/TransmogDisplayVendorConf.h"
+#include "../../scripts/Custom/TransmogDisplayVendor/TransmogDisplayVendorConf.h"
 #include "Common.h"
 #include "DBCStores.h"
 #include "WorldPacket.h"
@@ -27,7 +27,7 @@
 #include "Opcodes.h"
 #include "Spell.h"
 #include "Totem.h"
-#include "../../scripts/Custom/Transmogrification.h"
+#include "../../scripts/Custom/Transmog/Transmogrification.h"
 #include "ScriptMgr.h"
 #include "GameObjectAI.h"
 #include "SpellAuraEffects.h"
@@ -270,11 +270,8 @@ void WorldSession::HandleGameObjectUseOpcode(WorldPacket& recvData)
 
     TC_LOG_DEBUG("network", "WORLD: Recvd CMSG_GAMEOBJ_USE Message [%s]", guid.ToString().c_str());
 
-    if (GameObject* obj = GetPlayer()->GetMap()->GetGameObject(guid))
+    if (GameObject* obj = GetPlayer()->GetGameObjectIfCanInteractWith(guid))
     {
-        if (!obj->IsWithinDistInMap(GetPlayer(), obj->GetInteractionDistance()))
-            return;
-
         // ignore for remote control state
         if (GetPlayer()->m_mover != GetPlayer())
             if (!(GetPlayer()->IsOnVehicle(GetPlayer()->m_mover) || GetPlayer()->IsMounted()) && !obj->GetGOInfo()->IsUsableMounted())
@@ -295,17 +292,13 @@ void WorldSession::HandleGameobjectReportUse(WorldPacket& recvPacket)
     if (_player->m_mover != _player)
         return;
 
-    GameObject* go = GetPlayer()->GetMap()->GetGameObject(guid);
-    if (!go)
-        return;
+    if (GameObject* go = GetPlayer()->GetGameObjectIfCanInteractWith(guid))
+    {
+        if (go->AI()->GossipHello(_player))
+            return;
 
-    if (!go->IsWithinDistInMap(_player, INTERACTION_DISTANCE))
-        return;
-
-    if (go->AI()->GossipHello(_player))
-        return;
-
-    _player->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_USE_GAMEOBJECT, go->GetEntry());
+        _player->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_USE_GAMEOBJECT, go->GetEntry());
+    }
 }
 
 void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
@@ -585,38 +578,8 @@ void WorldSession::HandleMirrorImageDataRequest(WorldPacket& recvData)
     if (!unit)
         return;
 
-    //bot
-    if (unit->GetTypeId() == TYPEID_UNIT)
-    {
-        CreatureOutfitContainer const& outfits = sObjectMgr->GetCreatureOutfitMap();
-        CreatureOutfitContainer::const_iterator it = outfits.find(unit->GetEntry());
-        if (it != outfits.end())
-        {
-            WorldPacket data(SMSG_MIRRORIMAGE_DATA, 68);
-            data << uint64(guid);
-            data << uint32(unit->GetNativeDisplayId()); // displayId
-            data << uint8(it->second.race);             // race
-            data << uint8(it->second.gender);           // gender
-            data << uint8(unit->getClass());            // class
-            data << uint8(it->second.skin);             // skin
-            data << uint8(it->second.face);             // face
-            data << uint8(it->second.hair);             // hair
-            data << uint8(it->second.haircolor);        // haircolor
-            data << uint8(it->second.facialhair);       // facialhair
-            data << uint32(0);                          // guildId
-
-            // item displays
-            for (uint8 i = 0; i != MAX_CREATURE_OUTFIT_DISPLAYS; ++i)
-                data << uint32(it->second.outfit[i]);
-
-            SendPacket(&data);
-            return;
-        }
-    }
-
     if (!unit->HasAuraType(SPELL_AURA_CLONE_CASTER))
         return;
-    //end bot
 
     // Get creator of the unit (SPELL_AURA_CLONE_CASTER does not stack)
     Unit* creator = unit->GetAuraEffectsByType(SPELL_AURA_CLONE_CASTER).front()->GetCaster();
@@ -665,9 +628,7 @@ void WorldSession::HandleMirrorImageDataRequest(WorldPacket& recvData)
                 data << uint32(0);
             else if (Item const* item = player->GetItemByPos(INVENTORY_SLOT_BAG_0, *itr))
             {
-                if (uint32 entry = TransmogDisplayVendorMgr::GetFakeEntry(item))
-                    data << uint32(sObjectMgr->GetItemTemplate(entry)->DisplayInfoID);
-                else if (uint32 entry = sTransmogrification->GetFakeEntry(item))
+                if (uint32 entry = sTransmogrification->GetFakeEntry(item) || TransmogDisplayVendorMgr::GetFakeEntry(item))
                     data << uint32(sObjectMgr->GetItemTemplate(entry)->DisplayInfoID);
                 else
                     data << uint32(item->GetTemplate()->DisplayInfoID);
