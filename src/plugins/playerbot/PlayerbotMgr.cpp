@@ -220,19 +220,19 @@ string PlayerbotHolder::ProcessBotCommand(string cmd, ObjectGuid guid, bool admi
                 factory.CleanRandomize();
                 return "ok";
             }
-            else if (bot->getLevel() > 9 && (cmd == "init=green" || cmd == "init=uncommon"))
+            else if (master->getLevel() > 9 && (cmd == "init=green" || cmd == "init=uncommon"))
             {
                 PlayerbotFactory factory(bot, master->getLevel(), ITEM_QUALITY_UNCOMMON);
                 factory.CleanRandomize();
                 return "ok";
             }
-            else if (bot->getLevel() > 29 && (cmd == "init=blue" || cmd == "init=rare"))
+            else if (master->getLevel() > 29 && (cmd == "init=blue" || cmd == "init=rare"))
             {
                 PlayerbotFactory factory(bot, master->getLevel(), ITEM_QUALITY_RARE);
                 factory.CleanRandomize();
                 return "ok";
             }
-            else if (bot->getLevel() > 59 && (cmd == "init=epic" || cmd == "init=purple"))
+            else if (master->getLevel() > 59 && (cmd == "init=epic" || cmd == "init=purple"))
             {
                 PlayerbotFactory factory(bot, master->getLevel(), ITEM_QUALITY_EPIC);
                 factory.CleanRandomize();
