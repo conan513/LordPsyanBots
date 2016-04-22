@@ -205,6 +205,41 @@ string PlayerbotHolder::ProcessBotCommand(string cmd, ObjectGuid guid, bool admi
             return "ok";
         }
     }
+    else
+    {
+        Player* bot = GetPlayerBot(guid.GetRawValue());
+        if (!bot)
+            return "bot not found";
+
+        Player* master = bot->GetPlayerbotAI()->GetMaster();
+        if (master)
+        {
+            if (cmd == "init=white" || cmd == "init=common")
+            {
+                PlayerbotFactory factory(bot, master->getLevel(), ITEM_QUALITY_NORMAL);
+                factory.CleanRandomize();
+                return "ok";
+            }
+            else if (bot->getLevel() > 9 && (cmd == "init=green" || cmd == "init=uncommon"))
+            {
+                PlayerbotFactory factory(bot, master->getLevel(), ITEM_QUALITY_UNCOMMON);
+                factory.CleanRandomize();
+                return "ok";
+            }
+            else if (bot->getLevel() > 29 && (cmd == "init=blue" || cmd == "init=rare"))
+            {
+                PlayerbotFactory factory(bot, master->getLevel(), ITEM_QUALITY_RARE);
+                factory.CleanRandomize();
+                return "ok";
+            }
+            else if (bot->getLevel() > 59 && (cmd == "init=epic" || cmd == "init=purple"))
+            {
+                PlayerbotFactory factory(bot, master->getLevel(), ITEM_QUALITY_EPIC);
+                factory.CleanRandomize();
+                return "ok";
+            }
+        }
+    }
 
     return "unknown command";
 }
