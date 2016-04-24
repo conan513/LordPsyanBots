@@ -256,8 +256,31 @@ void PlayerbotFactory::ClearSpells()
         const SpellInfo* spellInfo = sSpellMgr->GetSpellInfo(spellId);
         if(itr->second->state == PLAYERSPELL_REMOVED || itr->second->disabled || spellInfo->IsPassive())
             continue;
-
-        spells.push_back(spellId);
+	
+	/* Don't remove starting abilites. Removing them causes InitSpells to skip ranking them to level. 
+	  Hunter - Raptor Strike-2973
+	  Warrior - Heroic Strike-78
+	  Rogue - Eviscerate-2098, Sinister Strike-1752
+	  Warlock - Demon Skin-687, Shadow Bolt-686
+	  Paladin - Holy Light-635, Seal of Righteousness-20154
+	  Priest - Lesser Heal-2050, Smite-585
+	  Mage - Fireball-133, Frost Armor-168
+	  Duid - Wrath-5176, Healing Touch-5185
+	  Shamman - Lightning Bolt-403, Healing Wave-331
+	*/
+	if (spellId == 2973 ||
+	  spellId == 78 ||
+	  spellId == 2098 || spellId == 1752 ||
+	  spellId == 687 || spellId == 686 ||
+	  spellId == 635 || spellId == 20154 ||
+	  spellId == 2050 || spellId == 585 ||
+	  spellId == 133 || spellId == 168 ||
+	  spellId == 5176 || spellId == 5185 ||
+	  spellId == 403 || spellId == 331
+	)
+	  continue;
+	  
+	spells.push_back(spellId);
     }
 
     for (list<uint32>::iterator i = spells.begin(); i != spells.end(); ++i)
