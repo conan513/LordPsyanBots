@@ -19,6 +19,7 @@ public:
     void CleanRandomize();
     void Randomize();
     void Refresh();
+    void ApplyLevel();
 
 private:
     void Randomize(bool incremental);

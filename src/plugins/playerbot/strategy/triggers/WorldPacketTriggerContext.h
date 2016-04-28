@@ -44,6 +44,7 @@ namespace ai
             creators["lfg leave"] = &WorldPacketTriggerContext::lfg_leave;
             creators["guild invite"] = &WorldPacketTriggerContext::guild_invite;
             creators["lfg teleport"] = &WorldPacketTriggerContext::lfg_teleport;
+	    creators["leveled up"] = &WorldPacketTriggerContext::leveled_up;
         }
 
     private:
@@ -81,5 +82,6 @@ namespace ai
         static Trigger* quest_share(PlayerbotAI* ai) { return new WorldPacketTrigger(ai, "quest share"); }
         static Trigger* loot_roll(PlayerbotAI* ai) { return new WorldPacketTrigger(ai, "loot roll"); }
         static Trigger* taxi(PlayerbotAI* ai) { return new WorldPacketTrigger(ai, "activate taxi"); }
+        static Trigger* leveled_up(PlayerbotAI* ai) { return new WorldPacketTrigger(ai, "leveled up"); }
     };
 };

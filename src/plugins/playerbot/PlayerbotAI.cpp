@@ -109,6 +109,7 @@ PlayerbotAI::PlayerbotAI(Player* bot) :
     botOutgoingPacketHandlers.AddHandler(SMSG_DUEL_REQUESTED, "duel requested");
     botOutgoingPacketHandlers.AddHandler(SMSG_LFG_ROLE_CHOSEN, "lfg role check");
     botOutgoingPacketHandlers.AddHandler(SMSG_LFG_PROPOSAL_UPDATE, "lfg proposal");
+    botOutgoingPacketHandlers.AddHandler(SMSG_LEVELUP_INFO, "leveled up");
 
     masterOutgoingPacketHandlers.AddHandler(SMSG_PARTY_COMMAND_RESULT, "party command");
     masterOutgoingPacketHandlers.AddHandler(MSG_RAID_READY_CHECK, "ready check");

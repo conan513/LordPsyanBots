@@ -23,6 +23,7 @@
 #include "LfgActions.h"
 #include "SecurityCheckAction.h"
 #include "GuildAcceptAction.h"
+#include "ApplyLevelAction.h"
 
 namespace ai
 {
