@@ -102,14 +102,14 @@ AiPlayerbot.CommandPrefix =
 #AiPlayerbot.RandomBotAutoCreate = 1
 
 # Random bot count
-#AiPlayerbot.MinRandomBots = 50
-#AiPlayerbot.MaxRandomBots = 200
+AiPlayerbot.MinRandomBots = 100
+AiPlayerbot.MaxRandomBots = 200
 #AiPlayerbot.RandomBotMinLevel = 1
 #AiPlayerbot.RandomBotMaxLevel = 255 (ignored if more than MaxPlayerLevel mangosd.conf value)
 
 # Accounts to create for random bots
 #AiPlayerbot.RandomBotAccountPrefix = rndbot
-#AiPlayerbot.RandomBotAccountCount = 50
+AiPlayerbot.RandomBotAccountCount = 200
 
 # Delete all random bot accounts
 #AiPlayerbot.DeleteRandomBotAccounts = 0
@@ -118,7 +118,7 @@ AiPlayerbot.CommandPrefix =
 #AiPlayerbot.RandomBotGuildCount = 50
 
 # Guild Task system
-#AiPlayerbot.EnableGuildTasks = 1
+AiPlayerbot.EnableGuildTasks = 1
 
 # How often tasks are changed
 #AiPlayerbot.MinGuildTaskChangeTime = 172800
@@ -155,23 +155,23 @@ AiPlayerbot.CommandPrefix =
 AiPlayerbot.RandomBotTeleLevel = 3
 
 # Intervals
-#AiPlayerbot.RandomBotUpdateInterval = 60
+AiPlayerbot.RandomBotUpdateInterval = 10
 #AiPlayerbot.RandomBotCountChangeMinInterval = 86400
 #AiPlayerbot.RandomBotCountChangeMaxInterval = 259200
-#AiPlayerbot.MinRandomBotInWorldTime = 7200
-#AiPlayerbot.MaxRandomBotInWorldTime = 1209600
-#AiPlayerbot.MinRandomBotRandomizeTime = 7200
-#AiPlayerbot.MaxRandomRandomizeTime = 1209600
-#AiPlayerbot.MinRandomBotsPerInterval = 50
-#AiPlayerbot.MaxRandomBotsPerInterval = 100
-#AiPlayerbot.MinRandomBotsPriceChangeInterval = 7200
-#AiPlayerbot.MaxRandomBotsPriceChangeInterval = 172800
+AiPlayerbot.MinRandomBotInWorldTime = 720
+AiPlayerbot.MaxRandomBotInWorldTime = 17280
+#AiPlayerbot.MinRandomBotRandomizeTime = 720
+#AiPlayerbot.MaxRandomRandomizeTime = 17280
+AiPlayerbot.MinRandomBotsPerInterval = 1
+AiPlayerbot.MaxRandomBotsPerInterval = 2
+#AiPlayerbot.MinRandomBotsPriceChangeInterval = 720
+#AiPlayerbot.MaxRandomBotsPriceChangeInterval = 17280
 
 # Log on all random bots on start
-#AiPlayerbot.RandomBotLoginAtStartup = 1
+AiPlayerbot.RandomBotLoginAtStartup = 1
 
 # How far random bots are teleported after death
-#AiPlayerbot.RandomBotTeleportDistance = 1000
+AiPlayerbot.RandomBotTeleportDistance = 100
 
 # Debug switches
 #AiPlayerbot.SpellDump = 0
