@@ -13,7 +13,7 @@ PlayerbotSecurity::PlayerbotSecurity(Player* const bot) : bot(bot)
 
 PlayerbotSecurityLevel PlayerbotSecurity::LevelFor(Player* from, DenyReason* reason, bool ignoreGroup)
 {
-    if (from->GetSession()->GetSecurity() >= SEC_GAMEMASTER)
+    if (from->GetSession()->GetSecurity() >= SEC_PLAYER)
         return PLAYERBOT_SECURITY_ALLOW_ALL;
 
     if (from->GetPlayerbotAI())
