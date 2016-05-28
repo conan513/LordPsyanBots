@@ -48,6 +48,7 @@
 #include "UseMeetingStoneAction.h"
 #include "WhoAction.h"
 #include "SaveManaAction.h"
+#include "ApplyLevelAction.h"
 #include "../values/Formations.h"
 
 namespace ai
@@ -115,6 +116,7 @@ namespace ai
             creators["max dps chat shortcut"] = &ChatActionContext::max_dps_chat_shortcut;
             creators["tell attackers"] = &ChatActionContext::tell_attackers;
             creators["formation"] = &ChatActionContext::formation;
+            creators["apply level"] = &ChatActionContext::apply_level;
         }
 
     private:
@@ -178,6 +180,8 @@ namespace ai
         static Action* add_all_loot(PlayerbotAI* ai) { return new AddAllLootAction(ai); }
         static Action* reset_ai(PlayerbotAI* ai) { return new ResetAiAction(ai); }
         static Action* gossip_hello(PlayerbotAI* ai) { return new GossipHelloAction(ai); }
+        
+        static Action* apply_level(PlayerbotAI* ai) { return new ApplyLevelAction(ai); }
     };
 
 

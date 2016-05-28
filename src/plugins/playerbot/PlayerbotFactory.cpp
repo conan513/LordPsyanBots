@@ -31,6 +31,11 @@ uint32 PlayerbotFactory::tradeSkills[] =
     SKILL_FISHING
 };
 
+void PlayerbotFactory::ApplyLevel()
+{
+    InitAvailableSpells();
+}
+
 void PlayerbotFactory::Randomize()
 {
     Randomize(true);
