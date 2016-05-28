@@ -34,7 +34,7 @@ bool TradeAction::TradeItem(const Item& item, int8 slot)
     if (!bot->GetTrader() || item.IsInTrade())
         return false;
 
-    if (!item.CanBeTraded() && slot != TRADE_SLOT_NONTRADED)
+    if (!item.CanBeTraded(false, true) && slot != TRADE_SLOT_NONTRADED)
         slot = TRADE_SLOT_NONTRADED;
 
     int8 tradeSlot = -1;
