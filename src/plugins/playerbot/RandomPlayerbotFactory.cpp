@@ -6,7 +6,6 @@
 #include "PlayerbotAI.h"
 #include "../../server/game/Entities/Player/Player.h"
 #include "../../server/game/Guilds/Guild.h"
-#include "../../server/game/Accounts/AccountMgr.h"
 #include "../../server/game/Guilds/GuildMgr.h"
 #include "RandomPlayerbotFactory.h"
 
@@ -111,18 +110,17 @@ bool RandomPlayerbotFactory::CreateRandomBot(uint8 cls)
     string name = CreateRandomBotName();
     if (name.empty())
         return false;
-	std::string nameOrIp = "";
+
     CharSectionsEntry const* skin = GetRandomCharSection(race, SECTION_TYPE_SKIN, gender);
     CharSectionsEntry const* face = GetRandomCharSection(race, SECTION_TYPE_FACE, gender, skin->Color);
     CharSectionsEntry const* hair = GetRandomCharSection(race, SECTION_TYPE_HAIR, gender);
     CharSectionsEntry const* facialHair = GetRandomCharSection(race, SECTION_TYPE_FACIAL_HAIR, gender, hair->Color);
     uint8 outfitId = 0;
-    std::string accountName;
-    AccountMgr::GetName(accountId, accountName);
-	WorldSession* session = new WorldSession(accountId, std::move(accountName), NULL, SEC_PLAYER, 2, 0, LOCALE_enUS, 0, false);
+
+    WorldSession* session = new WorldSession(accountId, "rndbot", NULL, SEC_PLAYER, 2, 0, LOCALE_enUS, 0, false);
     if (!session)
     {
-        sLog->outMessage("playerbot", LOG_LEVEL_ERROR, "Couldn't create session for random bot account %s", accountId);
+        sLog->outMessage("playerbot", LOG_LEVEL_ERROR, "Couldn't create session for random bot account %d", accountId);
         delete session;
         return false;
     }
