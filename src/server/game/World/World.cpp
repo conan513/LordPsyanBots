@@ -2407,7 +2407,8 @@ void World::Update(uint32 diff)
         sAuctionMgr->Update();
 
         // ahbot mod
-        auctionbot.Update();
+		 //DMANBOB DISABLE ike3 AHbot 
+     //   auctionbot.Update();
     }
 
     // playerbot mod
@@ -2420,13 +2421,13 @@ void World::Update(uint32 diff)
 
         sAuctionMgr->UpdatePendingAuctions();
     }
-
+    // DMANBOB Restore Trinity AHBOT use worldserver.conf to enable or diasble AHbot
     /// <li> Handle AHBot operations
-    // if (m_timers[WUPDATE_AHBOT].Passed())
-    //{
-    //    sAuctionBot->Update();
-    //    m_timers[WUPDATE_AHBOT].Reset();
-    //}
+    if (m_timers[WUPDATE_AHBOT].Passed())
+    {
+        sAuctionBot->Update();
+        m_timers[WUPDATE_AHBOT].Reset();
+    }
     // end of playerbot mod
 
     /// <li> Handle session updates when the timer has passed
@@ -3663,4 +3664,3 @@ void World::RemoveOldCorpses()
 {
     m_timers[WUPDATE_CORPSES].SetCurrent(m_timers[WUPDATE_CORPSES].GetInterval());
 }
-
