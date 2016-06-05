@@ -12453,6 +12453,7 @@ void Player::QuickEquipItem(uint16 pos, Item* pItem)
     }
 }
 
+extern uint32 GetItemEnchantVisual(Player* player, Item* item);
 void Player::SetVisibleItemSlot(uint8 slot, Item* pItem)
 {
     if (pItem)
@@ -12463,7 +12464,7 @@ void Player::SetVisibleItemSlot(uint8 slot, Item* pItem)
             SetUInt32Value(PLAYER_VISIBLE_ITEM_1_ENTRYID + (slot * 2), entry);
         else
             SetUInt32Value(PLAYER_VISIBLE_ITEM_1_ENTRYID + (slot * 2), pItem->GetEntry());
-        SetUInt16Value(PLAYER_VISIBLE_ITEM_1_ENCHANTMENT + (slot * 2), 0, pItem->GetEnchantmentId(PERM_ENCHANTMENT_SLOT));
+		SetUInt16Value(PLAYER_VISIBLE_ITEM_1_ENCHANTMENT + (slot * 2), 0, GetItemEnchantVisual(this, pItem));
         SetUInt16Value(PLAYER_VISIBLE_ITEM_1_ENCHANTMENT + (slot * 2), 1, pItem->GetEnchantmentId(TEMP_ENCHANTMENT_SLOT));
     }
     else
@@ -24865,6 +24866,7 @@ void Player::AutoStoreLoot(uint8 bag, uint8 slot, uint32 loot_id, LootStore cons
     }
 }
 
+extern void SetRandomEnchantVisual(Player* player, Item* item);
 void Player::StoreLootItem(uint8 lootSlot, Loot* loot)
 {
     QuestItem* qitem = NULL;
@@ -24940,6 +24942,7 @@ void Player::StoreLootItem(uint8 lootSlot, Loot* loot)
         if (loot->containerID > 0)
             loot->DeleteLootItemFromContainerItemDB(item->itemid);
 
+		SetRandomEnchantVisual(this, newitem);
     }
     else
         SendEquipError(msg, NULL, NULL, item->itemid);
