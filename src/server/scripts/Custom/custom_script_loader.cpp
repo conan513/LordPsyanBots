@@ -16,6 +16,8 @@
  */
 
 // This is where scripts' loading functions should be declared:
+
+void AddSC_MercenarySetup();
 void AddSC_item_enchant_visuals();
     // All In One NPC
     void AddSC_npc_all();
@@ -240,6 +242,7 @@ void AddSC_jail_commandscript();
 // void Add${NameOfDirectory}Scripts()
 void AddCustomScripts()
 {
+	AddSC_MercenarySetup();
 	AddSC_item_enchant_visuals();
     // All In One NPC
     AddSC_npc_all();

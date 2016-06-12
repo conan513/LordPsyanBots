@@ -30,6 +30,7 @@ set(scripts_STAT_SRCS
   ${scripts_STAT_SRCS}
   Custom/enchant_visuals.cpp
   Custom/npc_teleport.cpp
+  Custom/mercenary_gossip.cpp
   ../game/AI/ScriptedAI/sc_npc_teleport.cpp
   ../game/AI/ScriptedAI/sc_npc_teleport.h
   ../game/AI/ScriptedAI/ScriptedEscortAI.cpp
